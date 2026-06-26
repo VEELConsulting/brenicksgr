@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- connecting lines from center to 4 nodes -->
+  <line x1="100" y1="100" x2="55" y2="55" stroke="#A88447" stroke-width="2"/>
+  <line x1="100" y1="100" x2="145" y2="55" stroke="#A88447" stroke-width="2"/>
+  <line x1="100" y1="100" x2="55" y2="145" stroke="#A88447" stroke-width="2"/>
+  <line x1="100" y1="100" x2="145" y2="145" stroke="#A88447" stroke-width="2"/>
+  <!-- center node -->
+  <circle cx="100" cy="100" r="8" fill="none" stroke="#A88447" stroke-width="2"/>
+  <!-- outer nodes -->
+  <circle cx="55" cy="55" r="8" fill="none" stroke="#A88447" stroke-width="2"/>
+  <circle cx="145" cy="55" r="8" fill="none" stroke="#A88447" stroke-width="2"/>
+  <circle cx="55" cy="145" r="8" fill="none" stroke="#A88447" stroke-width="2"/>
+  <circle cx="145" cy="145" r="8" fill="none" stroke="#A88447" stroke-width="2"/>
+</svg>

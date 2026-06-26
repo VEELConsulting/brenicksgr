@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <title>Salesforce Consulting — The Brenicks Group</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <meta property="og:title" content="Salesforce Consulting — The Brenicks Group" />
+  <meta property="og:description" content="Salesforce that actually works — for businesses tired of paying for a system their team does not use." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://brenicks.com/salesforce/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Salesforce Consulting — The Brenicks Group" />
+  <meta name="twitter:description" content="Salesforce that actually works — for businesses tired of paying for a system their team does not use." />
+  <meta name="description" content="Salesforce that actually works — for businesses that are tired of paying for a system their team doesn't use." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Satoshi:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(260px,100%), 1fr));
+      gap: var(--gap);
+      margin-top: clamp(3rem, 6vw, 5rem);
+    }
+    .pillar { padding: clamp(1.75rem, 3vw, 2.5rem); border-top: 2px solid var(--c-gold); }
+    .pillar__num { font-family:'Playfair Display',serif; font-size:3.5rem; font-weight:500; color:var(--c-gold); opacity:.18; line-height:1; margin-bottom:1rem; display:block; }
+    .pillar h3 { font-family:'Playfair Display',serif; font-size:clamp(1.125rem,2.5vw,1.375rem); font-weight:500; margin-bottom:.875rem; line-height:1.3; }
+    .pillar p { font-size:.9375rem; color:var(--c-text-2); line-height:1.75; }
+
+    .result-block { border-left:2px solid var(--c-gold); padding:.25rem 0 .25rem 2rem; margin:clamp(3rem,6vw,5rem) 0; }
+    .result-block__stat { font-family:'Playfair Display',serif; font-size:clamp(3rem,8vw,6rem); font-weight:500; color:var(--c-text); line-height:1; margin-bottom:.5rem; }
+    .result-block__context { font-size:1rem; color:var(--c-text-2); line-height:1.6; max-width:480px; }
+    .result-block__source { font-size:.75rem; letter-spacing:.08em; text-transform:uppercase; color:var(--c-text-3); margin-top:1rem; }
+
+    .build-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr)); gap:1px; background:var(--c-border); border:var(--glass-border); border-radius:var(--radius-lg); overflow:hidden; margin-top:clamp(2rem,4vw,3rem); }
+    .build-item { background:var(--c-bg); padding:clamp(1.5rem,3vw,2rem); transition:background 0.3s; }
+    .build-item:hover { background:var(--c-surface); }
+    .build-item__label { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--c-gold); margin-bottom:.75rem; display:block; }
+    .build-item h4 { font-family:'Playfair Display',serif; font-size:1.0625rem; font-weight:500; margin-bottom:.5rem; }
+    .build-item p { font-size:.875rem; color:var(--c-text-2); line-height:1.65; }
+
+    .process-horizontal { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr)); gap:0; margin-top:clamp(2rem,4vw,3rem); counter-reset:steps; }
+    .ph-step { padding:clamp(1.5rem,3vw,2rem); border-right:var(--glass-border); counter-increment:steps; }
+    .ph-step:last-child { border-right:none; }
+    @media (max-width:640px) { .ph-step { border-right:none; border-bottom:var(--glass-border); } .ph-step:last-child { border-bottom:none; } }
+    .ph-step__num { font-family:'Playfair Display',serif; font-size:2rem; font-weight:500; color:var(--c-gold); opacity:.3; line-height:1; margin-bottom:1rem; }
+    .ph-step h4 { font-size:.9375rem; font-weight:600; margin-bottom:.5rem; }
+    .ph-step p { font-size:.8375rem; color:var(--c-text-2); line-height:1.65; }
+
+    .closing-statement { max-width:760px; margin:0 auto; text-align:center; padding:clamp(4rem,8vw,7rem) 0 clamp(2rem,4vw,3rem); }
+    .closing-statement h2 { font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3.75rem); font-weight:500; line-height:1.15; margin-bottom:1.5rem; }
+    .closing-statement p { font-size:clamp(1rem,2vw,1.125rem); color:var(--c-text-2); line-height:1.8; margin-bottom:2.5rem; max-width:560px; margin-left:auto; margin-right:auto; }
+
+    /* Diagnosis list */
+    .diagnosis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(280px,100%),1fr));
+      gap: var(--gap);
+      margin-top: clamp(2rem,4vw,3rem);
+    }
+    .diagnosis-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .diagnosis-item__dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--c-gold);
+      flex-shrink: 0;
+      margin-top: 0.45rem;
+    }
+    .diagnosis-item__text {
+      font-size: 0.9375rem;
+      color: var(--c-text-2);
+      line-height: 1.7;
+    }
+    .diagnosis-item__text strong { color: var(--c-text); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo"><img src="../assets/logo/brenicks-wordmark-light.svg" alt="Brenicks" class="logo-light" /><img src="../assets/logo/brenicks-wordmark-dark.svg" alt="Brenicks" class="logo-dark" /></a>
+      <ul class="nav__links">
+        <li><a href="../ai-implementation/index.html">AI Implementation</a></li>
+        <li><a href="../web-design/index.html">Web Design</a></li>
+        <li><a href="../salesforce/index.html" style="color:var(--c-text)">Salesforce</a></li>
+        <li><a href="../insights/index.html">Insights</a></li>
+        <li><a href="../about/index.html">About</a></li>
+      </ul>
+      <div class="nav__actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <span class="theme-toggle__icon">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+        <a href="../contact/index.html?service=salesforce" class="btn btn--outline">Book a Consultation</a>
+      </div>
+      <button class="nav__burger" id="navBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+    <div class="nav__mobile" id="navMobile">
+      <ul>
+        <li><a href="../ai-implementation/index.html">AI Implementation</a></li>
+        <li><a href="../web-design/index.html">Web Design</a></li>
+        <li><a href="../salesforce/index.html">Salesforce</a></li>
+        <li><a href="../insights/index.html">Insights</a></li>
+        <li><a href="../about/index.html">About</a></li>
+        <li><a href="../contact/index.html?service=salesforce">Book a Consultation</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="page-hero section" style="background:var(--c-bg-2);border-bottom:var(--glass-border);min-height:70svh;display:flex;align-items:center;position:relative;overflow:hidden;width:100%;max-width:100%;">
+    <div class="hero__bg" style="position:absolute;inset:0;pointer-events:none;">
+      <div class="hero__orb hero__orb--2" style="opacity:.4;"></div>
+      <div class="hero__orb hero__orb--3" style="opacity:.25;"></div>
+      <div class="hero__grid"></div>
+    </div>
+    <div class="container" style="position:relative;z-index:2;width:100%;">
+      <div class="reveal" style="max-width:860px;">
+        <span class="section__label">Salesforce Consulting</span>
+        <h1 style="font-family:'Playfair Display',serif;font-size:clamp(2.75rem,7vw,6rem);font-weight:500;line-height:1.06;letter-spacing:-0.02em;margin-bottom:1.75rem;">
+          Salesforce should be<br />your biggest asset.<br /><em>Not your biggest headache.</em>
+        </h1>
+        <p style="font-size:clamp(1rem,2vw,1.2rem);color:var(--c-text-2);font-weight:300;line-height:1.8;max-width:520px;margin-bottom:2.5rem;">
+          We implement, fix, and optimise Salesforce for growing businesses that can't afford a system their teams work around instead of in. Less friction. More pipeline. Real adoption.
+        </p>
+        <a href="../contact/index.html?service=salesforce" class="btn btn--primary btn--large">Book a Consultation →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MARQUEE ── -->
+  <div class="marquee-strip">
+    <div class="marquee-inner">
+      <div class="marquee-track">
+      <span>Sales Cloud</span><span class="sep">◆</span>
+      <span>Flow Automation</span><span class="sep">◆</span>
+      <span>CRM Implementation</span><span class="sep">◆</span>
+      <span>Data Architecture</span><span class="sep">◆</span>
+      <span>Pipeline Visibility</span><span class="sep">◆</span>
+      <span>User Adoption</span><span class="sep">◆</span>
+      <span>Sales Cloud</span><span class="sep">◆</span>
+      <span>Flow Automation</span><span class="sep">◆</span>
+      <span>CRM Implementation</span><span class="sep">◆</span>
+      <span>Data Architecture</span><span class="sep">◆</span>
+      <span>Pipeline Visibility</span><span class="sep">◆</span>
+      <span>User Adoption</span><span class="sep">◆</span>
+    </div>
+      <div class="marquee-track" aria-hidden="true">
+      <span>Sales Cloud</span><span class="sep">◆</span>
+      <span>Flow Automation</span><span class="sep">◆</span>
+      <span>CRM Implementation</span><span class="sep">◆</span>
+      <span>Data Architecture</span><span class="sep">◆</span>
+      <span>Pipeline Visibility</span><span class="sep">◆</span>
+      <span>User Adoption</span><span class="sep">◆</span>
+      <span>Sales Cloud</span><span class="sep">◆</span>
+      <span>Flow Automation</span><span class="sep">◆</span>
+      <span>CRM Implementation</span><span class="sep">◆</span>
+      <span>Data Architecture</span><span class="sep">◆</span>
+      <span>Pipeline Visibility</span><span class="sep">◆</span>
+      <span>User Adoption</span><span class="sep">◆</span>
+    </div>
+    </div>
+  </div>
+
+  <!-- ── DIAGNOSIS ── -->
+  <section class="section">
+    <div class="container">
+      <div class="reveal">
+        <span class="section__label">Sound familiar?</span>
+        <h2 class="section__title" style="max-width:600px;">The signs your Salesforce<br /><em>is working against you</em></h2>
+      </div>
+      <div class="diagnosis reveal reveal--delay-1">
+        <div class="diagnosis-item"><div class="diagnosis-item__dot"></div><div class="diagnosis-item__text"><strong>Your team has built workarounds.</strong> Spreadsheets, WhatsApp threads, sticky notes — anything to avoid logging into Salesforce.</div></div>
+        <div class="diagnosis-item"><div class="diagnosis-item__dot"></div><div class="diagnosis-item__text"><strong>Your pipeline data isn't trustworthy.</strong> Forecasts feel like guesswork. Dashboards show numbers nobody believes.</div></div>
+        <div class="diagnosis-item"><div class="diagnosis-item__dot"></div><div class="diagnosis-item__text"><strong>Every report requires a manual export.</strong> Getting a simple answer out of the system takes more effort than it should.</div></div>
+        <div class="diagnosis-item"><div class="diagnosis-item__dot"></div><div class="diagnosis-item__text"><strong>New starters take months to get up to speed.</strong> Because the system is built for how it was set up, not how you actually work.</div></div>
+        <div class="diagnosis-item"><div class="diagnosis-item__dot"></div><div class="diagnosis-item__text"><strong>You're paying for features you've never touched.</strong> Licences running. Value nowhere to be seen.</div></div>
+        <div class="diagnosis-item"><div class="diagnosis-item__dot"></div><div class="diagnosis-item__text"><strong>You don't know what "good" looks like.</strong> You inherited this org, or built it as you went, and now it's too tangled to fix from the inside.</div></div>
+      </div>
+
+      <!-- RESULT -->
+      <div class="result-block reveal">
+        <div class="result-block__stat">12 hrs</div>
+        <div class="result-block__context">Saved per week, per team member, after Brenicks rebuilt the automation layer for a 30-person property sales team. That's 360 hours of capacity returned to revenue-generating activity every month.</div>
+        <div class="result-block__source">Property Group — Flow Automation Engagement, 2025</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WHAT WE DO ── -->
+  <section class="section" style="background:var(--c-bg-2);border-top:var(--glass-border);border-bottom:var(--glass-border);">
+    <div class="container">
+      <div class="reveal">
+        <span class="section__label">The work</span>
+        <h2 class="section__title">What a Brenicks Salesforce<br /><em>engagement delivers</em></h2>
+      </div>
+      <div class="build-grid reveal reveal--delay-1">
+        <div class="build-item">
+          <span class="build-item__label">New Orgs</span>
+          <h4>Implementation from scratch</h4>
+          <p>Built around how your team actually works — not how a generic template assumes you do. Data model, profiles, automations, dashboards.</p>
+        </div>
+        <div class="build-item">
+          <span class="build-item__label">Existing Orgs</span>
+          <h4>Rescue & optimisation</h4>
+          <p>We audit what you have, identify what's broken or redundant, and rebuild it cleanly. Your team starts using the system because it stops getting in their way.</p>
+        </div>
+        <div class="build-item">
+          <span class="build-item__label">Automation</span>
+          <h4>Flow & process automation</h4>
+          <p>Eliminate the manual steps that eat your team's time. Approval workflows, lead routing, follow-up sequences, data validation — automated properly.</p>
+        </div>
+        <div class="build-item">
+          <span class="build-item__label">Visibility</span>
+          <h4>Reporting & dashboards</h4>
+          <p>Reports your leadership actually uses. Pipeline visibility that's accurate enough to make decisions from. Built for the people who read them.</p>
+        </div>
+        <div class="build-item">
+          <span class="build-item__label">Migration</span>
+          <h4>CRM-to-Salesforce migration</h4>
+          <p>Moving from HubSpot, Pipedrive, or spreadsheets. Zero-downtime transfers with full data integrity — years of history preserved.</p>
+        </div>
+        <div class="build-item">
+          <span class="build-item__label">Ongoing</span>
+          <h4>Retainer & admin support</h4>
+          <p>A dedicated Salesforce partner on call — without the cost of a full-time admin. Monthly retainers for businesses that need continuity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PILLARS / OUTCOMES ── -->
+  <section class="section">
+    <div class="container">
+      <div class="reveal">
+        <span class="section__label">What changes</span>
+        <h2 class="section__title">What you get when<br /><em>Salesforce actually works</em></h2>
+      </div>
+      <div class="pillars">
+        <div class="pillar reveal reveal--delay-1">
+          <span class="pillar__num">01</span>
+          <h3>A pipeline you can trust</h3>
+          <p>When your data is clean and your team logs consistently, your forecast becomes a real number. Decisions stop being gut calls and start being informed ones.</p>
+        </div>
+        <div class="pillar reveal reveal--delay-2">
+          <span class="pillar__num">02</span>
+          <h3>Hours returned to selling</h3>
+          <p>Every hour your team spends on manual admin is an hour not spent closing. Automation doesn't replace people — it gives them their time back.</p>
+        </div>
+        <div class="pillar reveal reveal--delay-3">
+          <span class="pillar__num">03</span>
+          <h3>A system that scales with you</h3>
+          <p>A well-built Salesforce org handles 10 users or 200 without falling apart. We build for where you're going, not just where you are.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROCESS ── -->
+  <section class="section" style="background:var(--c-bg-2);border-top:var(--glass-border);border-bottom:var(--glass-border);">
+    <div class="container">
+      <div class="reveal">
+        <span class="section__label">How it works</span>
+        <h2 class="section__title">Our process.<br /><em>No black boxes.</em></h2>
+        <p style="color:var(--c-text-2);max-width:480px;margin-top:.5rem;line-height:1.75;">Every stage is visible. Every decision is explained. You'll never be handed something you don't understand.</p>
+      </div>
+      <div class="process-horizontal glass-card reveal reveal--delay-1" style="border-radius:var(--radius-lg);overflow:hidden;">
+        <div class="ph-step">
+          <div class="ph-step__num">01</div>
+          <h4>Org Audit</h4>
+          <p>We map what you have — data model, automations, user adoption patterns, pain points. No assumptions. We start from facts.</p>
+        </div>
+        <div class="ph-step">
+          <div class="ph-step__num">02</div>
+          <h4>Architecture</h4>
+          <p>A clean blueprint signed off before anything is built. Object relationships, field logic, automation design, profile structure.</p>
+        </div>
+        <div class="ph-step">
+          <div class="ph-step__num">03</div>
+          <h4>Build</h4>
+          <p>Delivered in sprints. You review progress at each stage — not just at the end. Changes are easy when caught early.</p>
+        </div>
+        <div class="ph-step">
+          <div class="ph-step__num">04</div>
+          <h4>Handover</h4>
+          <p>Full documentation. User training for your team. You understand what's been built and why. You own it completely.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── WORK ── -->
+  <section class="work section" id="work">
+    <div class="container">
+      <div class="reveal">
+        <span class="section__label">Recent engagements</span>
+        <h2 class="section__title">Problems we've<br /><em>already solved</em></h2>
+      </div>
+      <div class="catalogue__grid" style="margin-top:clamp(2rem,4vw,3rem);">
+        <div class="catalogue-card reveal reveal--delay-1">
+          <div class="catalogue-card__img">
+            <div class="work-card__placeholder wp--night"><div class="wp__inner"><svg viewBox="0 0 60 40" fill="none"><path d="M20 6C12.268 6 6 12.268 6 20s6.268 14 14 14 14-6.268 14-14S27.732 6 20 6z" stroke="white" stroke-width="1.5" opacity=".4"/><circle cx="20" cy="20" r="3" fill="white" opacity=".6"/></svg></div></div>
+            <div class="catalogue-card__overlay"><a href="../contact/index.html?service=salesforce" class="btn btn--primary">Work with us →</a></div>
+          </div>
+          <div class="catalogue-card__info">
+            <div class="catalogue-card__meta"><span class="work-card__cat">Implementation</span><span class="catalogue-card__year">2025</span></div>
+            <h3 class="catalogue-card__title">Sales Cloud — FinTech SME</h3>
+            <p class="catalogue-card__desc">End-to-end Sales Cloud implementation for a 15-person sales team. Pipeline admin time reduced by 60%. Deal cycle cut in half within the first quarter.</p>
+            <div class="catalogue-card__tags"><span>Sales Cloud</span><span>Implementation</span><span>Training</span></div>
+          </div>
+        </div>
+        <div class="catalogue-card reveal reveal--delay-2">
+          <div class="catalogue-card__img">
+            <div class="work-card__placeholder wp--gold"><div class="wp__inner"><svg viewBox="0 0 60 40" fill="none"><rect x="8" y="8" width="44" height="24" rx="3" stroke="white" stroke-width="1.2" opacity=".4"/><path d="M18 20h24M18 15h16M18 25h12" stroke="white" stroke-width="1" opacity=".4" stroke-linecap="round"/></svg></div></div>
+            <div class="catalogue-card__overlay"><a href="../contact/index.html?service=salesforce" class="btn btn--primary">Work with us →</a></div>
+          </div>
+          <div class="catalogue-card__info">
+            <div class="catalogue-card__meta"><span class="work-card__cat">Automation</span><span class="catalogue-card__year">2025</span></div>
+            <h3 class="catalogue-card__title">Flow Automation — Property Group</h3>
+            <p class="catalogue-card__desc">12 hours of weekly manual data entry eliminated across a 30-person team. Equivalent to returning one full-time employee to productive work.</p>
+            <div class="catalogue-card__tags"><span>Flow Automation</span><span>Service Cloud</span><span>Reporting</span></div>
+          </div>
+        </div>
+        <div class="catalogue-card reveal reveal--delay-3">
+          <div class="catalogue-card__img">
+            <div class="work-card__placeholder wp--ocean"><div class="wp__inner"><svg viewBox="0 0 60 40" fill="none"><path d="M10 20 Q30 5 50 20" stroke="white" stroke-width="2" stroke-linecap="round" fill="none" opacity=".5"/><circle cx="10" cy="20" r="3" fill="white" opacity=".6"/><circle cx="50" cy="20" r="3" fill="white" opacity=".6"/></svg></div></div>
+            <div class="catalogue-card__overlay"><a href="../contact/index.html?service=salesforce" class="btn btn--primary">Work with us →</a></div>
+          </div>
+          <div class="catalogue-card__info">
+            <div class="catalogue-card__meta"><span class="work-card__cat">Migration</span><span class="catalogue-card__year">2026</span></div>
+            <h3 class="catalogue-card__title">HubSpot → Salesforce Migration</h3>
+            <p class="catalogue-card__desc">Zero-downtime migration for a 50-person team. Four years of pipeline history, custom field mappings, and active workflows — all preserved.</p>
+            <div class="catalogue-card__tags"><span>Migration</span><span>Data Architecture</span><span>Sales Cloud</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PACKAGES & PAYMENT OPTIONS ── -->
+  <section class="section" id="packages">
+    <div class="container">
+      <div class="section__header reveal">
+        <span class="section__label">Packages</span>
+        <h2 class="section__title">Three ways <em>to start</em></h2>
+      </div>
+      <div class="tiers-grid">
+        <!-- Stripe Payment Link: Salesforce Org Audit ($100/seat, min 10) -->
+        <a href="https://buy.stripe.com/test_00waEX2cZed6frwak10480i" class="tier-card reveal reveal--delay-1" style="display:block;text-decoration:none;color:inherit;">
+          <span class="tier-card__badge">Paid Audit</span>
+          <h3 class="tier-card__name">Org Audit</h3>
+          <p class="tier-card__price">1 week · $100/user <span style="opacity:.65;">(min 10 users)</span></p>
+          <ul class="tier-card__features">
+            <li>Full org health check</li>
+            <li>Data quality &amp; automation review</li>
+            <li>Prioritized fix list with effort estimates</li>
+            <li>Enter your user count at checkout</li>
+          </ul>
+          <span class="service-card__link" style="margin-top:.5rem;">Pay &amp; get started <span>→</span></span>
+        </a>
+        <!-- Stripe Payment Link: Salesforce Quick Setup ($500/seat, min 10) -->
+        <a href="https://buy.stripe.com/test_bJefZh5pb3ysdjo2Rz0480k" class="tier-card tier-card--featured reveal reveal--delay-2" style="display:block;text-decoration:none;color:inherit;">
+          <span class="tier-card__badge">One-Time Build</span>
+          <h3 class="tier-card__name">Quick Setup</h3>
+          <p class="tier-card__price">2–3 weeks · $500/user <span style="opacity:.65;">(min 10 users)</span></p>
+          <ul class="tier-card__features">
+            <li>Core objects, fields &amp; page layouts</li>
+            <li>Automated flows scaled to team size</li>
+            <li>User &amp; permission setup, per seat</li>
+            <li>Enter your user count at checkout</li>
+          </ul>
+          <span class="service-card__link" style="margin-top:.5rem;">Pay &amp; get started <span>→</span></span>
+        </a>
+        <!-- Stripe Payment Link: Salesforce Care Retainer ($150/seat/mo recurring, min 10) -->
+        <a href="https://buy.stripe.com/test_28EfZh3h38SM93877P0480l" class="tier-card reveal reveal--delay-3" style="display:block;text-decoration:none;color:inherit;">
+          <span class="tier-card__badge">Retainer</span>
+          <h3 class="tier-card__name">Care Retainer</h3>
+          <p class="tier-card__price">Monthly · $150/user/mo <span style="opacity:.65;">(min 10 users)</span></p>
+          <ul class="tier-card__features">
+            <li>Ongoing admin support &amp; small changes</li>
+            <li>Monthly health check</li>
+            <li>Priority response on issues</li>
+            <li>Enter your user count at checkout</li>
+          </ul>
+          <span class="service-card__link" style="margin-top:.5rem;">Subscribe &amp; get started <span>→</span></span>
+        </a>
+      </div>
+      <p style="text-align:center;color:var(--c-text-2);margin-top:1rem;font-size:0.9375rem;">For orgs over 150 users, pricing is custom. <a href="../contact/index.html?service=salesforce" style="color:var(--c-gold);">Book a consultation →</a></p>
+    </div>
+  </section>
+
+  <!-- ── CLOSING CTA ── -->
+  <section class="section" style="background:var(--c-bg-2);border-top:var(--glass-border);">
+    <div class="container">
+      <div class="closing-statement reveal">
+        <span class="section__label" style="justify-content:center;">The conversation costs nothing</span>
+        <h2>Tell us about your org.<br />We'll tell you exactly<br /><em>what's possible.</em></h2>
+        <p>No pitch. No jargon. Just an honest conversation about where your Salesforce is falling short and what it would take to fix it — or build it properly from the start.</p>
+        <a href="../contact/index.html?service=salesforce" class="btn btn--primary btn--large">Book a Consultation →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__bottom" style="padding-top:0;border-top:none;">
+        <span>© 2026 The Brenicks Group, LLC.</span>
+        <a href="../index.html" style="color:var(--c-gold);font-family:'Playfair Display',serif;letter-spacing:.12em;"><img src="../assets/logo/brenicks-wordmark-light.svg" alt="Brenicks" class="logo-light" /><img src="../assets/logo/brenicks-wordmark-dark.svg" alt="Brenicks" class="logo-dark" /></a>
+        <div class="footer__legal"><a href="../ai-implementation/index.html">AI Implementation</a><a href="../salesforce/index.html">Salesforce</a><a href="../web-design/index.html">Web Design</a><a href="../contact/index.html">Contact</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
