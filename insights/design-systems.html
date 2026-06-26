@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <title>What Building Our Own Brand Taught Us About Design Systems — The Brenicks Group</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <link rel="icon" type="image/x-icon" href="https://brenicks.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://brenicks.com/apple-touch-icon.png" />
+  <meta property="og:image" content="https://brenicks.com/assets/social-og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta name="twitter:image" content="https://brenicks.com/assets/social-og-image.png" />
+  <meta property="og:title" content="What Building Our Own Brand Taught Us About Design Systems — The Brenicks Group" />
+  <meta property="og:description" content="A design system isn't a style sheet. It's a constraint system. Here's what we learned applying that discipline to our own rebrand." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://brenicks.com/insights/design-systems.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="What Building Our Own Brand Taught Us About Design Systems — The Brenicks Group" />
+  <meta name="twitter:description" content="A design system isn't a style sheet. It's a constraint system. Here's what we learned applying that discipline to our own rebrand." />
+  <meta name="description" content="What we learned about design systems by applying real constraints — stroke weight, accent ratio, icon grammar — to our own brand instead of a client's." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Satoshi:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo"><img src="../assets/logo/brenicks-wordmark-light.svg" alt="Brenicks" class="logo-light" /><img src="../assets/logo/brenicks-wordmark-dark.svg" alt="Brenicks" class="logo-dark" /></a>
+      <ul class="nav__links">
+        <li><a href="../ai-implementation/index.html">AI Implementation</a></li>
+        <li><a href="../web-design/index.html">Web Design</a></li>
+        <li><a href="../salesforce/index.html">Salesforce</a></li>
+        <li><a href="../insights/index.html" style="color:var(--c-text)">Insights</a></li>
+        <li><a href="../about/index.html">About</a></li>
+      </ul>
+      <div class="nav__actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <span class="theme-toggle__icon">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+        <a href="../contact/index.html" class="btn btn--outline">Contact</a>
+      </div>
+      <button class="nav__burger" id="navBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="nav__mobile" id="navMobile">
+    <ul>
+      <li><a href="../ai-implementation/index.html">AI Implementation</a></li>
+      <li><a href="../web-design/index.html">Web Design</a></li>
+      <li><a href="../salesforce/index.html">Salesforce</a></li>
+      <li><a href="../insights/index.html">Insights</a></li>
+      <li><a href="../about/index.html">About</a></li>
+      <li><a href="../contact/index.html">Contact</a></li>
+    </ul>
+  </div>
+
+  <section class="article-hero">
+    <div class="container">
+      <div class="article-meta">
+        <span class="article-cat">Strategy</span>
+        <span class="article-read">May 8, 2026 · 4 min read</span>
+      </div>
+      <h1 class="article-title">What Building Our Own Brand Taught Us About Design Systems</h1>
+      <p class="article-excerpt">A design system isn't a style sheet. It's a constraint system. We learned that the hard way, by applying it to ourselves instead of a client.</p>
+      <div class="article-byline">The Brenicks Group</div>
+    </div>
+  </section>
+
+  <section class="article-body">
+    <div class="container">
+      <div class="article-content">
+        <p>It's easy to give a client advice about design consistency. It's a different exercise to sit with your own logo and realize it has the same problem you'd flag in a client review: a legal suffix baked permanently into the artwork, an icon that borrows another company's visual trademark, and an accent color doing 70% of the work a single accent color should never carry alone.</p>
+
+        <p>That was our own brand mark, a few weeks ago. Fixing it taught us more about what a design system actually is than any client engagement has.</p>
+
+        <h2>A style guide is not a design system</h2>
+
+        <p>A style guide tells you what a logo looks like. A design system tells you what's <em>not allowed</em> — and that distinction matters more than it sounds like it should.</p>
+
+        <p>Our first version of the Brenicks mark had "GROUP LLC" baked into the logo artwork itself. It looked fine in isolation. The problem only showed up once we asked what happens if the entity structure ever changes — a new partner, an S-corp election, anything. The logo would need to be redesigned just to stay legally accurate. A real system keeps legal identity in text, where it belongs, and keeps the mark itself free to outlive any one structural decision.</p>
+
+        <h2>Borrowed icons are borrowed trust</h2>
+
+        <p>Our Salesforce service icon was a cloud. It looked clean. It was also, on reflection, a problem — Salesforce's own visual identity is built around "the cloud" specifically, and a third-party consultancy echoing that imagery risks looking Salesforce-exclusive at best, and trademark-adjacent at worst. We replaced it with a neutral interlocking-nodes icon: same visual weight, same 2px stroke, zero borrowed equity. The lesson generalizes — any icon you didn't design from a blank constraint set is probably carrying baggage you haven't audited yet.</p>
+
+        <h2>Restraint is a ratio, not a vibe</h2>
+
+        <p>"Use gold as an accent" is advice. "Gold appears only in divider lines, icon strokes, hover states, and the favicon — never as a dominant fill" is a constraint. The first is something everyone agrees with and nobody enforces. The second is something you can actually check a screen against and get a yes or no answer.</p>
+
+        <p>We went from roughly 70% gold coverage on our original mark to a deliberate 10–15%, accent-only. The visual shift was immediate: the brand stopped reading as "ornate" and started reading as "precise" — which, for a firm whose entire pitch is precision and follow-through, was the whole point.</p>
+
+        <h2>The actual test of a design system</h2>
+
+        <p>The honest test of whether you have a design system isn't whether your logo looks good. It's whether a new icon, built six months from now by someone who wasn't in the original room, would naturally come out matching the other three. Same stroke width. Same corner radius. Same accent ratio. If the answer is no, what you have is a logo — not a system.</p>
+      </div>
+
+      <div class="article-cta glass-card">
+        <h3>Want a brand and a site built on the same discipline?</h3>
+        <a href="../web-design/index.html" class="btn btn--primary">Explore Web Design →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer__bottom" style="padding-top:0;border-top:none;"><span>© 2026 The Brenicks Group, LLC.</span><a href="../index.html" style="color:var(--c-gold);font-family:'Playfair Display',serif;letter-spacing:.12em;"><img src="../assets/logo/brenicks-wordmark-light.svg" alt="Brenicks" class="logo-light" /><img src="../assets/logo/brenicks-wordmark-dark.svg" alt="Brenicks" class="logo-dark" /></a><div class="footer__legal"><a href="../ai-implementation/index.html">AI Implementation</a><a href="../salesforce/index.html">Salesforce</a><a href="../web-design/index.html">Web Design</a><a href="../contact/index.html">Contact</a></div></div></div></footer>
+  <script src="../js/main.js"></script>
+</body>
+</html>
