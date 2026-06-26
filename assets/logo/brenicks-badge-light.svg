@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <circle cx="100" cy="100" r="74" fill="none" stroke="#A88447" stroke-width="2"/>
-  <text x="100" y="124" text-anchor="middle"
-        font-family="'Playfair Display', Georgia, 'Times New Roman', serif"
-        font-size="72" font-weight="400"
-        fill="#0C1117">B</text>
-</svg>
