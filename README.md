@@ -29,4 +29,4 @@ Boutique AI implementation, Salesforce, and web design consulting for ambitious 
 
 ---
 
-Raleigh, NC · Remote, Worldwide
+Raleigh, Durham, Chapel-Hill  NC · Remote, Worldwide
