@@ -120,3 +120,9 @@
   }
 
 })();
+
+/* Brenicks add-on: first-party visit counts (no cookies) and the website chat. */
+(function () {
+  var load = function () { ['/brenicks-beacon.js', '/brenicks-chat.js'].forEach(function (src) { var s = document.createElement('script'); s.src = src; s.defer = true; document.head.appendChild(s); }); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load); else load();
+})();
