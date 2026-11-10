@@ -58,6 +58,28 @@ export const answer = (kb, userLines, botLines) => {
   return `${body} ${kb.quote_note}; details at ${P.page}.${ask}${close}`;
 };
 
+// How warm is this visitor? Contact details make a Lead; contact plus buying signals (urgency, size, price,
+// a clear service and stage) make a HOT LEAD. Each level alerts Lionel's phone once per conversation.
+const URGENT = /asap|urgent|right away|this week|this month|next week|ready to (start|go|buy|sign|move)|budget (is )?(approved|ready|set)|when can (you|we) start|next steps?|send (me |us )?(a |the )?(proposal|quote|invoice|contract)|sign (up|today)|let.?s (do|go|start)|we.?re ready|how (do|can) we (start|proceed)/i;
+export const heatOf = (kb, userLines) => {
+  const t = userLines.join(' '), it = intentOf(kb, t);
+  const email = (t.match(/[\w.+-]+@[\w-]+\.[\w.]+/) || [])[0] || null, phone = (t.match(/\+?\d[\d\s().-]{7,}\d/) || [])[0] || null;
+  const urgent = URGENT.test(t);
+  const score = (email || phone ? 3 : 0) + (it.service ? 1 : 0) + (it.stage ? 1 : 0) + (it.pages || it.users ? 1 : 0) + (it.price ? 1 : 0) + (urgent ? 2 : 0) + (/\bbook|call|meeting|consult/i.test(t) ? 1 : 0);
+  const level = (email || phone) && (urgent || score >= 6) ? 'hot' : (email || phone) ? 'lead' : (urgent && score >= 4 ? 'warm' : null);
+  return { level, score, email, phone, urgent, intent: it };
+};
+const APP = process.env.COMMAND_APP_URL || 'https://brenicks-command.pages.dev';
+async function alertLionel(rec, heat, kb) {
+  if (!process.env.DASH_TOKEN) return;
+  const svc = heat.intent.service ? kb.services[heat.intent.service].name : 'unspecified service';
+  const size = heat.intent.users ? `, ${heat.intent.users} users` : heat.intent.pages ? `, ${heat.intent.pages} pages` : '';
+  const who = [heat.email, heat.phone].filter(Boolean).join(' · ') || 'no contact yet';
+  const title = heat.level === 'hot' ? 'HOT LEAD on brenicks.com' : heat.level === 'lead' ? 'New lead on brenicks.com' : 'Warm visitor on brenicks.com';
+  const body = `${svc}${size}. ${who}. "${rec.first_message.slice(0, 90)}"`;
+  try { await fetch(APP + '/api/notify', { method: 'POST', headers: { Authorization: 'Bearer ' + process.env.DASH_TOKEN, 'Content-Type': 'application/json' }, body: JSON.stringify({ title, body, url: '/desk/', tag: 'chat-' + rec.session + '-' + heat.level, level: heat.level === 'hot' ? 'hot' : 'lead' }) }); } catch (e) { /* the desk still has it */ }
+}
+
 export default async function handler(req, res) {
   const sid = String((req.method === 'GET' ? req.query.session : (req.body && req.body.session)) || '').replace(/[^a-z0-9-]/gi, '').slice(0, 40);
   try {
@@ -103,9 +125,15 @@ export default async function handler(req, res) {
     const it = intentOf(kb, userLines.join(' '));
     rec.intent = { service: it.service, stage: it.stage, pages: it.pages || null, users: it.users || null, asked_price: it.price };
     if (rec.status === 'closed') rec.status = 'open';
+    const heat = heatOf(kb, userLines);
+    rec.heat = { level: heat.level, score: heat.score };
+    const rank = { warm: 1, lead: 2, hot: 3 };
+    const alert = heat.level && heat.level !== 'warm' && (rank[heat.level] || 0) > (rank[rec.alerted] || 0);
+    if (alert) rec.alerted = heat.level;
     const cmds = [['SET', 'chat:' + sid, JSON.stringify(rec), 'EX', 7776000], ['ZADD', 'chats', Date.now(), sid]];
     if (rec.transcript.length <= 2) cmds.push(['INCR', 'chats:' + day()], ['EXPIRE', 'chats:' + day(), 7776000], ['LPUSH', 'events', JSON.stringify({ at: rec.at, type: 'chat', path: rec.path, label: rec.first_message.slice(0, 80) })], ['LTRIM', 'events', 0, 499]);
     await redis(cmds);
+    if (alert) await alertLionel(rec, heat, kb);
     res.status(200).json({ reply, length: rec.transcript.length });
   } catch (e) {
     res.status(200).json({ reply: 'The assistant is offline right now. Email hello@brenicks.com or book a call: ' + BOOKING });

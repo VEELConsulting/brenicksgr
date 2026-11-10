@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       const limit = Math.min(100, +req.query.limit || 50);
       const ids = (await redis([['ZREVRANGE', 'chats', 0, limit - 1]]))[0] || [];
       const vals = ids.length ? (await redis([['MGET', ...ids.map((i) => 'chat:' + i)]]))[0] : [];
-      let chats = vals.filter(Boolean).map((v) => JSON.parse(v)).map((c) => ({ session: c.session, at: c.at, last_at: c.last_at || c.at, status: c.status || 'open', claimed_by: c.claimed_by || null, claimed_at: c.claimed_at || null, lead: !!c.lead, intent: c.intent || null, path: c.path, first_message: c.first_message, transcript: c.transcript || [] }));
+      let chats = vals.filter(Boolean).map((v) => JSON.parse(v)).map((c) => ({ session: c.session, at: c.at, last_at: c.last_at || c.at, status: c.status || 'open', claimed_by: c.claimed_by || null, claimed_at: c.claimed_at || null, lead: !!c.lead, heat: c.heat || null, intent: c.intent || null, path: c.path, first_message: c.first_message, transcript: c.transcript || [] }));
       if ((req.query.status || 'open') === 'open') chats = chats.filter((c) => c.status !== 'closed');
       res.setHeader('Cache-Control', 'no-store'); res.status(200).json({ chats }); return;
     }
