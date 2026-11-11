@@ -885,6 +885,11 @@ em { font-style: italic; font-family: 'Playfair Display', serif; }
 .footer__tagline { letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.7rem; }
 .footer__legal { display: flex; gap: 1.25rem; }
 .footer__legal a:hover { color: var(--c-gold); }
+.footer__social { display: flex; gap: 0.5rem; align-items: center; }
+.footer__brand .footer__social { margin-top: 1.25rem; }
+.footer__social a { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--c-border); border-radius: 50%; color: var(--c-text-2); transition: color 0.3s, border-color 0.3s; }
+.footer__social a:hover, .footer__social a:focus-visible { color: var(--c-gold); border-color: var(--c-gold); }
+.contact-social { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
 @media (max-width: 480px) {
   .footer__bottom { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
   .footer__tagline { display: none; }
