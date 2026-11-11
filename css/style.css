@@ -651,7 +651,7 @@ em { font-style: italic; font-family: 'Playfair Display', serif; }
 .work { background: var(--c-bg-2); }
 .work__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px,100%), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px,100%), 1fr));
   gap: var(--gap);
 }
 .work-card {
@@ -674,6 +674,7 @@ em { font-style: italic; font-family: 'Playfair Display', serif; }
 .work-card:hover .work-card__placeholder { transform: scale(1.04); }
 .wp--ocean { background: linear-gradient(135deg,#1A4A5C 0%,#2D7A8C 40%,#4DA8B8 100%); }
 .wp--gold  { background: linear-gradient(135deg,#3A2810 0%,#6B4A20 40%,#9A7040 100%); }
+.wp--cloud { background: linear-gradient(135deg,#0B2A4A 0%,#0F5A99 45%,#2B8FD6 100%); }
 .wp--night { background: linear-gradient(135deg,#080C14 0%,#0D1E34 40%,#1A3054 100%); }
 .wp__inner { width: 60%; opacity: 0.7; }
 .work-card__info { padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3vw, 2rem); }
