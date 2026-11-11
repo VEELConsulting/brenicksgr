@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <title>Careers — The Brenicks Group</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <link rel="icon" type="image/x-icon" href="https://brenicks.com/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://brenicks.com/apple-touch-icon.png" />
+  <meta property="og:image" content="https://brenicks.com/assets/social-og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta name="twitter:image" content="https://brenicks.com/assets/social-og-image.png" />
+  <meta property="og:title" content="Careers — The Brenicks Group" />
+  <meta property="og:description" content="Join The Brenicks Group as a remote, commission-based Sales Development Representative." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://brenicks.com/careers/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Careers — The Brenicks Group" />
+  <meta name="twitter:description" content="Join The Brenicks Group as a remote, commission-based Sales Development Representative." />
+  <meta name="description" content="Join The Brenicks Group as a remote, commission-based Sales Development Representative. No experience required. We train you." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Satoshi:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .role-facts{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1.5rem 0 2rem}
+    .role-fact{border:var(--glass-border);border-radius:var(--radius-md);padding:.9rem 1rem}
+    .role-fact small{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--c-text-3);margin-bottom:.3rem}
+    .role-fact b{font-weight:500;color:var(--c-text)}
+    .contact-info ul.plain{list-style:none;padding:0;margin:0 0 1.75rem}
+    .contact-info ul.plain li{color:var(--c-text-2);line-height:1.7;padding-left:1.25rem;position:relative;margin-bottom:.5rem}
+    .contact-info ul.plain li::before{content:"";position:absolute;left:0;top:.7em;width:6px;height:6px;border:1px solid var(--c-gold);transform:rotate(45deg)}
+    .steps{counter-reset:s;list-style:none;padding:0;margin:0}
+    .steps li{counter-increment:s;color:var(--c-text-2);line-height:1.7;padding-left:2.25rem;position:relative;margin-bottom:.9rem}
+    .steps li::before{content:counter(s);position:absolute;left:0;top:-.1rem;font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--c-gold)}
+    .file-drop{display:flex;align-items:center;gap:.875rem;padding:1rem 1.125rem;border:1px dashed rgba(200,169,110,.45);border-radius:var(--radius-md);background:var(--c-bg);cursor:pointer;transition:border-color .3s}
+    .file-drop:hover{border-color:var(--c-gold)}
+    .form-group label.file-drop{text-transform:none;letter-spacing:0;font-size:inherit;font-weight:400;margin-bottom:0}
+    .file-drop input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+    .file-drop .fd-icon{width:36px;height:36px;border-radius:50%;border:var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--c-gold);flex-shrink:0}
+    .file-drop .fd-text{font-size:.9rem;color:var(--c-text-2);line-height:1.45}
+    .file-drop .fd-text b{color:var(--c-text);font-weight:500}
+    .file-drop.has-file{border-style:solid;border-color:var(--c-gold)}
+    .script-box{border-left:2px solid var(--c-gold);padding:.75rem 1rem;margin:.25rem 0 .875rem;font-family:'Playfair Display',serif;font-style:italic;color:var(--c-text-2);line-height:1.65;font-size:.95rem;background:rgba(200,169,110,.05);border-radius:0 var(--radius-md) var(--radius-md) 0}
+    .check{display:flex;gap:.75rem;align-items:flex-start;color:var(--c-text-2);font-size:.9rem;line-height:1.55;margin-bottom:1rem;cursor:pointer;text-transform:none;letter-spacing:0}
+    .check input{width:18px;height:18px;margin-top:.15rem;flex-shrink:0;accent-color:#C8A96E}
+    .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+    .form-error{display:none;background:rgba(229,72,77,.1);border:1px solid rgba(229,72,77,.45);color:var(--c-text);border-radius:var(--radius-md);padding:.875rem 1rem;font-size:.9rem;margin-bottom:1rem;line-height:1.5}
+    .form-done{display:none;text-align:center;padding:2rem 0}
+    .form-done h3{font-family:'Playfair Display',serif;font-weight:500;font-size:1.75rem;margin:.5rem 0 1rem}
+    .form-done p{color:var(--c-text-2);line-height:1.8}
+    .hint{display:block;font-size:.8rem;color:var(--c-text-3);margin-top:.5rem;line-height:1.5;text-transform:none;letter-spacing:0}
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="../index.html" class="nav__logo"><img src="../assets/logo/brenicks-wordmark-light.svg" alt="Brenicks" class="logo-light" /><img src="../assets/logo/brenicks-wordmark-dark.svg" alt="Brenicks" class="logo-dark" /></a>
+      <ul class="nav__links">
+        <li><a href="../ai-implementation/index.html">AI Implementation</a></li>
+        <li><a href="../web-design/index.html">Web Design</a></li>
+        <li><a href="../salesforce/index.html">Salesforce</a></li>
+        <li><a href="../insights/index.html">Insights</a></li>
+        <li><a href="../about/index.html">About</a></li>
+      </ul>
+      <div class="nav__actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <span class="theme-toggle__icon">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+        </button>
+      </div>
+      <button class="nav__burger" id="navBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+
+  </nav>
+
+    <div class="nav__mobile" id="navMobile">
+      <ul>
+        <li><a href="../ai-implementation/index.html">AI Implementation</a></li>
+        <li><a href="../web-design/index.html">Web Design</a></li>
+        <li><a href="../salesforce/index.html">Salesforce</a></li>
+        <li><a href="../insights/index.html">Insights</a></li>
+        <li><a href="../about/index.html">About</a></li>
+      </ul>
+    </div>
+
+  <section class="page-hero section" style="background:var(--c-bg-2);border-bottom:var(--glass-border);">
+    <div class="hero__bg" style="position:absolute;inset:0;pointer-events:none;"><div class="hero__orb hero__orb--2" style="opacity:.4;"></div><div class="hero__grid"></div></div>
+    <div class="container" style="position:relative;z-index:2;">
+      <div class="page-hero__inner reveal">
+        <span class="section__label">Careers</span>
+        <h1 class="page-hero__title">Join the <em>team.</em></h1>
+        <p class="page-hero__sub">We're building our first sales team. No experience required: we train you, equip you, and pay you for every result you bring in.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="contact-layout">
+
+        <div class="contact-info reveal">
+          <span class="section__label">Open role</span>
+          <h3>Sales Development Representative</h3>
+          <p>You open doors for The Brenicks Group. You'll introduce business owners to our AI implementation, Salesforce consulting and web design services, and book meetings with our founder, who leads the sale.</p>
+          <div class="role-facts">
+            <div class="role-fact"><small>Location</small><b>Fully remote</b></div>
+            <div class="role-fact"><small>Hours</small><b>US Eastern business hours</b></div>
+            <div class="role-fact"><small>Pay</small><b>Commission only</b></div>
+            <div class="role-fact"><small>Experience</small><b>Not required</b></div>
+          </div>
+          <h3 style="font-size:1.25rem">How you're paid</h3>
+          <ul class="plain">
+            <li>10% of the first project or payment from every client you bring in</li>
+            <li>10% of monthly retainers for a client's first 3 months</li>
+            <li>A bonus for every qualified meeting that takes place, and for strong months</li>
+            <li>No base salary and no ceiling: your income grows with your results</li>
+          </ul>
+          <h3 style="font-size:1.25rem">What you get</h3>
+          <ul class="plain">
+            <li>Secure access to our private sales platform: qualified prospects, guided outreach and transparent tracking of everything you earn</li>
+            <li>Training, scripts and direct coaching from the founder</li>
+            <li>Hands-on experience with AI and Salesforce</li>
+          </ul>
+          <h3 style="font-size:1.25rem">How hiring works</h3>
+          <ol class="steps">
+            <li>Apply here with your resume and a short voice recording.</li>
+            <li>A 15-minute introductory call with the founder.</li>
+            <li>Sign your agreement and join onboarding.</li>
+          </ol>
+        </div>
+
+        <div class="brief-form reveal reveal--delay-1">
+          <form id="applyForm" novalidate>
+            <div class="form-error" id="formError" role="alert"></div>
+            <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+            <div class="form-group"><label for="name">Full name</label><input type="text" id="name" name="name" autocomplete="name" placeholder="As it appears on your ID" required /></div>
+            <div class="form-row">
+              <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="email" autocomplete="email" placeholder="you@email.com" required /></div>
+              <div class="form-group"><label for="phone">Phone or WhatsApp</label><input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="+27 …" /></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label for="country">Country</label><input type="text" id="country" name="country" autocomplete="country-name" required /></div>
+              <div class="form-group"><label for="city">City</label><input type="text" id="city" name="city" autocomplete="address-level2" /></div>
+            </div>
+            <div class="form-group"><label for="linkedin">LinkedIn profile (optional)</label><input type="url" id="linkedin" name="linkedin" placeholder="https://www.linkedin.com/in/…" /></div>
+            <div class="form-row">
+              <div class="form-group"><label for="hours">Hours a week</label><select id="hours" name="hours" required><option value="" disabled selected>Choose</option><option>Under 10</option><option>10–20</option><option>20–30</option><option>30+</option></select></div>
+              <div class="form-group"><label for="experience">Sales or customer-facing experience</label><select id="experience" name="experience"><option value="" disabled selected>Choose</option><option>None yet</option><option>Under 1 year</option><option>1–3 years</option><option>3+ years</option></select></div>
+            </div>
+            <div class="form-group"><label for="why">Why would you be good at sales?</label><textarea id="why" name="why" placeholder="A few sentences in your own words." style="min-height:110px"></textarea></div>
+
+            <div class="form-group"><label>Resume</label>
+              <label class="file-drop" id="resumeDrop"><input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required />
+                <span class="fd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+                <span class="fd-text" data-empty="<b>Upload your resume</b><br>PDF or Word, under 3 MB"><b>Upload your resume</b><br>PDF or Word, under 3 MB</span></label></div>
+
+            <div class="form-group"><label>Voice recording (recommended)</label>
+              <span class="hint" style="margin:0 0 .5rem">Record a voice note on your phone, about 45 seconds, reading this script in your own style. We're listening for clarity, warmth and confidence.</span>
+              <div class="script-box">"Hi, this is [your name] calling from The Brenicks Group. I'll be brief. We help businesses save hours every week by putting practical AI to work on the tasks that slow their team down. What's one task your team spends too much time on right now? … Would you be open to a quick 15-minute call this week?"</div>
+              <label class="file-drop" id="voiceDrop"><input type="file" id="voice" name="voice" accept="audio/*,.m4a,.mp3,.wav,.ogg,.opus,.aac,.webm,.amr" />
+                <span class="fd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg></span>
+                <span class="fd-text" data-empty="<b>Upload your voice recording</b><br>Any audio file, under 5 MB"><b>Upload your voice recording</b><br>Any audio file, under 5 MB</span></label></div>
+
+            <label class="check"><input type="checkbox" name="commission_ok" value="yes" required> I understand this role is paid by commission only, with no base salary.</label>
+            <label class="check"><input type="checkbox" name="et_hours_ok" value="yes"> I can work during US Eastern business hours.</label>
+            <button type="submit" class="form-submit">Send application</button>
+            <span class="hint" style="text-align:center">We read every application and reply within a few days. Your details are used only for hiring.</span>
+          </form>
+          <div class="form-done" id="formDone" role="status">
+            <span class="section__label">Application received</span>
+            <h3>Thank you.</h3>
+            <p>We've received your application and will be in touch within a few days. In the meantime, follow <a href="https://www.linkedin.com/company/brenicks/" style="color:var(--c-gold)">The Brenicks Group on LinkedIn</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer__bottom" style="padding-top:0;border-top:none;"><span>© 2026 The Brenicks Group, LLC.</span><a href="../index.html" style="color:var(--c-gold);font-family:'Playfair Display',serif;letter-spacing:.12em;"><img src="../assets/logo/brenicks-wordmark-light.svg" alt="Brenicks" class="logo-light" /><img src="../assets/logo/brenicks-wordmark-dark.svg" alt="Brenicks" class="logo-dark" /></a><div class="footer__legal"><a href="../ai-implementation/index.html">AI Implementation</a><a href="../salesforce/index.html">Salesforce</a><a href="../web-design/index.html">Web Design</a><a href="../contact/index.html">Contact</a><a href="../careers/index.html">Careers</a></div></div></div></footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    (function () {
+      var ENDPOINT = 'https://team-app-9an.pages.dev/api/careers/apply';
+      var form = document.getElementById('applyForm'), errBox = document.getElementById('formError'), done = document.getElementById('formDone');
+      function fail(msg, el) { errBox.textContent = msg; errBox.style.display = 'block'; (el || errBox).scrollIntoView({ block: 'center', behavior: 'smooth' }); if (el && el.focus) el.focus(); }
+      [['resume', 'resumeDrop'], ['voice', 'voiceDrop']].forEach(function (p) {
+        var input = document.getElementById(p[0]), drop = document.getElementById(p[1]), txt = drop.querySelector('.fd-text');
+        input.addEventListener('change', function () {
+          var f = input.files && input.files[0];
+          if (f) { txt.innerHTML = '<b></b><br>' + (f.size / 1048576).toFixed(1) + ' MB · tap to change'; txt.querySelector('b').textContent = f.name; drop.classList.add('has-file'); }
+          else { txt.innerHTML = txt.getAttribute('data-empty'); drop.classList.remove('has-file'); }
+        });
+      });
+      form.addEventListener('submit', function (e) {
+        e.preventDefault(); errBox.style.display = 'none';
+        var g = function (id) { return document.getElementById(id); };
+        if (g('name').value.trim().split(/\s+/).length < 2) return fail('Please enter your full name (first and last).', g('name'));
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(g('email').value.trim())) return fail('Please enter a valid email address.', g('email'));
+        if (!g('country').value.trim()) return fail('Please enter your country.', g('country'));
+        if (!g('hours').value) return fail('Please choose how many hours a week you can work.', g('hours'));
+        var r = g('resume').files[0]; if (!r) return fail('Please attach your resume (PDF or Word).');
+        if (r.size > 3 * 1048576) return fail('Your resume must be under 3 MB.');
+        var v = g('voice').files[0]; if (v && v.size > 5 * 1048576) return fail('Your voice recording must be under 5 MB. About 45 seconds is perfect.');
+        if (!form.commission_ok.checked) return fail('Please confirm you understand this role is paid by commission only.');
+        var btn = form.querySelector('.form-submit'); btn.disabled = true; btn.textContent = 'Sending…';
+        fetch(ENDPOINT, { method: 'POST', body: new FormData(form) })
+          .then(function (res) { return res.json().catch(function () { return {}; }).then(function (j) { if (!res.ok) throw new Error(j.error || 'Something went wrong. Please try again.'); }); })
+          .then(function () { form.style.display = 'none'; done.style.display = 'block'; done.scrollIntoView({ block: 'center', behavior: 'smooth' }); })
+          .catch(function (x) { btn.disabled = false; btn.textContent = 'Send application'; fail(x.message === 'Failed to fetch' ? 'We could not reach our servers. Check your connection and try again.' : x.message); });
+      });
+    })();
+  </script>
+</body>
+</html>
