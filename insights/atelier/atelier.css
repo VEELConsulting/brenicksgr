@@ -245,3 +245,11 @@
 .at-tilt.show { display: flex; width: max-content; }
 .at-tilt svg { width: 18px; height: 18px; }
 .at-hero__inner .at-tilt { margin-top: 1.4rem; }
+
+/* hero drawing (a new variant each visit) */
+.at-hero__field .af { fill: none; stroke: rgba(201,168,106,.6); stroke-width: 1; vector-effect: non-scaling-stroke; }
+[data-theme="light"] .at-hero__field .af { stroke: rgba(122,90,34,.55); }
+.at-hero__field .ad { fill: var(--at-accent, #C9A86A); opacity: .28; }
+.at-hero__field { animation: at-draw-in 2.4s var(--at-ease) both; }
+@keyframes at-draw-in { from { opacity: 0; filter: blur(6px); } }
+.at-hero__variant { position: absolute; left: 1.25rem; bottom: 1.1rem; font: 500 .62rem/1 var(--at-mono); letter-spacing: .2em; color: var(--at-fg-3); }
