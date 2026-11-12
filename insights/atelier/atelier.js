@@ -270,7 +270,7 @@
 
   // ---------- cursor ----------
   function cursor() {
-    if (!FINE || RM) return;
+    if (!FINE || RM || !document.body.classList.contains('at-body')) return;
     var c = el('div', { class: 'at-cursor', 'aria-hidden': 'true' }, document.body), lab = el('span', { class: 'at-cursor__label' }, c);
     var x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y;
     addEventListener('pointermove', function (e) { x = e.clientX; y = e.clientY; c.classList.add('on'); var t = e.target.closest && e.target.closest('[data-cursor]'); c.classList.toggle('big', !!t); if (t) lab.textContent = t.getAttribute('data-cursor'); });
@@ -306,6 +306,38 @@
     e.preventDefault(); go(a.href);
   });
 
+
+  // ---------- tilt (phones and tablets) ----------
+  var COARSE = window.matchMedia('(pointer: coarse)').matches;
+  var tilt = { on: false, x: 0, y: 0, sx: 0, sy: 0 };
+  function onTilt(e) {
+    if (e.gamma == null) return;
+    var a = (screen.orientation && screen.orientation.angle) || window.orientation || 0, g = e.gamma, b = e.beta, x, y;
+    if (a === 90) { x = b; y = -g - 45; } else if (a === -90 || a === 270) { x = -b; y = g - 45; } else { x = g; y = b - 45; }
+    tilt.x = clamp(x / 28, -1, 1); tilt.y = clamp(y / 28, -1, 1); tilt.on = true;
+  }
+  function startTilt() { addEventListener('deviceorientation', onTilt); document.querySelectorAll('.at-tilt').forEach(function (b) { b.classList.remove('show'); }); }
+  function setupTilt(where) {
+    if (!COARSE || RM || !('DeviceOrientationEvent' in window)) return;
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      (where || []).forEach(function (host) {
+        if (!host) return;
+        var b = el('button', { type: 'button', class: 'at-tilt show' }, host);
+        b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5" transform="rotate(-14 12 12)"/><path d="M3 9a9 9 0 0 1 3-4M21 15a9 9 0 0 1-3 4"/></svg>TILT YOUR PHONE';
+        b.addEventListener('click', function () {
+          DeviceOrientationEvent.requestPermission().then(function (r) { if (r === 'granted') { startTilt(); toast('Tilt away.'); } else toast('Motion access was declined. Settings can turn it back on.'); }).catch(function () {});
+        });
+      });
+    } else startTilt();
+    hooks.push(function () {
+      if (!tilt.on) return;
+      tilt.sx += (tilt.x - tilt.sx) * .12; tilt.sy += (tilt.y - tilt.sy) * .12;
+      arts.forEach(function (a) { a.mx = tilt.sx; a.my = tilt.sy; a.holder.style.setProperty('--mx', tilt.sx.toFixed(3)); });
+      tiltHooks.forEach(function (h) { h(tilt.sx, tilt.sy); });
+    });
+  }
+  var tiltHooks = [];
+
   // ---------- INDEX ----------
   function index() {
     var hero = document.querySelector('.at-hero');
@@ -319,12 +351,18 @@
         });
       }, { passive: true });
     }
+    if (title) {
+      var tch = [].slice.call(title.querySelectorAll('.ch')), r0 = rng(5), depth = tch.map(function () { return .35 + r0() * .65; });
+      tiltHooks.push(function (x, y) { tch.forEach(function (c, i) { var d = depth[i]; c.style.setProperty('--dx', (x * 26 * d).toFixed(1) + 'px'); c.style.setProperty('--dy', (y * 20 * d).toFixed(1) + 'px'); c.style.setProperty('--r', (x * 6 * d * (i % 2 ? -1 : 1)).toFixed(1) + 'deg'); }); });
+    }
     var field = document.querySelector('.at-hero__field');
     if (field) {
       var r = rng(3);
       for (var i = 0; i < 60; i++) { var a = i / 60 * Math.PI; el('svg:line', { x1: 500 + Math.cos(a) * 900, y1: 500 + Math.sin(a) * 900, x2: 500 - Math.cos(a) * 900, y2: 500 - Math.sin(a) * 900 + (r() - .5) * 200 }, field); }
       hooks.push(function () { var s = clamp(scrollY / (hero.offsetHeight || 1), 0, 1); hero.style.setProperty('--s', s.toFixed(3)); });
+      tiltHooks.push(function (x, y) { field.style.translate = (x * 30).toFixed(1) + 'px ' + (y * 30).toFixed(1) + 'px'; });
     }
+    setupTilt([document.querySelector('.at-hero__inner')]);
     document.querySelectorAll('.at-plate').forEach(function (pl) {
       var art = pl.querySelector('.at-plate__art'), rec = mount(art);
       var live = isLive(pl.getAttribute('data-date'));
@@ -353,6 +391,9 @@
     // split title
     var t = document.querySelector('.at-post-hero__title');
     if (t && !RM) { var txt = t.textContent, n = 0; t.textContent = ''; t.classList.add('at-split'); t.setAttribute('aria-label', txt); txt.split(' ').forEach(function (w, wi) { var ws = el('span', { 'aria-hidden': 'true', style: 'display:inline-block;white-space:nowrap' }, t); w.split('').forEach(function (ch) { var s = el('span', { class: 'ch' }, ws); s.textContent = ch; s.style.setProperty('--i', n++); }); if (wi < txt.split(' ').length - 1) t.appendChild(document.createTextNode(' ')); }); }
+    var copy = document.querySelector('.at-post-hero__copy');
+    tiltHooks.push(function (x, y) { if (t) t.style.transform = 'translate3d(' + (x * 14).toFixed(1) + 'px,' + (y * 10).toFixed(1) + 'px,0) rotate(' + (x * -1.2).toFixed(2) + 'deg)'; });
+    setupTilt([copy]);
     if (!isLive(date)) {
       body.classList.add('at-post-sealed');
       var w = document.querySelector('.at-post-seal b'); if (w) w.textContent = niceDate(date);
