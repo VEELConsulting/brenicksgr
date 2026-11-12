@@ -31,7 +31,7 @@ export const DEFAULT_KB = {
       keywords: '\\bai\\b|a\\.i\\.|artificial|automat|agents?\\b|chat ?bot|gpt|claude|copilot|llm|machine learning|document|proposal|intake|knowledge',
       audit: [['AI Readiness Assessment', '$2,000–$5,000', '2 weeks: workflow audit, ranked AI opportunities and an ROI estimate']],
       build: [['AI Pilot', '$10,000–$30,000', '4–8 weeks: one working tool on your real data'], ['AI Implementation', '$30,000–$150,000+', 'firm-wide rollout, copilots and custom agents']],
-      retainer: [['AI Operations', '$2,000–$10,000/month', 'monitoring, model updates and new automations']] },
+      retainer: [['AI Operations retainers (Keep, Run, Grow)', '$750–$3,500/month', 'monitoring, weekly tuning, a Monday owner report and new automations']] },
   },
   // Extra answers the team adds over time: {id, match (a regular expression, case-insensitive), answer, service?}
   faqs: [
