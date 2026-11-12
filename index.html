@@ -254,6 +254,17 @@
     </div>
   </section>
 
+  <!-- GOOGLE REVIEWS (filled by js/reviews.js; hidden until Google returns reviews) -->
+  <section class="reviews section" id="reviews" hidden>
+    <div class="container">
+      <div class="section__header reveal">
+        <span class="section__label">What Clients Say</span>
+        <h2 class="section__title">In their <em>own words</em></h2>
+      </div>
+      <div data-reviews></div>
+    </div>
+  </section>
+
   <!-- OWNERSHIP TEST -->
   <section class="section" style="background:var(--c-bg-2);">
     <div class="container">
@@ -389,5 +400,6 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="js/reviews.js" defer></script>
 </body>
 </html>
