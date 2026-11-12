@@ -338,6 +338,46 @@
   }
   var tiltHooks = [];
 
+
+  // ---------- hero background: a new mathematical drawing on every visit ----------
+  function heroArt(svg) {
+    var seed = Math.floor(Math.random() * 1e6), r = rng(seed), C = 500, TAU = Math.PI * 2;
+    function poly(pts, extra) { var d = 'M' + pts.map(function (q) { return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('L'); return el('svg:path', Object.assign({ d: d, class: 'af' }, extra || {}), svg); }
+    var kinds = [
+      ['Harmonograph', function () {
+        var f = [2 + Math.floor(r() * 3), 3 + Math.floor(r() * 3), 2 + Math.floor(r() * 3), 3 + Math.floor(r() * 3)].map(function (v) { return v + (r() - .5) * .02; });
+        var p = [r() * TAU, r() * TAU, r() * TAU, r() * TAU], d = .0016 + r() * .0012, pts = [];
+        for (var t = 0; t < 900; t += .1) { var e = Math.exp(-d * t * 6); pts.push([C + 430 * e * (Math.sin(f[0] * t + p[0]) * .6 + Math.sin(f[1] * t + p[1]) * .4), C + 430 * e * (Math.sin(f[2] * t + p[2]) * .6 + Math.sin(f[3] * t + p[3]) * .4)]); }
+        poly(pts);
+      }],
+      ['Spirograph', function () {
+        var R = 300, k = 3 + Math.floor(r() * 9), rr = R * (k - 1) / k * (.35 + r() * .5), dd = rr * (.6 + r() * .9), pts = [];
+        var g = function (a, b) { return b ? g(b, a % b) : a; }, turns = rr / g(Math.round(R), Math.round(rr)) || 20;
+        for (var t = 0; t < TAU * Math.min(turns, 40); t += .012) pts.push([C + (R - rr) * Math.cos(t) + dd * Math.cos((R - rr) / rr * t), C + (R - rr) * Math.sin(t) - dd * Math.sin((R - rr) / rr * t)]);
+        poly(pts);
+      }],
+      ['Rose curve', function () {
+        var n = 2 + Math.floor(r() * 7), dd = 1 + Math.floor(r() * 8), k = n / dd, layers = 3 + Math.floor(r() * 4);
+        for (var L = 0; L < layers; L++) { var pts = [], A = 460 - L * 70, rot = L * r(); for (var t = 0; t < TAU * dd; t += .006) { var rad = A * Math.cos(k * t); pts.push([C + rad * Math.cos(t + rot), C + rad * Math.sin(t + rot)]); } poly(pts); }
+      }],
+      ['Phyllotaxis', function () {
+        var ga = Math.PI * (3 - Math.sqrt(5)) + (r() - .5) * .02, c = 10 + r() * 6, n = 900;
+        for (var i = 1; i < n; i++) { var a = i * ga, rad = c * Math.sqrt(i); el('svg:circle', { cx: (C + rad * Math.cos(a)).toFixed(1), cy: (C + rad * Math.sin(a)).toFixed(1), r: (1 + i / n * 5).toFixed(2), class: 'ad' }, svg); }
+      }],
+      ['String star', function () {
+        var n = 120 + Math.floor(r() * 120), m = 2 + Math.floor(r() * 60), pts = [];
+        for (var i = 0; i < n; i++) { var a = i / n * TAU, b = (i * m) % n / n * TAU; el('svg:line', { x1: C + 470 * Math.cos(a), y1: C + 470 * Math.sin(a), x2: C + 470 * Math.cos(b), y2: C + 470 * Math.sin(b), class: 'af' }, svg); }
+      }],
+      ['Lissajous lattice', function () {
+        var a = 1 + Math.floor(r() * 6), b = a + 1 + Math.floor(r() * 5), layers = 6;
+        for (var L = 0; L < layers; L++) { var pts = [], ph = L * Math.PI / layers + r(); for (var t = 0; t <= TAU + .01; t += .004) pts.push([C + 470 * Math.sin(a * t + ph), C + 470 * Math.sin(b * t)]); poly(pts); }
+      }]
+    ];
+    var pick = kinds[Math.floor(Math.random() * kinds.length)];
+    pick[1]();
+    return 'TODAY’S DRAWING · ' + pick[0].toUpperCase() + ' · NO. ' + seed;
+  }
+
   // ---------- INDEX ----------
   function index() {
     var hero = document.querySelector('.at-hero');
@@ -357,8 +397,8 @@
     }
     var field = document.querySelector('.at-hero__field');
     if (field) {
-      var r = rng(3);
-      for (var i = 0; i < 60; i++) { var a = i / 60 * Math.PI; el('svg:line', { x1: 500 + Math.cos(a) * 900, y1: 500 + Math.sin(a) * 900, x2: 500 - Math.cos(a) * 900, y2: 500 - Math.sin(a) * 900 + (r() - .5) * 200 }, field); }
+      var label = heroArt(field);
+      var cap = el('div', { class: 'at-hero__variant', 'aria-hidden': 'true' }, hero); cap.textContent = label;
       hooks.push(function () { var s = clamp(scrollY / (hero.offsetHeight || 1), 0, 1); hero.style.setProperty('--s', s.toFixed(3)); });
       tiltHooks.push(function (x, y) { field.style.translate = (x * 30).toFixed(1) + 'px ' + (y * 30).toFixed(1) + 'px'; });
     }
