@@ -1384,3 +1384,16 @@ em { font-style: italic; font-family: 'Playfair Display', serif; }
   color: var(--c-bg);
   border-color: var(--c-text);
 }
+
+/* ── GOOGLE REVIEWS ───────────────────────── */
+.reviews__summary{display:flex;align-items:center;gap:1rem;margin:0 0 1.5rem}
+.reviews__score{font-family:'Playfair Display',Georgia,serif;font-size:3rem;line-height:1;color:var(--c-text)}
+.reviews__stars{font-size:1.25rem;letter-spacing:.1em}.reviews__summary small{color:var(--c-text-3)}
+.reviews__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:1.25rem}
+.review-card{margin:0;padding:1.5rem;display:flex;flex-direction:column;gap:.9rem}
+.review-card__stars{letter-spacing:.1em}
+.review-card__text{margin:0;color:var(--c-text-2);line-height:1.7;font-size:.95rem}
+.review-card__who{display:flex;align-items:center;gap:.75rem;margin-top:auto;font-size:.875rem}
+.review-card__who a{color:var(--c-text)}.review-card__who small{color:var(--c-text-3)}
+.reviews__links{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.75rem}
+.reviews__credit{margin-top:1rem;font-size:.75rem;color:var(--c-text-3)}
