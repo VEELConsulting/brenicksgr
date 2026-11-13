@@ -11,7 +11,7 @@ export const DEFAULT_KB = {
   version: 1,
   updated: '2026-11-10T17:00:00Z',
   approved_by: 'Lionel (initial)',
-  company: 'The Brenicks Group is a boutique consultancy, founded in 2018, for ambitious small and mid-size businesses, with a focus on professional-services firms (law, accounting, consulting). Three services: AI implementation, Salesforce consulting and web design. 50+ projects delivered. The person who scopes a project builds it. Every engagement ends with full ownership. Contact: hello@brenicks.com, +1 919 298 1808, replies within 24 hours.',
+  company: 'The Brenicks Group is a boutique consultancy, established in Raleigh, North Carolina in November 2026, for ambitious small and mid-size businesses, with a focus on professional-services firms (law, accounting, consulting). Three services: AI implementation, Salesforce consulting and web design. 50+ projects delivered. The person who scopes a project builds it. Every engagement ends with full ownership. Contact: hello@brenicks.com, +1 919 298 1808, replies within 24 hours.',
   greeting: 'Hello. Ask me about The Brenicks Group, our websites, Salesforce or AI work, or what it costs. What are you working on?',
   hello: 'Hello! Are you looking at your website, Salesforce or AI for your business? Tell me a little about what you need and I can point you to the right package and price.',
   starting_points: 'We quote by scope, and our published ranges are: websites $500 to $9,000 (care plans $300 to $600 a month); Salesforce $100 to $500 per user, minimum 10 users (care $150 per user a month); AI projects $2,000 to $150,000+ (operations $2,000 to $10,000 a month). Which one are you looking at, and how big is your team or site?',
@@ -35,7 +35,7 @@ export const DEFAULT_KB = {
   },
   // Extra answers the team adds over time: {id, match (a regular expression, case-insensitive), answer, service?}
   faqs: [
-    { id: 'history', match: 'how long (have|has|are)|in business|been around|founded|established|since when|when did (you|brenicks|the company) (start|begin)|how old|years (of experience|in)', answer: 'The Brenicks Group was founded in 2018 and has delivered 50+ projects since then.' },
+    { id: 'history', match: 'how long (have|has|are)|in business|been around|founded|established|since when|when did (you|brenicks|the company) (start|begin)|how old|years (of experience|in)', answer: 'The Brenicks Group LLC was established in Raleigh, North Carolina in November 2026. The team behind it has delivered 50+ projects.' },
     { id: 'about', match: 'who (are|is) (you|brenicks|the brenicks)|what (is|does) (brenicks|the brenicks|your company)|about (you|the company|brenicks|your (firm|company))|tell me about', answer: 'The Brenicks Group is a boutique consultancy for ambitious small and mid-size businesses, with a focus on professional-services firms like law, accounting and consulting. We do three things: AI implementation, Salesforce consulting and web design. The person who scopes your project is the person who builds it.' },
     { id: 'name', match: 'what does (brenicks|the name) mean|why (the name )?brenicks|name brenicks|meaning of', answer: 'Brenicks is a pure brand name: no acronym. It stands for the standard we hold our work to, uncommon quality in everything we produce.' },
     { id: 'who-builds', match: 'who (will|would|actually) (do|build|work|ship)|your team|how many (people|employees|staff)|outsourc|junior', answer: 'The person who scopes your project is the person who builds it: no rotating team and no hand-offs to a junior bench.' },
