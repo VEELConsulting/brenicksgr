@@ -991,6 +991,31 @@ body:has(.nav__mobile.open) #bk-chat-btn { opacity: 0; pointer-events: none; tra
   .footer__tagline { display: none; }
 }
 
+/* Footer on tablets and phones: links wrap instead of running off the screen */
+.footer__legal { flex-wrap: wrap; row-gap: 0.75rem; }
+@media (max-width: 640px) {
+  /* clear the B chat button so nothing sits under it */
+  .footer { padding-bottom: calc(6.75rem + env(safe-area-inset-bottom)); }
+  .footer__bottom { flex-direction: column; align-items: center; text-align: center; gap: 1.75rem; }
+  .footer__bottom > a { order: 1; }                         /* wordmark */
+  .footer__bottom .footer__social { order: 2; justify-content: center; gap: 0.75rem; }
+  .footer__bottom .footer__social a { width: 46px; height: 46px; }
+  .footer__bottom .footer__legal {
+    order: 3; width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0;
+    border-top: var(--glass-border); border-bottom: var(--glass-border); padding: 0.5rem 0;
+  }
+  .footer__bottom .footer__legal a {
+    display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 0.25rem;
+    font-size: 0.8125rem; letter-spacing: 0.02em; color: var(--c-text-2); line-height: 1.25;
+  }
+  .footer__bottom .footer__legal a:hover, .footer__bottom .footer__legal a:focus-visible { color: var(--c-gold); }
+  .footer__bottom > span:first-child { order: 4; font-size: 0.75rem; letter-spacing: 0.04em; }
+  /* the homepage's short legal row (two links) stays a single centred line */
+  .footer__bottom .footer__legal:not(:has(> a:nth-child(3))) { display: flex; justify-content: center; gap: 1.75rem; border: 0; padding: 0; }
+  .footer__bottom .footer__legal:not(:has(> a:nth-child(3))) a { white-space: nowrap; }
+  .footer__bottom .footer__tagline { display: none; }
+}
+
 /* ── REVEAL ANIMATIONS ── */
 .reveal {
   opacity: 0;
