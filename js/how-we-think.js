@@ -346,7 +346,7 @@ function edgePath(a,b){const dx=b.cx-a.cx,dy=b.cy-a.cy,g=14,R=18;let p;
   ctx.lineTo(p[3][0],p[3][1]);return true;}
 
 function draw(now){
-  S=W/cam[2];
+  S=W/cam[2];drawnOnce=true;
   ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=C.bg;ctx.fillRect(0,0,cv.width,cv.height);drawDots();
   ctx.setTransform(DPR*S,0,0,DPR*S,DPR*(W/2-cam[0]*S),DPR*(H/2-cam[1]*S));ctx.globalAlpha=1;
   const far=clamp((0.75-S)/0.55,0,1),mapA=clamp((15-30*S)/6,0,1);
@@ -383,7 +383,7 @@ function viewOf(tg){if(tg.kind==='overview'){const b=bounds();return viewFor(b.x
   if(tg.kind==='section'){const s=secById[tg.id];return viewFor(s.x,s.y,s.w,s.h,1.06);}
   const t=tById[tg.id],big=Math.max(W,H)>900;return viewFor(t.x,t.y,t.w,t.h,big?1.5:1.14,t.hero?(big?1.3:1.1):(big?2.1:3));}
 
-let flight=null,holdUntil=0,playing=false,current={kind:'overview'},dirty=true,extendedHold=false,bag=[],hop=0,lastId=null;
+let drawnOnce=false,flight=null,holdUntil=0,playing=false,current={kind:'overview'},dirty=true,extendedHold=false,bag=[],hop=0,lastId=null;
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
 function pickNext(){hop++;if(hop===1)return {kind:'tile',id:'hero'};if(hop%5===0)return {kind:'overview'};
   if(hop%5===3&&current.kind==='tile'&&tById[current.id].s)return {kind:'section',id:tById[current.id].s};
@@ -399,7 +399,13 @@ function onArrive(now){let sec,ttl;
 /* ═════════════ The sleeve reveal, driven by scroll (transform + opacity only) ═════════════ */
 const STICKY_OK=!!(window.CSS&&CSS.supports('overflow-x','clip')&&CSS.supports('selector(:has(*))'));
 if(!STICKY_OK)root.classList.add('no-sticky');
-let navOver=false,navH=72,lastP=-1,started=false,geo=null,isFull=false,hudOn=false,pin='',active=false,raf=0,sizeKey='';
+let navOver=false,navH=72,lastP=-1,started=false,geo=null,isFull=false,hudOn=false,pin='',active=false,raf=0,sizeKey='',pS=-1,lastT=0;
+// Phones report scroll position in uneven steps (and in bursts during momentum), which made the sleeve shake.
+// The reveal now follows the scroll through a short critically-damped glide, snaps to whole device pixels,
+// skips the 3D tilt on touch screens, and keeps the canvas still until the map has fully landed.
+const TOUCH=!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches),
+      CALM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);
+const px=v=>(Math.round(v*DPR)/DPR).toFixed(2);
 const lerp=(a,b,t)=>a+(b-a)*t,eio=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 function measureReveal(){
   const s0=Math.min(0.62,600/W),pw=W*s0,ph=H*s0,sw=pw*1.1,sh=ph*1.09,notch=Math.max(18,sw*0.07);
@@ -409,35 +415,39 @@ function measureReveal(){
 function layoutReveal(p){
   const {s0,ph,sw,sh}=geo,pull=eio(smooth(0.1,0.52,p)),grow=eio(smooth(0.52,0.8,p));
   const restY=H/2+ph*0.03,outY=restY-ph*0.32,cy=lerp(lerp(restY,outY,pull),H/2,grow),s=lerp(s0,1,grow);
-  const tilt=(1-grow)*pull*(1-pull)*4*-3;
-  const tf=`translate3d(0,${(cy-H/2).toFixed(2)}px,0) scale(${s.toFixed(5)}) rotateX(${tilt.toFixed(3)}deg)`;
+  const tilt=TOUCH?0:(1-grow)*pull*(1-pull)*4*-3;
+  const tf=`translate3d(0,${px(cy-H/2)}px,0) scale(${s.toFixed(5)})`+(TOUCH?'':` rotateX(${tilt.toFixed(3)}deg)`);
   paperEl.style.transform=tf;shadowEl.style.transform=tf;shadowEl.style.opacity=(1-grow).toFixed(3);
   const full=grow>0.999;if(full!==isFull){isFull=full;paperEl.classList.toggle('is-full',full);}
   ghost.style.opacity=lerp(0.55,0,smooth(0.05,0.5,p)).toFixed(3);
-  const sy=H/2-sh/2+ph*0.04+pull*(H*0.55+sh*0.5),st=`translate3d(${(W/2-sw/2).toFixed(2)}px,${sy.toFixed(2)}px,0)`;
+  const sy=H/2-sh/2+ph*0.04+pull*(H*0.55+sh*0.5),st=`translate3d(${px(W/2-sw/2)}px,${px(sy)}px,0)`;
   sf.style.transform=st;sb.style.transform=st;
   sf.style.opacity=(1-smooth(0.4,0.6,p)).toFixed(3);sb.style.opacity=(1-smooth(0.35,0.55,p)).toFixed(3);
   const hud=p>=0.8;if(hud!==hudOn){hudOn=hud;topEl.classList.toggle('off',!hud);botEl.classList.toggle('off',!hud);}
-  if(p>0.7&&!started){started=true;setPlaying(true);holdUntil=performance.now()+400;}
-  if(p<0.55&&started){started=false;setPlaying(false);if(current.kind!=='overview')go({kind:'overview'});}
+  // the tour starts only once the map has fully landed, so the canvas never repaints mid-transition
+  if(p>=0.8&&!started){started=true;setPlaying(true);holdUntil=performance.now()+500;}
+  if(p<0.78&&started){started=false;setPlaying(false);flight=null;current={kind:'overview'};cam=viewOf(current);shine=null;cap.classList.add('hide');dirty=true;}
 }
 function pinFallback(r){const st=r.top>0?'before':(r.bottom<H?'after':'fixed');if(st!==pin){pin=st;stage.dataset.pin=st;}}
 
 /* ═════════════ Loop (runs only while the section is near the screen), sizing, input ═════════════ */
 function frame(now){
-  if(!active){raf=0;return;}
+  if(!active){raf=0;lastT=0;return;}
   const r=reveal.getBoundingClientRect();if(!STICKY_OK)pinFallback(r);
   const over=r.top<=navH&&r.bottom>=navH;if(over!==navOver){navOver=over;document.body.classList.toggle('hwt-over',over);}
-  const p=clamp(-r.top/Math.max(1,r.height-H),0,1);if(Math.abs(p-lastP)>1e-4){layoutReveal(p);lastP=p;}
-  if(flight){let t=(now-flight.t0)/flight.dur;if(t>=1)t=1;cam=flight.it(ease(t));dirty=true;if(t===1){flight=null;onArrive(now);}}
+  const pT=clamp(-r.top/Math.max(1,r.height-H),0,1),dt=lastT?Math.min(64,now-lastT):16;lastT=now;
+  if(pS<0||CALM)pS=pT;else{pS+=(pT-pS)*(1-Math.exp(-dt/(TOUCH?90:60)));if(Math.abs(pT-pS)<2e-4)pS=pT;}
+  const p=pS;if(Math.abs(p-lastP)>1e-5){layoutReveal(p);lastP=p;}
+  const moving=p>0.5&&p<0.8; // paper is growing: hold the canvas still
+  if(moving){}else if(flight){let t=(now-flight.t0)/flight.dur;if(t>=1)t=1;cam=flight.it(ease(t));dirty=true;if(t===1){flight=null;onArrive(now);}}
   else if(playing&&now>holdUntil)go(pickNext());
   if(shine)dirty=true;
-  if(dirty){dirty=false;draw(now);}
+  if(dirty&&(!moving||lastP<0)){dirty=false;draw(now);}else if(dirty&&moving&&!drawnOnce){dirty=false;draw(now);}
   raf=requestAnimationFrame(frame);}
 function resize(force){
   const w=stage.clientWidth,h=stage.clientHeight,d=Math.min(window.devicePixelRatio||1,2),k=w+'x'+h+'@'+d;
   if(k===sizeKey&&!force)return;sizeKey=k;W=w;H=h;DPR=d;
-  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);drawnOnce=false;
   hudTop=topEl.offsetTop+topEl.offsetHeight;hudBot=H-botEl.offsetTop;
   navH=(document.getElementById('nav')||{}).offsetHeight||72;measureReveal();if(!flight)cam=viewOf(current);dirty=true;lastP=-1;}
 const ICON_PAUSE='<svg viewBox="0 0 16 16" fill="currentColor"><rect x="3" y="2" width="3.5" height="12" rx="1"/><rect x="9.5" y="2" width="3.5" height="12" rx="1"/></svg>';
