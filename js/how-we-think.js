@@ -432,8 +432,20 @@ function layoutReveal(p){
 function pinFallback(r){const st=r.top>0?'before':(r.bottom<H?'after':'fixed');if(st!==pin){pin=st;stage.dataset.pin=st;}}
 
 /* ═════════════ Loop (runs only while the section is near the screen), sizing, input ═════════════ */
+// The antenna: telescopes out of the B chat button while the film plays; tap it to glide past the section
+const ant=document.createElement('div');ant.className='hwt-ant';ant.setAttribute('aria-hidden','false');
+ant.innerHTML='<div class="hwt-ant__mast"><span class="hwt-ant__seg hwt-ant__seg--1"></span><span class="hwt-ant__seg hwt-ant__seg--2"></span><span class="hwt-ant__seg hwt-ant__seg--3"></span><span class="hwt-ant__collar"></span>'+
+  '<span class="hwt-ant__tip"><span class="hwt-ant__ring"></span><span class="hwt-ant__ring"></span><span class="hwt-ant__ring"></span></span></div>'+
+  '<button type="button" class="hwt-ant__btn" aria-label="Scroll on past the film"><span>Scroll on<small>or tap to continue</small></span><i></i></button>';
+document.body.appendChild(ant);let antUp=false;
+function setAnt(up){if(up===antUp)return;antUp=up;ant.classList.toggle('is-up',up);}
+ant.querySelector('button').addEventListener('click',()=>{setAnt(false);
+  const y=root.getBoundingClientRect().bottom+scrollY-innerHeight*0.25;
+  scrollTo({top:y,behavior:CALM?'auto':'smooth'});});
+function antFrame(r){const chat=document.getElementById('bk-chat'),chatOpen=chat&&getComputedStyle(chat).display!=='none';
+  setAnt(active&&autoA>=1&&r.top<=1&&r.bottom>H*0.6&&!chatOpen);}
 function frame(now){
-  if(!active){raf=0;lastT=0;return;}
+  if(!active){raf=0;lastT=0;setAnt(false);return;}
   const r=reveal.getBoundingClientRect();if(!STICKY_OK)pinFallback(r);
   const over=r.top<=navH&&r.bottom>=navH;if(over!==navOver){navOver=over;document.body.classList.toggle('hwt-over',over);}
   const pT=clamp(-r.top/Math.max(1,r.height-H),0,1),dt=lastT?Math.min(64,now-lastT):16;lastT=now;
@@ -445,7 +457,8 @@ function frame(now){
   if(r.top<=1)autoDir=1;else if(r.top>H*0.04)autoDir=-1;
   if(CALM)autoA=autoDir>0?1:0;else autoA=clamp(autoA+autoDir*dt/AUTO_MS,0,1);
   const p=autoA>=1?Math.max(0.8,pT):0.8*autoA;if(Math.abs(p-lastP)>1e-5){layoutReveal(p);lastP=p;}
-  const moving=p>0.5&&p<0.8||(autoA>0&&autoA<1); // paper is growing: hold the canvas still
+  const moving=p>0.5&&p<0.8||(autoA>0&&autoA<1);
+  antFrame(r); // paper is growing: hold the canvas still
   if(moving){}else if(flight){let t=(now-flight.t0)/flight.dur;if(t>=1)t=1;cam=flight.it(ease(t));dirty=true;if(t===1){flight=null;onArrive(now);}}
   else if(playing&&now>holdUntil)go(pickNext());
   if(shine)dirty=true;

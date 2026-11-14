@@ -27,7 +27,7 @@ section.hwt{position:relative;background:#F7F5F0;color:#0C1117;max-width:100%;
 .hwt__fade.is-in{opacity:1;transform:none}
 
 /* the pinned stage */
-.hwt__track{position:relative;height:430vh;height:430lvh}
+.hwt__track{position:relative;height:200vh;height:200lvh}
 .hwt__stage{position:sticky;top:0;width:100%;height:100vh;height:100lvh;overflow:hidden;perspective:1400px;background:#F7F5F0;
   opacity:0;transition:opacity .9s ease}
 .hwt__stage.is-in{opacity:1}
@@ -103,3 +103,44 @@ body.hwt-over .nav .icon-moon{opacity:0}
   .hwt__shadow{box-shadow:0 24px 48px rgba(12,17,23,.26),0 0 0 calc(1px / var(--hwt-s0,.6)) rgba(168,132,71,.6)}
   .hwt__sleeve--front{box-shadow:0 18px 36px rgba(12,17,23,.18),inset 0 1px 0 rgba(255,255,255,.7)}
 }
+
+/* ── The antenna: rises out of the B chat button while the film plays, pulsing like radar → "scroll on" ── */
+.hwt-ant{position:fixed;z-index:2147482999;right:calc(max(16px,env(safe-area-inset-right)) + 30px);bottom:calc(max(16px,env(safe-area-inset-bottom)) + 58px);
+  width:0;height:0;pointer-events:none}
+.hwt-ant__mast{position:absolute;left:0;bottom:0;width:0}
+.hwt-ant__seg{position:absolute;left:50%;bottom:0;border-radius:2px;transform-origin:50% 100%;
+  background:linear-gradient(90deg,#6E5A35,#F3E2B4 38%,#C9A45C 55%,#5C4A2A);box-shadow:0 0 0 .5px rgba(12,17,23,.35);
+  transform:translate(-50%,0) scaleY(.02);transition:transform .45s cubic-bezier(.2,.9,.25,1.25)}
+.hwt-ant__seg--1{width:6px;height:30px}
+.hwt-ant__seg--2{width:4.5px;height:30px;bottom:0}
+.hwt-ant__seg--3{width:3px;height:30px;bottom:0}
+.hwt-ant__collar{position:absolute;left:50%;bottom:-3px;width:14px;height:6px;transform:translateX(-50%);border-radius:3px;
+  background:linear-gradient(#F3E2B4,#8A7046);box-shadow:0 1px 2px rgba(0,0,0,.4);opacity:0;transition:opacity .25s}
+.hwt-ant__tip{position:absolute;left:50%;bottom:0;width:11px;height:11px;margin-left:-5.5px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFF6DA,#C9A45C 55%,#6E5A35);box-shadow:0 0 10px rgba(201,164,92,.9);
+  transform:translateY(0) scale(.2);opacity:0;transition:transform .55s cubic-bezier(.2,.9,.25,1.25),opacity .3s}
+.hwt-ant__ring{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;
+  border:1.5px solid rgba(201,164,92,.95);opacity:0}
+.hwt-ant__btn{position:absolute;right:20px;bottom:64px;pointer-events:none;opacity:0;transform:translateX(10px);
+  transition:opacity .35s ease .35s,transform .45s cubic-bezier(.2,.9,.25,1.2) .35s;
+  display:flex;align-items:center;gap:9px;white-space:nowrap;cursor:pointer;border:1px solid rgba(201,164,92,.75);border-radius:999px;
+  padding:9px 14px 9px 12px;background:rgba(12,17,23,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#F7F5F0;
+  font:600 11px/1 'Satoshi',Inter,system-ui,sans-serif;letter-spacing:.2em;text-transform:uppercase;box-shadow:0 10px 26px rgba(12,17,23,.3);
+  -webkit-tap-highlight-color:transparent}
+.hwt-ant__btn i{display:block;width:8px;height:8px;border-right:1.5px solid #C9A45C;border-bottom:1.5px solid #C9A45C;transform:rotate(45deg);margin-top:-4px;animation:hwtNudge 1.4s ease-in-out infinite}
+.hwt-ant__btn small{display:block;font-size:9px;letter-spacing:.14em;color:rgba(247,245,240,.6);margin-top:4px;text-transform:none;font-weight:500}
+.hwt-ant__btn:focus-visible{outline:2px solid #C9A45C;outline-offset:3px}
+.hwt-ant.is-up .hwt-ant__collar{opacity:1}
+.hwt-ant.is-up .hwt-ant__seg--1{transform:translate(-50%,0) scaleY(1);transition-delay:0s}
+.hwt-ant.is-up .hwt-ant__seg--2{transform:translate(-50%,-26px) scaleY(1);transition-delay:.12s}
+.hwt-ant.is-up .hwt-ant__seg--3{transform:translate(-50%,-52px) scaleY(1);transition-delay:.24s}
+.hwt-ant.is-up .hwt-ant__tip{transform:translateY(-84px) scale(1);opacity:1;transition-delay:.3s}
+.hwt-ant.is-up .hwt-ant__ring{animation:hwtRadar 2.1s cubic-bezier(.2,.6,.3,1) infinite .8s}
+.hwt-ant.is-up .hwt-ant__ring:nth-child(2){animation-delay:1.5s}
+.hwt-ant.is-up .hwt-ant__ring:nth-child(3){animation-delay:2.2s}
+.hwt-ant.is-up .hwt-ant__btn{opacity:1;transform:none;pointer-events:auto}
+.hwt-ant:not(.is-up) .hwt-ant__seg,.hwt-ant:not(.is-up) .hwt-ant__tip{transition-delay:0s!important;transition-duration:.3s}
+.hwt-ant:not(.is-up) .hwt-ant__btn{transition-delay:0s}
+@keyframes hwtRadar{0%{transform:scale(.4);opacity:.95}100%{transform:scale(3.4);opacity:0}}
+@keyframes hwtNudge{0%,100%{transform:translateY(0) rotate(45deg)}50%{transform:translateY(4px) rotate(45deg)}}
+@media (prefers-reduced-motion:reduce){.hwt-ant *{animation:none!important;transition:none!important}}
