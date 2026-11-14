@@ -48,6 +48,14 @@
     }
   }, { passive: true });
 
+  // Mark the page you are on in the mobile menu
+  const norm = (u) => u.replace(/index\.html$/, '').replace(/\/+$/, '');
+  const here = norm(location.pathname);
+  mobileNav?.querySelectorAll('ul a').forEach(a => {
+    const path = norm(new URL(a.getAttribute('href'), location.href).pathname);
+    if (path && (here === path || here.startsWith(path + '/'))) a.setAttribute('aria-current', 'page');
+  });
+
   // Close when a nav link is clicked
   mobileNav?.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', closeMenu);
