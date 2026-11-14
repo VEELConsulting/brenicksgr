@@ -24,6 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Satoshi:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/scenes.css" />
   <link rel="stylesheet" href="insights/atelier/atelier.css" />
 </head>
 <body>
@@ -256,15 +257,20 @@
           <p>That's the same hands-on, build-it-and-make-it-work approach we've brought to every Salesforce org and website we've shipped since day one.</p>
           <a href="about/index.html" class="btn btn--primary" style="margin-top:2rem">About Brenicks →</a>
         </div>
-        <div class="about__visual">
-          <div class="about__orb-wrap">
-            <div class="about__orb"></div>
-            <div class="about__values">
-              <div class="value-pill">Precision</div>
-              <div class="value-pill">Implementation</div>
-              <div class="value-pill">ROI</div>
-              <div class="value-pill">Craft</div>
-            </div>
+        <div class="about__visual stack-host">
+          <div class="stack3d" data-stack role="img" aria-label="A flat roadmap document with four layers rising out of it: design, build, integrate and support, topped by a beam marking measurable results.">
+            <div class="stack3d__cam" aria-hidden="true"><div class="stack3d__world">
+              <div class="stack3d__grid"></div>
+              <div class="stack3d__deck"><b>Roadmap.pdf</b><i></i><i></i><i></i><i></i></div>
+              <div class="stack3d__slab" style="--i:0"><div class="stack3d__face stack3d__side"></div><div class="stack3d__face stack3d__front">Design</div><div class="stack3d__face stack3d__top"><em>01</em></div></div>
+              <div class="stack3d__slab" style="--i:1"><div class="stack3d__face stack3d__side"></div><div class="stack3d__face stack3d__front">Build</div><div class="stack3d__face stack3d__top"><em>02</em></div></div>
+              <div class="stack3d__slab" style="--i:2"><div class="stack3d__face stack3d__side"></div><div class="stack3d__face stack3d__front">Integrate</div><div class="stack3d__face stack3d__top"><em>03</em></div></div>
+              <div class="stack3d__slab" style="--i:3"><div class="stack3d__face stack3d__side"></div><div class="stack3d__face stack3d__front">Support</div><div class="stack3d__face stack3d__top"><em>04</em></div></div>
+              <div class="stack3d__beam"></div>
+            </div></div>
+            <div class="stack3d__label stack3d__label--deck" aria-hidden="true">Where most firms stop</div>
+            <div class="stack3d__label stack3d__label--top" aria-hidden="true">Measurable results</div>
+            <div class="stack3d__steps" aria-hidden="true"><span>Design</span><span>Build</span><span>Integrate</span><span>Support</span></div>
           </div>
         </div>
       </div>
@@ -417,6 +423,7 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script src="js/scenes.js" defer></script>
   <script src="insights/atelier/atelier.js"></script>
   <script src="js/reviews.js" defer></script>
 </body>
