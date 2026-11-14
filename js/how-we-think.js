@@ -400,7 +400,7 @@ function onArrive(now){let sec,ttl;
 const STICKY_OK=!!(window.CSS&&CSS.supports('overflow-x','clip')&&CSS.supports('selector(:has(*))'));
 if(!STICKY_OK)root.classList.add('no-sticky');
 let navOver=false,navH=72,lastP=-1,started=false,geo=null,isFull=false,hudOn=false,pin='',active=false,raf=0,sizeKey='',pS=-1,lastT=0,autoA=0,autoDir=-1;
-const AUTO_FROM=0.1,AUTO_MS=1250;
+const AUTO_MS=1700;
 // Phones report scroll position in uneven steps (and in bursts during momentum), which made the sleeve shake.
 // The reveal now follows the scroll through a short critically-damped glide, snaps to whole device pixels,
 // skips the 3D tilt on touch screens, and keeps the canvas still until the map has fully landed.
@@ -440,9 +440,11 @@ function frame(now){
   // Automatic hand-off: once the visitor scrolls the file to the point where it starts leaving the sleeve,
   // the pull-out and the grow to full screen play on their own clock (not the finger), so nothing can shake.
   // Scrolling back above the start plays it in reverse.
-  if(pT>=AUTO_FROM)autoDir=1;else if(pT<AUTO_FROM-0.03)autoDir=-1;
+  // One continuous film: the moment the page pins the sleeve in the centre of the screen, the pull-out,
+  // the grow to full screen and then the tour all play on their own. Scrolling back up above the pin reverses it.
+  if(r.top<=1)autoDir=1;else if(r.top>H*0.04)autoDir=-1;
   if(CALM)autoA=autoDir>0?1:0;else autoA=clamp(autoA+autoDir*dt/AUTO_MS,0,1);
-  let p;if(autoA<=0)p=Math.min(pT,AUTO_FROM);else if(autoA<1)p=AUTO_FROM+(0.8-AUTO_FROM)*autoA;else p=Math.max(0.8,pT);if(Math.abs(p-lastP)>1e-5){layoutReveal(p);lastP=p;}
+  const p=autoA>=1?Math.max(0.8,pT):0.8*autoA;if(Math.abs(p-lastP)>1e-5){layoutReveal(p);lastP=p;}
   const moving=p>0.5&&p<0.8||(autoA>0&&autoA<1); // paper is growing: hold the canvas still
   if(moving){}else if(flight){let t=(now-flight.t0)/flight.dur;if(t>=1)t=1;cam=flight.it(ease(t));dirty=true;if(t===1){flight=null;onArrive(now);}}
   else if(playing&&now>holdUntil)go(pickNext());
