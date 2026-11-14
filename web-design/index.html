@@ -21,9 +21,10 @@
   <meta name="description" content="Bespoke web design for businesses that understand the cost of looking ordinary." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Satoshi:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Satoshi:wght@300;400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../insights/atelier/atelier.css" />
+  <link rel="stylesheet" href="../css/how-we-think.css" />
   <style>
     /* ── OUTCOME PILLARS ── */
     .pillars {
@@ -564,6 +565,45 @@
     </div>
   </section>
 
+  <!-- ── HOW WE THINK: living thought map in a sleeve (css/how-we-think.css, js/how-we-think.js) ── -->
+  <section class="hwt" id="hwt-root" aria-label="How we think">
+    <div class="hwt__edge" aria-hidden="true"></div>
+    <div class="hwt__intro hwt__fade">
+      <span class="hwt__label">How we think</span>
+      <h2 class="hwt__title">Our thinking,<br /><em>kept in a sleeve.</em></h2>
+      <p class="hwt__lede">The values behind every site we build, laid out the way we work. Keep scrolling and it slides out.</p>
+      <div class="hwt__cue">Scroll<i></i></div>
+    </div>
+    <div class="hwt__track" id="hwt-track">
+      <div class="hwt__stage" id="hwt-stage">
+        <div class="hwt__sleeve hwt__sleeve--back" id="hwt-sleeveBack"></div>
+        <div class="hwt__shadow" id="hwt-shadow" aria-hidden="true"></div>
+        <div class="hwt__paper" id="hwt-paper">
+          <canvas id="hwt-c" role="img" aria-label="An animated map of The Brenicks Group's values. The camera glides between tiles on its own; tap a tile to fly to it."></canvas>
+          <div class="hwt__hud hwt__hud--top off" id="hwt-top">
+            <div class="hwt__pill"><i class="hwt__mark"></i><b>The Brenicks Group</b><span>· how we think</span></div>
+            <div class="hwt__pill hwt__zoom" id="hwt-zoom">100%</div>
+          </div>
+          <div class="hwt__hud hwt__hud--bottom off" id="hwt-bottom">
+            <div class="hwt__caption hide" id="hwt-caption" aria-live="polite"><div class="hwt__sec" id="hwt-capSec"></div><div class="hwt__ttl" id="hwt-capTtl"></div></div>
+            <button class="hwt__btn" id="hwt-play" aria-label="Play the tour"></button>
+          </div>
+          <div class="hwt__ghost" id="hwt-ghost"></div>
+        </div>
+        <div class="hwt__sleeve hwt__sleeve--front" id="hwt-sleeveFront" aria-hidden="true">
+          <div class="hwt__seal">
+            <div class="hwt__mono">B</div>
+            <div class="hwt__word">BRENICKS</div>
+            <div class="hwt__rule"></div>
+            <div class="hwt__tag">How we think</div>
+            <div class="hwt__hint">Keep scrolling</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hwt__edge hwt__edge--out" aria-hidden="true"></div>
+  </section>
+
   <!-- ── CLOSING CTA ── -->
   <section class="section">
     <div class="container">
@@ -588,5 +628,6 @@
 
   <script src="../js/main.js"></script>
   <script src="../insights/atelier/atelier.js"></script>
+  <script src="../js/how-we-think.js" defer></script>
 </body>
 </html>
