@@ -399,7 +399,7 @@ function onArrive(now){let sec,ttl;
 /* ═════════════ The sleeve reveal, driven by scroll (transform + opacity only) ═════════════ */
 const STICKY_OK=!!(window.CSS&&CSS.supports('overflow-x','clip')&&CSS.supports('selector(:has(*))'));
 if(!STICKY_OK)root.classList.add('no-sticky');
-let navOver=false,navH=72,lastP=-1,started=false,geo=null,isFull=false,hudOn=false,pin='',active=false,raf=0,sizeKey='',pS=-1,lastT=0,autoA=0,autoDir=-1;
+let navOver=false,navH=72,lastP=-1,started=false,startedAt=0,geo=null,isFull=false,hudOn=false,pin='',active=false,raf=0,sizeKey='',pS=-1,lastT=0,autoA=0,autoDir=-1;
 const AUTO_MS=1700;
 // Phones report scroll position in uneven steps (and in bursts during momentum), which made the sleeve shake.
 // The reveal now follows the scroll through a short critically-damped glide, snaps to whole device pixels,
@@ -426,7 +426,7 @@ function layoutReveal(p){
   sf.style.opacity=(1-smooth(0.4,0.6,p)).toFixed(3);sb.style.opacity=(1-smooth(0.35,0.55,p)).toFixed(3);
   const hud=p>=0.8;if(hud!==hudOn){hudOn=hud;topEl.classList.toggle('off',!hud);botEl.classList.toggle('off',!hud);}
   // the tour starts only once the map has fully landed, so the canvas never repaints mid-transition
-  if(p>=0.8&&!started){started=true;setPlaying(true);holdUntil=performance.now()+500;}
+  if(p>=0.8&&!started){started=true;startedAt=performance.now();setPlaying(true);holdUntil=performance.now()+500;}
   if(p<0.78&&started){started=false;setPlaying(false);flight=null;current={kind:'overview'};cam=viewOf(current);shine=null;cap.classList.add('hide');dirty=true;}
 }
 function pinFallback(r){const st=r.top>0?'before':(r.bottom<H?'after':'fixed');if(st!==pin){pin=st;stage.dataset.pin=st;}}
@@ -434,16 +434,24 @@ function pinFallback(r){const st=r.top>0?'before':(r.bottom<H?'after':'fixed');i
 /* ═════════════ Loop (runs only while the section is near the screen), sizing, input ═════════════ */
 // The antenna: telescopes out of the B chat button while the film plays; tap it to glide past the section
 const ant=document.createElement('div');ant.className='hwt-ant';ant.setAttribute('aria-hidden','false');
-ant.innerHTML='<div class="hwt-ant__mast"><span class="hwt-ant__seg hwt-ant__seg--1"></span><span class="hwt-ant__seg hwt-ant__seg--2"></span><span class="hwt-ant__seg hwt-ant__seg--3"></span><span class="hwt-ant__collar"></span>'+
-  '<span class="hwt-ant__tip"><span class="hwt-ant__ring"></span><span class="hwt-ant__ring"></span><span class="hwt-ant__ring"></span></span></div>'+
-  '<button type="button" class="hwt-ant__btn" aria-label="Scroll on past the film"><span>Scroll on<small>or tap to continue</small></span><i></i></button>';
+ant.innerHTML='<div class="hwt-ant__mast"><span class="hwt-ant__seg hwt-ant__seg--1"></span><span class="hwt-ant__seg hwt-ant__seg--2"></span><span class="hwt-ant__seg hwt-ant__seg--3"></span>'+
+  '<span class="hwt-ant__joint" style="bottom:28px"></span><span class="hwt-ant__joint" style="bottom:54px"></span><span class="hwt-ant__collar"></span>'+
+  '<button type="button" class="hwt-ant__beacon" aria-label="Scroll on past the film"><span class="hwt-ant__ring"></span><span class="hwt-ant__ring"></span><span class="hwt-ant__ring"></span>'+
+  '<span class="hwt-ant__orb"></span>'+
+  '<svg class="hwt-ant__dial" viewBox="0 0 58 58" aria-hidden="true"><defs><linearGradient id="hwtSw" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".95"/></linearGradient></defs><g class="rim" fill="none" stroke="rgba(12,17,23,.38)" stroke-width=".45"><path d="M54.00 29.00L58.00 29.00M56.59 31.41L57.89 31.53M56.28 33.81L57.56 34.04M55.76 36.17L57.01 36.51M55.03 38.47L56.25 38.92M54.10 40.71L55.28 41.26M52.04 42.30L54.11 43.50M51.69 44.89L52.76 45.63M50.22 46.81L51.22 47.64M48.59 48.59L49.51 49.51M46.81 50.22L47.64 51.22M44.89 51.69L45.63 52.76M42.30 52.04L43.50 54.11M40.71 54.10L41.26 55.28M38.47 55.03L38.92 56.25M36.17 55.76L36.51 57.01M33.81 56.28L34.04 57.56M31.41 56.59L31.53 57.89M29.00 54.00L29.00 58.00M26.59 56.59L26.47 57.89M24.19 56.28L23.96 57.56M21.83 55.76L21.49 57.01M19.53 55.03L19.08 56.25M17.29 54.10L16.74 55.28M15.70 52.04L14.50 54.11M13.11 51.69L12.37 52.76M11.19 50.22L10.36 51.22M9.41 48.59L8.49 49.51M7.78 46.81L6.78 47.64M6.31 44.89L5.24 45.63M5.96 42.30L3.89 43.50M3.90 40.71L2.72 41.26M2.97 38.47L1.75 38.92M2.24 36.17L0.99 36.51M1.72 33.81L0.44 34.04M1.41 31.41L0.11 31.53M4.00 29.00L0.00 29.00M1.41 26.59L0.11 26.47M1.72 24.19L0.44 23.96M2.24 21.83L0.99 21.49M2.97 19.53L1.75 19.08M3.90 17.29L2.72 16.74M5.96 15.70L3.89 14.50M6.31 13.11L5.24 12.37M7.78 11.19L6.78 10.36M9.41 9.41L8.49 8.49M11.19 7.78L10.36 6.78M13.11 6.31L12.37 5.24M15.70 5.96L14.50 3.89M17.29 3.90L16.74 2.72M19.53 2.97L19.08 1.75M21.83 2.24L21.49 0.99M24.19 1.72L23.96 0.44M26.59 1.41L26.47 0.11M29.00 4.00L29.00 0.00M31.41 1.41L31.53 0.11M33.81 1.72L34.04 0.44M36.17 2.24L36.51 0.99M38.47 2.97L38.92 1.75M40.71 3.90L41.26 2.72M42.30 5.96L43.50 3.89M44.89 6.31L45.63 5.24M46.81 7.78L47.64 6.78M48.59 9.41L49.51 8.49M50.22 11.19L51.22 10.36M51.69 13.11L52.76 12.37M52.04 15.70L54.11 14.50M54.10 17.29L55.28 16.74M55.03 19.53L56.25 19.08M55.76 21.83L57.01 21.49M56.28 24.19L57.56 23.96M56.59 26.59L57.89 26.47"/></g><g fill="none" stroke="rgba(12,17,23,.2)" stroke-width=".4"><circle cx="29" cy="29" r="20"/><circle cx="29" cy="29" r="12" stroke-dasharray="1 1.6"/><path d="M29 7v8M29 43v8M7 29h8M43 29h8"/></g><g class="sweep"><path d="M29 29L29 4A25 25 0 0 1 46.7 11.3Z" fill="url(#hwtSw)" opacity=".55"/><path d="M29 29L46.7 11.3" stroke="#fff" stroke-width=".8"/></g><circle cx="29" cy="29" r="1.1" fill="rgba(12,17,23,.55)"/></svg>'+
+  '<span class="hwt-ant__label">SCROLL ON</span></button></div>';
 document.body.appendChild(ant);let antUp=false;
 function setAnt(up){if(up===antUp)return;antUp=up;ant.classList.toggle('is-up',up);}
-ant.querySelector('button').addEventListener('click',()=>{setAnt(false);
+ant.querySelector('.hwt-ant__beacon').addEventListener('click',()=>{setAnt(false);
   const y=root.getBoundingClientRect().bottom+scrollY-innerHeight*0.25;
   scrollTo({top:y,behavior:CALM?'auto':'smooth'});});
-function antFrame(r){const chat=document.getElementById('bk-chat'),chatOpen=chat&&getComputedStyle(chat).display!=='none';
-  setAnt(active&&autoA>=1&&r.top<=1&&r.bottom>H*0.6&&!chatOpen);}
+let playOff=0;
+// keep the play/pause button vertically centred on the B chat button (horizontal position untouched)
+function alignPlay(){const cb=document.getElementById('bk-chat-btn');if(!cb||!hudOn)return;
+  const a=cb.getBoundingClientRect(),b=playBtn.getBoundingClientRect();if(!a.height||!b.height)return;
+  const d=(a.top+a.height/2)-(b.top+b.height/2);if(Math.abs(d)>0.5){playOff+=d;playBtn.style.transform=`translateY(${playOff.toFixed(1)}px)`;}}
+function antFrame(r){alignPlay();const chat=document.getElementById('bk-chat'),chatOpen=chat&&getComputedStyle(chat).display!=='none';
+  setAnt(active&&started&&performance.now()>startedAt+700&&r.top<=1&&r.bottom>H*0.6&&!chatOpen);}
 function frame(now){
   if(!active){raf=0;lastT=0;setAnt(false);return;}
   const r=reveal.getBoundingClientRect();if(!STICKY_OK)pinFallback(r);
