@@ -259,7 +259,7 @@
   const RINGS = [
     {z: 900, name: 'WHERE YOUR TEAM WORKS', tools: ['Salesforce', 'Microsoft 365 & SharePoint', 'Google Workspace', 'Microsoft Copilot']},
     {z: 1800, name: 'HOW IT CONNECTS', tools: ['LangChain', 'n8n', 'RAG & Vector Search']},
-    {z: 2700, name: 'THE INTELLIGENCE', tools: ['OpenAI', 'Anthropic', 'Azure OpenAI']},
+    {z: 2700, name: 'THE INTELLIGENCE', tools: ['Writing & summaries', 'Search & answers', 'Decisions & routing']},
   ];
   const CORE = 3600, RR = 250, DWELL = 560;
   const STARS = Array.from({length: 420}, (_, i) => { const a = i * 2.399963, r = 320 + ((i * 7919) % 1100); return {x: Math.cos(a) * r, y: Math.sin(a) * r, z: -900 + ((i * 104729) % 5400), s: 0.6 + (i % 5) * 0.25}; });
