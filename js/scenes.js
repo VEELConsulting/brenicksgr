@@ -148,7 +148,7 @@
   const SATS = [{a: -0.3, label: 'CRM'}, {a: 0.87, label: 'Documents'}, {a: 2.05, label: 'Workflows'}].map((s) => ({...s, x: Math.cos(s.a) * 235, z: Math.sin(s.a) * 235}));
   const MOTES = Array.from({length: 60}, (_, i) => ({a: i * 2.399, r: 20 + (i * 37) % 70, s: 0.4 + ((i * 13) % 10) / 10, o: (i * 0.137) % 1}));
   STACK.draw = (ctx, W, H, t, now, done) => {
-    const c = cam(); const narrow = W < 480; c.f = Math.min(W, H) * (narrow ? 1.05 : 1.12); c.cx = W / 2; c.cy = H * (narrow ? 0.5 : 0.58);
+    const c = cam(); const narrow = W < 480; c.f = Math.min(W, H) * (narrow ? 1.05 : W > H * 1.2 ? 1.3 : 1.12); c.cx = W / 2; c.cy = H * (narrow ? 0.5 : 0.58);
     const sway = CALM ? 0 : Math.sin(now * 0.35) * 0.08;
     const a1 = eio(seg(t, 1.55, 3.0)), rise = eio(seg(t, 6.9, 8.4));
     const th = lerp(0, -0.7, a1) + (t > 3 ? (t - 3) * 0.035 : 0) + (done ? sway : 0);
@@ -275,7 +275,7 @@
     return ['<em>Where your team works:</em> we build inside it.', '<em>How it connects:</em> we wire it together.', '<em>The intelligence:</em> the right model for each job.'][Math.max(0, focusOf(t))];
   };
   TUN.draw = (ctx, W, H, t, now, done) => {
-    const c = cam(); c.f = Math.min(W, H) * (W < 520 ? 0.7 : 0.82); c.cx = W / 2; c.cy = H / 2 + (W < 520 ? 22 : 10);
+    const c = cam(); c.f = Math.min(W, H) * (W < 520 ? 0.7 : W > H * 1.3 ? 0.95 : 0.82); c.cx = W / 2; c.cy = H / 2 + (W < 520 ? 22 : 10);
     const pull = eio(seg(t, 8.0, 9.6)), z = camZ(t), sway = done && !CALM ? Math.sin(now * 0.3) * 40 : 0;
     const px = lerp(0, 2500, pull) + sway, py = lerp(0, 640, pull), pz = lerp(camZ(t), 1650, pull);
     look(c, px, py, pz, 0, lerp(0, -30, pull), lerp(pz + 1000, 2080, pull));

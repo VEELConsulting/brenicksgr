@@ -1,0 +1,61 @@
+/* ─────────────────────────────────────────────────────────────
+   The Grove: the Salesforce page's "What a Brenicks Salesforce engagement delivers" section.
+   js/grove.js paints two autumn trees close up, cropped by the frame. Birds land on the
+   branches, and each card drops on its string as a bird lands above it.
+   Without JavaScript, or with reduced motion, every card simply shows.
+   ───────────────────────────────────────────────────────────── */
+.grove { position: relative; overflow: hidden; isolation: isolate; background: #0B1020;
+  padding-top: clamp(5rem, 9vw, 8rem); padding-bottom: clamp(6rem, 11vw, 10rem); }
+[data-theme="light"] .grove { background: #F2D9A8; }
+.grove__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; }
+.grove__inner { position: relative; z-index: 1; }
+.grove__head { position: relative; max-width: 36rem; }
+.grove__head::before { content: ""; position: absolute; inset: -3rem -4rem -3rem -5rem; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(8,11,22,.62), rgba(8,11,22,0)); }
+[data-theme="light"] .grove__head::before { background: radial-gradient(closest-side, rgba(252,240,214,.8), rgba(252,240,214,0)); }
+.grove .section__title, .grove .section__label { text-shadow: 0 2px 22px rgba(0,0,0,.55); }
+.grove .section__title { color: #F7F5F0; }
+[data-theme="light"] .grove .section__title { color: #1E1712; text-shadow: 0 1px 18px rgba(255,240,210,.8); }
+[data-theme="light"] .grove .section__label { text-shadow: 0 1px 14px rgba(255,240,210,.9); }
+
+/* the cards hang like tags, in the open air between the two trunks */
+.grove__grid.build-grid { position: relative; background: none; border: 0; border-radius: 0; overflow: visible;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(5.5rem, 8vw, 7.5rem) clamp(1rem, 2.4vw, 2rem);
+  max-width: min(980px, 76vw); margin: clamp(5rem, 8vw, 7rem) auto 0; }
+.grove .build-item { position: relative; border-radius: 16px; transform-origin: 50% -44px;
+  background: rgba(10, 13, 20, .74); border: 1px solid rgba(216, 180, 106, .34);
+  backdrop-filter: blur(8px) saturate(1.1); -webkit-backdrop-filter: blur(8px) saturate(1.1);
+  box-shadow: 0 24px 60px -28px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,236,190,.08);
+  transition: opacity .55s ease .2s, transform .9s cubic-bezier(.2,1.4,.4,1) .2s, background .3s; }
+.grove .build-item:hover { background: rgba(14, 18, 27, .86); }
+.grove .build-item h4 { color: #F7F5F0; }
+.grove .build-item p { color: rgba(247,245,240,.72); }
+[data-theme="light"] .grove .build-item { background: rgba(255, 251, 243, .84); border-color: rgba(168, 132, 71, .45); box-shadow: 0 24px 60px -30px rgba(80,50,20,.55); }
+[data-theme="light"] .grove .build-item:hover { background: rgba(255, 251, 243, .95); }
+[data-theme="light"] .grove .build-item h4 { color: #1E1712; }
+[data-theme="light"] .grove .build-item p { color: #5A4C40; }
+/* the eyelet the string is tied to */
+.grove .build-item::before { content: ""; position: absolute; top: 10px; left: 50%; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%;
+  border: 1.5px solid rgba(216,180,106,.8); background: rgba(0,0,0,.35); }
+
+/* waiting for a bird (only on wide screens, only when the scene is running) */
+.grove.is-live .build-item:not(.is-lit) { opacity: 0; transform: translateY(-26px) rotate(-5deg) scale(.96); }
+.grove.is-live .build-item.is-lit { animation: grove-swing 2.6s ease-out .45s 1 both; }
+@keyframes grove-swing { 0% { transform: rotate(-3.2deg); } 22% { transform: rotate(2.4deg); } 44% { transform: rotate(-1.4deg); } 66% { transform: rotate(.7deg); } 100% { transform: none; } }
+
+.grove__ctl { position: absolute; bottom: 22px; right: 22px; z-index: 3; cursor: pointer; font: 600 10px/1 Inter, system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase;
+  padding: 9px 14px; border-radius: 999px; color: rgba(247,245,240,.78); background: rgba(10,14,19,.6); border: 1px solid rgba(247,245,240,.2); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.grove__ctl:hover { color: #F7F5F0; border-color: #D8B46A; }
+.grove__ctl:focus-visible { outline: 2px solid #D8B46A; outline-offset: 3px; }
+
+@media (max-width: 900px) {
+  .grove__grid.build-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 80vw; }
+}
+@media (max-width: 620px) {
+  .grove__grid.build-grid { grid-template-columns: 1fr; max-width: 74vw; gap: 4.5rem; }
+  .grove .build-item { padding: 1.25rem 1.2rem 1.3rem; }
+  .grove__ctl { bottom: 14px; right: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grove .build-item { transition: none; animation: none !important; }
+}
