@@ -6,7 +6,7 @@
    blossom and the blue-violet evening turns to sunrise.
    Without JavaScript, or with reduced motion, every scroll simply shows, open.
    ───────────────────────────────────────────────────────────── */
-.grove { position: relative; overflow: hidden; isolation: isolate; background: #2B3A6B;
+.grove { position: relative; overflow: hidden; isolation: isolate; background: #0B1220;
   padding-top: clamp(5rem, 9vw, 8rem); padding-bottom: clamp(6rem, 11vw, 10rem); }
 .grove__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; }
 .grove__inner { position: relative; z-index: 1; }
@@ -15,6 +15,10 @@
   background: radial-gradient(closest-side, rgba(16,18,40,.55), rgba(16,18,40,0)); }
 .grove .section__title { color: #F7F5F0; text-shadow: 0 2px 24px rgba(10,10,30,.6); }
 .grove .section__label { color: #E8C987; text-shadow: 0 1px 14px rgba(10,10,30,.7); }
+[data-theme="light"] .grove { background: #F3EEE2; }
+[data-theme="light"] .grove__head::before { background: radial-gradient(closest-side, rgba(250,248,244,.75), rgba(250,248,244,0)); }
+[data-theme="light"] .grove .section__title { color: #1A1510; text-shadow: 0 1px 18px rgba(250,248,244,.9); }
+[data-theme="light"] .grove .section__label { color: #9A7440; text-shadow: none; }
 
 /* the scrolls hang in the open air between the two trunks */
 .grove__grid.build-grid { position: relative; background: none; border: 0; border-radius: 0; overflow: visible;
@@ -22,7 +26,7 @@
   max-width: min(980px, 76vw); margin: clamp(5rem, 8vw, 7rem) auto 0; }
 
 /* ── a hanging scroll (kakejiku) in leather ── */
-.grove .build-item { position: relative; background: none; padding: 7px 0 14px; border: 0; transform-origin: 50% -46px;
+.grove .build-item { position: relative; display: flex; flex-direction: column; background: none; padding: 7px 0 14px; border: 0; transform-origin: 50% -46px;
   transition: opacity .25s ease; filter: drop-shadow(0 22px 26px rgba(10,6,20,.55)); }
 .grove .build-item:hover { background: none; }
 .scroll__rod, .scroll__roll { position: absolute; left: -8px; right: -8px; z-index: 2; border-radius: 99px; pointer-events: none;
@@ -36,7 +40,7 @@
 .scroll__rod::before, .scroll__roll::before { left: -6px; }
 .scroll__rod::after, .scroll__roll::after { right: -6px; }
 /* the leather */
-.scroll__paper { position: relative; margin: 0 2px; padding: clamp(1.4rem, 2.6vw, 1.9rem) clamp(1.2rem, 2.2vw, 1.6rem) clamp(1.5rem, 2.8vw, 2rem);
+.scroll__paper { position: relative; flex: 1; margin: 0 2px; padding: clamp(1.4rem, 2.6vw, 1.9rem) clamp(1.2rem, 2.2vw, 1.6rem) clamp(1.5rem, 2.8vw, 2rem);
   border-radius: 3px 3px 5px 5px; color: #F3E9D6;
   background-color: #2F1D12;
   background-image:

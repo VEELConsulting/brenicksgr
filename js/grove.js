@@ -1,11 +1,14 @@
 /* The Grove. The Brenicks Group.
-   A maple garden in ancient Japan for the Salesforce page, drawn on canvas.
-   Two old maples stand close to the camera, cropped by the frame, red leaves stirring in the wind. Far behind them
-   are a mountain, a pagoda and a torii gate in the haze, and a still lake.
-   Two Japanese white-eyes (mejiro) land on the branches. As each one lands, the leather hanging scroll tied below that
-   branch unrolls; the bird sings, looks down at the scroll, then looks at us. One lands on "New Orgs". The other
-   lands on the far tree, hops from branch to branch, flies off, then flies back from behind the viewer onto the tree.
-   When every scroll is open, the trees blossom and the blue-violet evening turns to sunrise.
+   A garden in ancient Japan for the Salesforce page, drawn on canvas in the Brenicks palette, in both themes.
+   Autumn: two old maples close to the camera, cropped by the frame, leaves of gold and bronze; far behind them a
+   mountain, a pagoda, a torii gate and a still lake. Two Japanese white-eyes (mejiro) land on the branches. As each
+   one lands, the leather hanging scroll tied below that branch unrolls; the bird sings, looks down at the scroll,
+   then looks at us. One lands on "New Orgs"; the other lands on the far tree, hops from branch to branch, flies off,
+   then flies back from behind the viewer onto the tree.
+   Spring: once every scroll is open, the birds fly off, the leaves stop falling, and over three seconds the garden
+   turns to spring: aquamarine leaves, ivory blossoms with gold hearts, the sky clearing to dawn.
+   Dark theme: obsidian and navy with warm gold. Light theme: ivory, champagne and aquamarine.
+   For speed, each cluster of leaves is painted once into an image and moved as one, and the frame rate is capped.
    On phones the birds come to each scroll as it scrolls into view. The scene runs only while it is on screen. */
 (() => {
   const root = document.querySelector('[data-grove]'); if (!root) return;
@@ -20,14 +23,28 @@
   const mix = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
   const rgba = (c, a = 1) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a, 0, 1).toFixed(3)})`;
   const canFilter = 'filter' in document.createElement('canvas').getContext('2d');
+  const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
 
-  /* ── the two moods: blue-violet evening before sunset, and sunrise ── */
-  const DUSK = { sky: ['#22305E', '#3A3F7C', '#5D4E92', '#93649E', '#C9839C', '#E6A79C'], fuji: '#6B6A9E', snow: '#C9C6E6', ridge: ['#5A5689', '#463F72', '#352E58'],
-    lake: ['#7C6BA6', '#3A3566'], ground: '#1E1828', torii: [150, 70, 90], light: [255, 190, 170], haze: [170, 150, 210] };
-  const DAWN = { sky: ['#3E6EA6', '#7FA6CF', '#C9B9C8', '#F4C29A', '#FFB47E', '#FFE0A8'], fuji: '#9D8FB2', snow: '#FFF1E2', ridge: ['#A88FAE', '#8A7192', '#5E4A64'],
-    lake: ['#F5C39A', '#7D6A8C'], ground: '#2C1E22', torii: [196, 62, 50], light: [255, 214, 160], haze: [255, 210, 180] };
-  const LEAVES = ['#5C0B12', '#86141A', '#AE1F1E', '#CF3424', '#E85A2C', '#F28A3C'];
-  const BARK = [[38, 32, 30], [70, 60, 54], [112, 100, 90]];
+  /* ── the Brenicks palette, by theme and season ── */
+  const PAL = {
+    dark: {
+      autumn: { sky: ['#060A12', '#0B1220', '#131C30', '#272A3E', '#56452F', '#A8864F'], fuji: '#1B2438', snow: '#D9C79C', ridge: ['#151D2F', '#101727', '#0B111D'],
+        lake: ['#4A4232', '#0D1320'], ground: '#090D15', torii: [200, 169, 110], light: [216, 180, 106], haze: [58, 66, 92],
+        leaves: ['#4E3210', '#74501E', '#9E7536', '#C8A96E', '#DDBF85', '#F0DCAE'], bark: [[14, 16, 22], [32, 34, 42], [60, 60, 68]], rim: [216, 180, 106], bg: [8, 12, 20] },
+      spring: { sky: ['#08101E', '#0F1E36', '#1A3048', '#2A4A5C', '#5F8C92', '#BBD6D2'], fuji: '#26374E', snow: '#F4F0E6', ridge: ['#1F3146', '#17283B', '#101C2C'],
+        lake: ['#5C8C95', '#0E1A2A'], ground: '#0B131F', torii: [216, 180, 106], light: [190, 228, 232], haze: [96, 150, 162],
+        leaves: ['#173D44', '#245C63', '#3F8088', '#6FAFB8', '#8EC5D0', '#C4E3E8'], bark: [[16, 20, 26], [36, 42, 50], [68, 74, 82]], rim: [200, 228, 232], bg: [8, 12, 20] },
+    },
+    light: {
+      autumn: { sky: ['#DCE9EC', '#EAEEE8', '#F4EEE2', '#F1E2C4', '#E7CB96', '#D9B378'], fuji: '#B4C2C6', snow: '#FAF8F4', ridge: ['#D3CBBB', '#BCB09C', '#9B8D77'],
+        lake: ['#EAD9B6', '#B7A685'], ground: '#77674F', torii: [184, 149, 106], light: [255, 236, 196], haze: [240, 226, 200],
+        leaves: ['#7E5018', '#A87230', '#C49450', '#D8B47A', '#E8CC98', '#F5E4C0'], bark: [[66, 54, 44], [100, 86, 72], [138, 122, 104]], rim: [255, 240, 210], bg: [250, 248, 244] },
+      spring: { sky: ['#B9DEE5', '#CFE8EB', '#E6F2F0', '#F5F3EA', '#FAF8F4', '#FFFFFF'], fuji: '#A3C6CD', snow: '#FFFFFF', ridge: ['#A6CAD0', '#8DB6BD', '#6C9CA4'],
+        lake: ['#D2EAEC', '#8EC5D0'], ground: '#5A7B7E', torii: [184, 149, 106], light: [255, 250, 236], haze: [214, 236, 238],
+        leaves: ['#3A767E', '#57949C', '#8EC5D0', '#AED9DF', '#D2ECEF', '#F0F9FA'], bark: [[74, 70, 64], [110, 104, 96], [150, 144, 134]], rim: [255, 255, 245], bg: [250, 248, 244] },
+    },
+  };
+  let THEME = PAL.dark;
 
   // which tree each scroll hangs from: 0 is the left tree, 1 the right (New Orgs, Existing, Automation, Visibility, Migration, Ongoing)
   const TREE_OF = [0, 1, 1, 0, 0, 1];
@@ -41,51 +58,50 @@
     [1, 'approach', 'VIEW', 4, 14.9, 17.4, 4],
     [0, 'hop', 0, 3, 17.8, 18.7, 3],
   ];
-  const SCRIPT_END = 21.4, ROUTINE = 2.8;
+  const ROUTINE = 2.8, SPRING_IN = 3, FPS = 30;
 
-  let W = 0, H = 0, DPR = 1, narrow = false, T = 0, started = false, raf = 0, last = 0, visible = false, bloomAt = Infinity;
-  let L = null, branches = [], clusters = [], twigs = [], perches = [], falling = [], petals = [], motes = [], bokeh = [], notes = [], dyn = [], queued = new Set(), mx = 0, tmx = 0;
-  const birds = [mkBird(0), mkBird(1)], lit = new Set(), idle = [];
+  let W = 0, H = 0, DPR = 1, narrow = false, T = 0, started = false, raf = 0, last = 0, lastDraw = 0, visible = false, springAt = Infinity;
+  let L = null, branches = [], clusters = [], twigs = [], perches = [], falling = [], motes = [], bokeh = [], notes = [], dyn = [], queued = new Set(), mx = 0, tmx = 0;
+  const birds = [mkBird(0), mkBird(1)], lit = new Set(), extra = [];
   function mkBird(i) { return { i, x: -99, y: -99, s: 1, face: 1, flap: 0, perched: null, landedAt: -9, ph: i * 1.7, hidden: true, lastNote: 0 }; }
 
-  /* ── sprites: a maple leaf, a cherry blossom, a blurred leaf for the foreground ── */
+  /* ── sprites: a maple leaf, a blossom, a soft glow ── */
   const sprites = new Map();
   function mapleSprite(col, blur = 0) {
-    const key = col + blur; if (sprites.has(key)) return sprites.get(key);
+    const key = col + '|' + blur; if (sprites.has(key)) return sprites.get(key);
     const S = blur ? 160 : 64, c = document.createElement('canvas'); c.width = S; c.height = S; const g = c.getContext('2d'), cc = hex(col), R = S * (blur ? 0.3 : 0.42);
     g.translate(S / 2, S / 2); if (blur && canFilter) g.filter = `blur(${blur}px)`;
-    const path = () => { g.beginPath(); for (let k = 0; k <= 280; k++) { const th = (k / 280) * TAU, a = th - Math.PI / 2, lobe = Math.pow(Math.abs(Math.cos(3.5 * (th - Math.PI))), 0.55), tooth = 0.035 * Math.sin(th * 42), gap = Math.exp(-Math.pow((th - Math.PI) * 3.2, 2)) * 0.55, r = R * (0.42 + 0.58 * lobe + tooth - gap); const x = Math.cos(a + Math.PI) * r * -1, y = Math.sin(a + Math.PI) * r * -1; k ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath(); };
-    path(); const gr = g.createRadialGradient(-R * 0.2, -R * 0.25, R * 0.05, 0, 0, R * 1.1);
-    gr.addColorStop(0, rgba(cc.map((v) => Math.min(255, v * 1.35 + 18)))); gr.addColorStop(0.55, rgba(cc)); gr.addColorStop(1, rgba(cc.map((v) => v * 0.6)));
-    g.fillStyle = gr; g.fill(); g.strokeStyle = rgba(cc.map((v) => v * 0.45), 0.85); g.lineWidth = S / 64; g.stroke();
-    if (!blur) { g.strokeStyle = rgba(cc.map((v) => Math.min(255, v * 1.5 + 30)), 0.45); g.lineWidth = S / 90; for (let k = 0; k < 7; k++) { const a = -Math.PI / 2 + (k - 3) * 0.78; g.beginPath(); g.moveTo(0, R * 0.12); g.lineTo(Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86); g.stroke(); }
-      g.strokeStyle = rgba(cc.map((v) => v * 0.5), 0.9); g.lineWidth = S / 50; g.beginPath(); g.moveTo(0, R * 0.12); g.lineTo(R * 0.06, R * 0.62); g.stroke(); }
+    g.beginPath(); for (let k = 0; k <= 280; k++) { const th = (k / 280) * TAU, a = th - Math.PI / 2, lobe = Math.pow(Math.abs(Math.cos(3.5 * (th - Math.PI))), 0.55), tooth = 0.035 * Math.sin(th * 42), gap = Math.exp(-Math.pow((th - Math.PI) * 3.2, 2)) * 0.55, r = R * (0.42 + 0.58 * lobe + tooth - gap); const x = -Math.cos(a + Math.PI) * r, y = -Math.sin(a + Math.PI) * r; k ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath();
+    const gr = g.createRadialGradient(-R * 0.2, -R * 0.25, R * 0.05, 0, 0, R * 1.1);
+    gr.addColorStop(0, rgba(cc.map((v) => Math.min(255, v * 1.1 + 8)))); gr.addColorStop(0.55, rgba(cc)); gr.addColorStop(1, rgba(cc.map((v) => v * 0.62)));
+    g.fillStyle = gr; g.fill(); g.strokeStyle = rgba(cc.map((v) => v * 0.45), 0.8); g.lineWidth = S / 64; g.stroke();
+    if (!blur) { g.strokeStyle = rgba(cc.map((v) => Math.min(255, v * 1.4 + 30)), 0.4); g.lineWidth = S / 90; for (let k = 0; k < 7; k++) { const a = -Math.PI / 2 + (k - 3) * 0.78; g.beginPath(); g.moveTo(0, R * 0.12); g.lineTo(Math.cos(a) * R * 0.86, Math.sin(a) * R * 0.86); g.stroke(); } }
     sprites.set(key, c); return c;
   }
-  function blossomSprite(k) {
-    const key = 'b' + k; if (sprites.has(key)) return sprites.get(key);
+  function blossomSprite(k, dark) {
+    const key = 'b' + k + dark; if (sprites.has(key)) return sprites.get(key);
     const S = 48, c = document.createElement('canvas'); c.width = S; c.height = S; const g = c.getContext('2d'); g.translate(S / 2, S / 2);
-    const tint = [[255, 228, 236], [252, 200, 216], [246, 176, 200]][k % 3];
+    // ivory petals with an aquamarine blush, gold stamens: the Brenicks blossom
+    const tint = [[250, 248, 244], [236, 246, 246], [243, 240, 234]][k % 3], blush = dark ? [142, 197, 208] : [120, 180, 192];
     for (let p = 0; p < 5; p++) {
       g.save(); g.rotate(p * TAU / 5 + k * 0.3); g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(-9, -6, -8, -17, -2.2, -19); g.lineTo(0, -16.5); g.lineTo(2.2, -19); g.bezierCurveTo(8, -17, 9, -6, 0, 0);
-      const gr = g.createLinearGradient(0, 0, 0, -19); gr.addColorStop(0, 'rgba(232,92,128,1)'); gr.addColorStop(0.35, rgba(tint)); gr.addColorStop(1, 'rgba(255,248,250,1)');
-      g.fillStyle = gr; g.fill(); g.strokeStyle = 'rgba(200,90,120,.35)'; g.lineWidth = 0.6; g.stroke(); g.restore();
+      const gr = g.createLinearGradient(0, 0, 0, -19); gr.addColorStop(0, rgba(blush, 0.95)); gr.addColorStop(0.4, rgba(tint)); gr.addColorStop(1, '#FFFFFF');
+      g.fillStyle = gr; g.fill(); g.strokeStyle = 'rgba(110,150,160,.35)'; g.lineWidth = 0.6; g.stroke(); g.restore();
     }
-    for (let s = 0; s < 9; s++) { const a = s * TAU / 9; g.strokeStyle = 'rgba(200,60,90,.8)'; g.lineWidth = 0.7; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * 6.5, Math.sin(a) * 6.5); g.stroke(); g.fillStyle = '#F6D36B'; g.beginPath(); g.arc(Math.cos(a) * 6.8, Math.sin(a) * 6.8, 1, 0, TAU); g.fill(); }
+    for (let s = 0; s < 9; s++) { const a = s * TAU / 9; g.strokeStyle = 'rgba(168,132,71,.9)'; g.lineWidth = 0.7; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * 6.5, Math.sin(a) * 6.5); g.stroke(); g.fillStyle = '#E3C27E'; g.beginPath(); g.arc(Math.cos(a) * 6.8, Math.sin(a) * 6.8, 1.1, 0, TAU); g.fill(); }
     sprites.set(key, c); return c;
   }
-  function petalSprite() {
-    if (sprites.has('petal')) return sprites.get('petal');
-    const c = document.createElement('canvas'); c.width = 24; c.height = 24; const g = c.getContext('2d'); g.translate(12, 12);
-    g.beginPath(); g.moveTo(0, 8); g.bezierCurveTo(-7, 3, -6, -6, -1.6, -8); g.lineTo(0, -6); g.lineTo(1.6, -8); g.bezierCurveTo(6, -6, 7, 3, 0, 8);
-    const gr = g.createLinearGradient(0, 8, 0, -8); gr.addColorStop(0, '#F08AA8'); gr.addColorStop(1, '#FFF2F6'); g.fillStyle = gr; g.fill();
-    sprites.set('petal', c); return c;
+  function glowSprite() {
+    if (sprites.has('glow')) return sprites.get('glow');
+    const c = document.createElement('canvas'); c.width = 32; c.height = 32; const g = c.getContext('2d'), gr = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gr.addColorStop(0, 'rgba(255,240,205,1)'); gr.addColorStop(0.35, 'rgba(216,180,106,.6)'); gr.addColorStop(1, 'rgba(216,180,106,0)'); g.fillStyle = gr; g.fillRect(0, 0, 32, 32);
+    sprites.set('glow', c); return c;
   }
 
-  /* ── layout: measure the scrolls, grow the trees towards them, paint the backdrop ── */
+  /* ── layout: measure the scrolls, grow the trees towards them, paint everything that does not move ── */
   function layout() {
-    const r = root.getBoundingClientRect(); W = r.width; H = r.height; narrow = W < 901;
-    DPR = Math.min(devicePixelRatio || 1, W > 1500 ? 1.4 : 1.75);
+    const r = root.getBoundingClientRect(); W = r.width; H = r.height; narrow = W < 901; THEME = PAL[isDark() ? 'dark' : 'light'];
+    DPR = Math.min(devicePixelRatio || 1, W > 1500 ? 1.25 : 1.5);
     cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
     // measured without transforms, so a scroll still waiting for its bird is placed where it will hang
     const rel = (el) => { let x = 0, y = 0, e = el; while (e && e !== root) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; } return { x, y, w: el.offsetWidth, h: el.offsetHeight }; };
@@ -95,7 +111,6 @@
     const rnd = rngOf(1185 + Math.round(W / 40) * 7 + Math.round(H / 60));
     const k = clamp(W / 1300, 0.62, 1.15);
 
-    // two old maples, close to the camera, each cropped by the edge of the frame
     const tw = clamp(W * 0.11, 64, 180);
     const trees = [
       { side: -1, base: [W * 0.03 - tw * 0.15, H + 60], c1: [W * 0.085, H * 0.64], c2: [W * -0.01, H * 0.32], top: [W * 0.07, -90], w: tw },
@@ -111,12 +126,12 @@
         const a = rnd() * TAU, d = Math.sqrt(rnd()) * r0, ox = Math.cos(a) * d * 1.3, oy = Math.sin(a) * d * 0.82 - lift;
         if (inAvoid(base.x + ox, base.y + oy)) continue;
         const light = clamp(0.48 - oy / (r0 * 1.7) + ox / (r0 * 4.5) + (rnd() - 0.5) * 0.75, 0, 0.999);
-        leaves.push({ ox, oy, sz: (0.62 + rnd() * 0.5) * k, ang: rnd() * TAU, col: Math.floor(light * 6), ph: rnd() * TAU }); i++;
-        if (rnd() < 0.3) blooms.push({ ox: ox + (rnd() - 0.5) * 6, oy: oy - 3, sz: (0.36 + rnd() * 0.3) * k, ang: rnd() * TAU, kind: Math.floor(rnd() * 3), delay: rnd() * 0.65, ph: rnd() * TAU });
+        leaves.push({ ox, oy, sz: (0.62 + rnd() * 0.5) * k, ang: rnd() * TAU, col: Math.floor(light * 6), tilt: 0.7 + rnd() * 0.3 }); i++;
+        if (rnd() < 0.34) blooms.push({ ox: ox + (rnd() - 0.5) * 6, oy: oy - 3, sz: (0.36 + rnd() * 0.3) * k, ang: rnd() * TAU, kind: Math.floor(rnd() * 3) });
       }
       const blobs = Array.from({ length: 3 + Math.floor(rnd() * 3) }, () => { const a = rnd() * TAU, d = rnd() * r0 * 0.55; return { ox: Math.cos(a) * d * 1.2, oy: Math.sin(a) * d * 0.7 - lift, r: r0 * (0.42 + rnd() * 0.32) }; })
         .filter((q) => !inAvoid(base.x + q.ox, base.y + q.oy));
-      clusters.push({ anchor, leaves, blobs, blooms });
+      if (leaves.length) clusters.push({ anchor, leaves, blooms, blobs, ph: rnd() * TAU });
     };
     const dens = narrow ? 0.6 : 1;
 
@@ -139,7 +154,6 @@
       addCluster({ b, s: 1 }, 26 * (narrow ? 0.85 : 1), Math.round(36 * dens), 8);
       addCluster({ b, s: 0.55 }, 22, Math.round(24 * dens), 16);
     });
-
     // the canopy: limbs that climb out of the frame, heavy with leaves, so we only ever see part of each tree
     trees.forEach((t, ti) => {
       const inward = -t.side, n = narrow ? 5 : 9;
@@ -156,34 +170,48 @@
       }
     });
 
-    L = { dusk: paintLand(DUSK, rnd), dawn: paintLand(DAWN, rngOf(55)), skyDusk: paintSky(DUSK), skyDawn: paintSky(DAWN), near: paintTrunks(trees) };
-    falling = Array.from({ length: narrow ? 14 : 28 }, () => newFall(true));
-    petals = Array.from({ length: narrow ? 22 : 46 }, () => newPetal(true));
-    motes = Array.from({ length: narrow ? 16 : 34 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 0.6 + Math.random() * 1.6, ph: Math.random() * TAU, sp: 0.2 + Math.random() * 0.5 }));
-    bokeh = Array.from({ length: narrow ? 2 : 4 }, (_, i) => ({ x: Math.random() * W, y: H * (0.15 + Math.random() * 0.7), sz: (narrow ? 0.5 : 0.8) + Math.random() * 0.6, vx: 6 + Math.random() * 10, ph: Math.random() * TAU, col: 1 + (i % 4) }));
+    // bake each cluster once per season: the leaves no longer cost a draw call each
+    for (const cl of clusters) { cl.autumn = bakeCluster(cl, THEME.autumn, false); cl.spring = bakeCluster(cl, THEME.spring, true); }
+    L = {};
+    for (const season of ['autumn', 'spring']) { const M = THEME[season]; L[season] = { sky: paintSky(M), land: paintLand(M, rngOf(season === 'autumn' ? 31 : 55)), trunks: paintTrunks(trees, M) }; }
+    falling = Array.from({ length: narrow ? 12 : 22 }, () => newFall(true));
+    motes = Array.from({ length: narrow ? 12 : 26 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 0.6 + Math.random() * 1.6, ph: Math.random() * TAU, sp: 0.2 + Math.random() * 0.5 }));
+    bokeh = Array.from({ length: narrow ? 1 : 3 }, (_, i) => ({ x: Math.random() * W, y: H * (0.15 + Math.random() * 0.7), sz: (narrow ? 0.5 : 0.8) + Math.random() * 0.6, vx: 6 + Math.random() * 10, ph: Math.random() * TAU, col: 1 + (i % 4) }));
     root.classList.toggle('is-live', !CALM && cards.length > 0);
     applyLit(); draw(performance.now() / 1000, 0);
   }
+  function bakeCluster(cl, M, spring) {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const pad = 20;
+    for (const q of cl.blobs) { x0 = Math.min(x0, q.ox - q.r); y0 = Math.min(y0, q.oy - q.r); x1 = Math.max(x1, q.ox + q.r); y1 = Math.max(y1, q.oy + q.r); }
+    for (const l of cl.leaves) { x0 = Math.min(x0, l.ox - pad); y0 = Math.min(y0, l.oy - pad); x1 = Math.max(x1, l.ox + pad); y1 = Math.max(y1, l.oy + pad); }
+    const w = Math.ceil(x1 - x0), h = Math.ceil(y1 - y0), c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * DPR)); c.height = Math.max(1, Math.round(h * DPR));
+    const g = c.getContext('2d'); g.scale(DPR, DPR); g.translate(-x0, -y0);
+    const deep = hex(M.leaves[0]).map((v) => v * 0.7), mid2 = hex(M.leaves[1]);
+    for (const q of cl.blobs) { const gr = g.createRadialGradient(q.ox - q.r * 0.3, q.oy - q.r * 0.4, 0, q.ox, q.oy, q.r); gr.addColorStop(0, rgba(mid2, 0.55)); gr.addColorStop(0.35, rgba(deep, 0.9)); gr.addColorStop(0.8, rgba(deep, 0.65)); gr.addColorStop(1, rgba(deep, 0)); g.fillStyle = gr; g.beginPath(); g.arc(q.ox, q.oy, q.r, 0, TAU); g.fill(); }
+    for (const l of cl.leaves) { const s = l.sz * 0.5; g.save(); g.translate(l.ox, l.oy); g.rotate(l.ang); g.scale(s, s * l.tilt); g.drawImage(mapleSprite(M.leaves[l.col]), -32, -32); g.restore(); }
+    if (spring) for (const b of cl.blooms) { const s = b.sz * 0.55; g.save(); g.translate(b.ox, b.oy); g.rotate(b.ang); g.scale(s, s); g.drawImage(blossomSprite(b.kind, isDark()), -24, -24); g.restore(); }
+    return { c, x0, y0, w, h };
+  }
   function newFall(any) { return { x: Math.random() * W * 1.1 - W * 0.05, y: any ? Math.random() * H : -20 - Math.random() * 80, vy: 26 + Math.random() * 30, sw: 20 + Math.random() * 34, ph: Math.random() * TAU, spin: 0.8 + Math.random() * 2.2, col: Math.floor(Math.random() * 6), sz: 0.5 + Math.random() * 0.45 }; }
-  function newPetal(any) { return { x: Math.random() * W * 1.2 - W * 0.1, y: any ? Math.random() * H : -10 - Math.random() * 60, vy: 18 + Math.random() * 22, sw: 26 + Math.random() * 40, ph: Math.random() * TAU, spin: 1 + Math.random() * 3, sz: 0.45 + Math.random() * 0.5 }; }
 
-  /* ── the backdrop, painted once per mood ── */
-  const HZ = () => H * 0.78;   // the horizon: where the lake meets the far shore
+  /* ── the backdrop, painted once per season ── */
+  const HZ = () => H * 0.78;
   function paintSky(M) {
     const c = document.createElement('canvas'); c.width = Math.round(W + 40); c.height = Math.round(H); const g = c.getContext('2d');
     const sky = g.createLinearGradient(0, 0, 0, HZ()); M.sky.forEach((col, i) => sky.addColorStop(i / (M.sky.length - 1), col));
     g.fillStyle = sky; g.fillRect(0, 0, c.width, H);
-    // long thin clouds, lit from below
-    const rnd = rngOf(M === DUSK ? 3 : 4);
+    const rnd = rngOf(3);
     for (let i = 0; i < 9; i++) { const y = HZ() * (0.18 + rnd() * 0.6), x = rnd() * c.width, w = 160 + rnd() * 380, h = 5 + rnd() * 10;
-      const gr = g.createLinearGradient(0, y - h, 0, y + h); gr.addColorStop(0, rgba(mix(hex(M.sky[1]), [255, 255, 255], 0.15), 0)); gr.addColorStop(0.5, rgba(M.light, 0.28 + rnd() * 0.2)); gr.addColorStop(1, rgba(M.light, 0));
+      const gr = g.createLinearGradient(0, y - h, 0, y + h); gr.addColorStop(0, rgba(M.light, 0)); gr.addColorStop(0.5, rgba(M.light, 0.16 + rnd() * 0.14)); gr.addColorStop(1, rgba(M.light, 0));
       g.fillStyle = gr; g.beginPath(); g.ellipse(x, y, w, h, 0, 0, TAU); g.fill(); }
+    // the sun's glow low on the horizon, between the trees
+    const sx = W * 0.62 + 20, sy = HZ() - H * 0.04, R = Math.max(W, H) * 0.5, sg = g.createRadialGradient(sx, sy, 0, sx, sy, R);
+    sg.addColorStop(0, rgba(M.light, 0.6)); sg.addColorStop(0.08, rgba(M.light, 0.35)); sg.addColorStop(0.45, rgba(M.light, 0.08)); sg.addColorStop(1, rgba(M.light, 0)); g.fillStyle = sg; g.fillRect(0, 0, c.width, H);
     return c;
   }
   function paintLand(M, rnd) {
     const c = document.createElement('canvas'), pad = 20; c.width = Math.round(W + pad * 2); c.height = Math.round(H); const g = c.getContext('2d'); g.translate(pad, 0);
     const hz = HZ(), blurOn = (px) => { if (canFilter) g.filter = px ? `blur(${px}px)` : 'none'; };
-    // the mountain, far off, with snow
     blurOn(1.4);
     const fx = W * 0.42, fy = hz - Math.min(H * 0.42, W * 0.24), fw = Math.max(W * 0.36, 420);
     g.beginPath(); g.moveTo(fx - fw, hz); g.quadraticCurveTo(fx - fw * 0.35, hz - (hz - fy) * 0.55, fx - fw * 0.08, fy + 4); g.lineTo(fx + fw * 0.08, fy + 4); g.quadraticCurveTo(fx + fw * 0.35, hz - (hz - fy) * 0.55, fx + fw, hz); g.closePath();
@@ -191,7 +219,6 @@
     g.save(); g.clip(); g.beginPath(); g.moveTo(fx - fw, fy + (hz - fy) * 0.3);
     for (let x = -fw; x <= fw; x += 8) g.lineTo(fx + x, fy + (hz - fy) * (0.24 + 0.06 * Math.sin(x / 9) + 0.04 * Math.sin(x / 23)));
     g.lineTo(fx + fw, fy - 10); g.lineTo(fx - fw, fy - 10); g.closePath(); g.fillStyle = M.snow; g.fill(); g.restore();
-    // ridges, nearer and darker, with pine silhouettes, a pagoda and a torii gate
     M.ridge.forEach((col, li) => {
       blurOn(li === 0 ? 1.1 : li === 1 ? 0.6 : 0);
       const base = hz - H * (0.08 - li * 0.025), amp = H * (0.05 - li * 0.012), yAt = (x) => base - amp * (0.55 + 0.45 * Math.sin(x / (210 + li * 80) + li * 2.3)) - amp * 0.3 * Math.sin(x / 71 + li);
@@ -200,30 +227,26 @@
       for (let i = 0; i < n; i++) { const x = rnd() * (W + pad * 2) - pad, y = yAt(x) + 2, s = (6 + rnd() * 7) * (1 + li * 0.6); pine(g, x, y, s, col); }
       if (li === 1) pagoda(g, W * 0.73, yAt(W * 0.73) + 4, clamp(H * 0.17, 90, 170), col, M);
       if (li === 2) torii(g, W * 0.24, yAt(W * 0.24) + 2, clamp(H * 0.07, 34, 70), M);
-      // haze between ridges
       blurOn(0); const hzG = g.createLinearGradient(0, base - amp * 2, 0, hz); hzG.addColorStop(0, rgba(M.haze, 0)); hzG.addColorStop(1, rgba(M.haze, 0.22 - li * 0.05));
       g.fillStyle = hzG; g.fillRect(-pad, base - amp * 2, W + pad * 2, hz - base + amp * 2);
     });
     blurOn(0);
-    // the lake: the sky mirrored, darker, with long ripples
     const ly = hz, lh = H * 0.08, lg = g.createLinearGradient(0, ly, 0, ly + lh); lg.addColorStop(0, M.lake[0]); lg.addColorStop(1, M.lake[1]);
     g.fillStyle = lg; g.fillRect(-pad, ly, W + pad * 2, lh);
     for (let i = 0; i < 70; i++) { const y = ly + rnd() * lh, x = rnd() * W, w = 20 + rnd() * 90; g.fillStyle = rgba(M.light, 0.08 + rnd() * 0.14); g.fillRect(x, y, w, 1); }
-    // the near shore: moss, stones, fallen red leaves
     const gy = ly + lh; g.beginPath(); g.moveTo(-pad, H); for (let x = -pad; x <= W + pad; x += 10) g.lineTo(x, gy - 6 * Math.sin(x / 130) - 4 * Math.sin(x / 41)); g.lineTo(W + pad, H); g.closePath();
-    const gg = g.createLinearGradient(0, gy - 10, 0, H); gg.addColorStop(0, rgba(mix(hex(M.ground), [70, 90, 50], 0.35))); gg.addColorStop(1, M.ground); g.fillStyle = gg; g.fill();
-    for (let i = 0; i < 9; i++) { const x = rnd() * W, y = gy + 10 + rnd() * (H - gy - 10), r = 8 + rnd() * 16; g.fillStyle = rgba(mix(hex(M.ground), [150, 140, 150], 0.3)); g.beginPath(); g.ellipse(x, y, r * 1.6, r * 0.7, 0, 0, TAU); g.fill(); g.fillStyle = rgba(M.light, 0.12); g.beginPath(); g.ellipse(x - r * 0.3, y - r * 0.25, r, r * 0.3, 0, 0, TAU); g.fill(); }
-    for (let i = 0; i < W / 2.2; i++) { const x = rnd() * W, y = gy + rnd() * (H - gy) + 2, s = 0.18 + rnd() * 0.18; g.save(); g.translate(x, y); g.rotate(rnd() * TAU); g.scale(s, s * 0.55); g.globalAlpha = 0.55 + rnd() * 0.4; g.drawImage(mapleSprite(LEAVES[Math.floor(rnd() * 6)]), -32, -32); g.restore(); }
+    const gg = g.createLinearGradient(0, gy - 10, 0, H); gg.addColorStop(0, rgba(mix(hex(M.ground), hex(M.leaves[2]), 0.25))); gg.addColorStop(1, M.ground); g.fillStyle = gg; g.fill();
+    for (let i = 0; i < 9; i++) { const x = rnd() * W, y = gy + 10 + rnd() * (H - gy - 10), r = 8 + rnd() * 16; g.fillStyle = rgba(mix(hex(M.ground), [150, 150, 150], 0.3)); g.beginPath(); g.ellipse(x, y, r * 1.6, r * 0.7, 0, 0, TAU); g.fill(); g.fillStyle = rgba(M.light, 0.12); g.beginPath(); g.ellipse(x - r * 0.3, y - r * 0.25, r, r * 0.3, 0, 0, TAU); g.fill(); }
+    for (let i = 0; i < W / 2.4; i++) { const x = rnd() * W, y = gy + rnd() * (H - gy) + 2, s = 0.18 + rnd() * 0.18; g.save(); g.translate(x, y); g.rotate(rnd() * TAU); g.scale(s, s * 0.55); g.globalAlpha = 0.5 + rnd() * 0.4; g.drawImage(mapleSprite(M.leaves[Math.floor(rnd() * 6)]), -32, -32); g.restore(); }
     return { c, pad };
   }
   function pine(g, x, y, s, col) { g.fillStyle = col; g.fillRect(x - s * 0.05, y - s * 1.6, s * 0.1, s * 1.6); for (let i = 0; i < 3; i++) { g.beginPath(); g.ellipse(x + (i - 1) * s * 0.25, y - s * (1.0 + i * 0.35), s * (0.75 - i * 0.18), s * 0.2, 0, 0, TAU); g.fill(); } }
   function pagoda(g, x, y, h, col, M) {
-    // five storeys with upturned eaves and a finial (sōrin)
     const body = mix(hex(col), [0, 0, 0], 0.25), roof = mix(hex(col), [0, 0, 0], 0.4), tier = h * 0.15;
     for (let i = 0; i < 5; i++) {
       const by = y - i * tier, w = h * (0.36 - i * 0.045);
       g.fillStyle = rgba(body); g.fillRect(x - w * 0.55, by - tier * 0.7, w * 1.1, tier * 0.7);
-      g.fillStyle = rgba(M.light, 0.5); if (i < 4) g.fillRect(x - w * 0.12, by - tier * 0.55, w * 0.24, tier * 0.28);   // a lit window
+      g.fillStyle = rgba(M.light, 0.55); if (i < 4) g.fillRect(x - w * 0.12, by - tier * 0.55, w * 0.24, tier * 0.28);
       g.fillStyle = rgba(roof); g.beginPath(); g.moveTo(x - w * 1.25, by - tier * 0.62); g.quadraticCurveTo(x - w * 0.9, by - tier * 0.72, x - w * 0.6, by - tier * 0.95);
       g.lineTo(x + w * 0.6, by - tier * 0.95); g.quadraticCurveTo(x + w * 0.9, by - tier * 0.72, x + w * 1.25, by - tier * 0.62); g.lineTo(x + w * 1.05, by - tier * 0.72); g.lineTo(x - w * 1.05, by - tier * 0.72); g.closePath(); g.fill();
     }
@@ -235,31 +258,26 @@
     g.fillStyle = col; g.fillRect(x - w * 0.36, y - h, h * 0.08, h); g.fillRect(x + w * 0.28, y - h, h * 0.08, h);
     g.fillRect(x - w * 0.46, y - h * 0.78, w * 0.92, h * 0.07);
     g.beginPath(); g.moveTo(x - w * 0.62, y - h * 0.96); g.quadraticCurveTo(x, y - h * 0.88, x + w * 0.62, y - h * 0.96); g.lineTo(x + w * 0.56, y - h * 1.08); g.quadraticCurveTo(x, y - h * 1.0, x - w * 0.56, y - h * 1.08); g.closePath(); g.fill();
-    g.fillStyle = 'rgba(20,10,10,.6)'; g.fillRect(x - w * 0.5, y - h * 1.1, w, h * 0.04);
   }
-  function paintTrunks(trees) {
+  function paintTrunks(trees, M) {
     const c = document.createElement('canvas'); c.width = Math.round(W * DPR); c.height = Math.round(H * DPR);
-    const g = c.getContext('2d'); g.scale(DPR, DPR); const rnd = rngOf(11);
+    const g = c.getContext('2d'); g.scale(DPR, DPR); const rnd = rngOf(11), BK = M.bark;
     trees.forEach((t) => {
       const N = 70, Lp = [], Rp = [];
       for (let i = 0; i <= N; i++) { const y = lerp(t.base[1], t.top[1], i / N), a = t.at(y), flare = Math.pow(clamp((y - H * 0.78) / (H * 0.28), 0, 1), 2) * t.w * 0.4, wob = Math.sin(y / 37 + t.side) * t.w * 0.03; Lp.push([a.x - a.w / 2 - flare + wob, y]); Rp.push([a.x + a.w / 2 + flare + wob, y]); }
       g.beginPath(); Lp.forEach((p, i) => (i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); [...Rp].reverse().forEach((p) => g.lineTo(p[0], p[1])); g.closePath();
       const mid = t.at(H * 0.5), sunny = t.side < 0, gr = g.createLinearGradient(mid.x - mid.w / 2, 0, mid.x + mid.w / 2, 0);
-      // a round trunk: dark at the shaded edge, a soft highlight, a warm rim where the low sun catches it
-      // the low sun sits between the trees, so each trunk is lit on its inner edge
-      const RIMC = [226, 168, 150], stops = sunny ? [BARK[0], BARK[1], BARK[2], BARK[1], RIMC] : [RIMC, BARK[1], BARK[2], BARK[1], BARK[0]];
-      [0, 0.12, 0.45, 0.8, 1].forEach((o, i) => gr.addColorStop(o, rgba(stops[i])));
+      const stops = sunny ? [BK[0], BK[1], BK[2], BK[1], M.rim] : [M.rim, BK[1], BK[2], BK[1], BK[0]];
+      [0, 0.12, 0.45, 0.8, 1].forEach((o, i) => gr.addColorStop(o, rgba(stops[i], i === 0 || i === 4 ? 0.95 : 1)));
       g.fillStyle = gr; g.fill(); g.save(); g.clip();
-      // smooth maple bark: long pale streaks, fine horizontal lenticels, a few twisting ridges
       for (let i = 0; i < 52; i++) {
         const f = rnd(), y0 = H + 40 - rnd() * 80, len = 0.25 + rnd() * 0.75; g.beginPath();
         for (let u = 0; u <= len; u += 0.02) { const y = lerp(y0, t.top[1], u), a = t.at(y), x = a.x + (f - 0.5) * a.w + Math.sin(u * 28 + i) * 2.4 + u * t.w * 0.08 * t.side; u ? g.lineTo(x, y) : g.moveTo(x, y); }
-        g.strokeStyle = f > 0.55 ? 'rgba(190,180,170,.10)' : 'rgba(0,0,0,.22)'; g.lineWidth = 1 + rnd() * 3; g.stroke();
+        g.strokeStyle = f > 0.55 ? rgba(M.rim, 0.08) : 'rgba(0,0,0,.24)'; g.lineWidth = 1 + rnd() * 3; g.stroke();
       }
-      for (let i = 0; i < 260; i++) { const y = rnd() * H, a = t.at(y), x = a.x + (rnd() - 0.5) * a.w * 0.9; g.fillStyle = `rgba(20,14,12,${0.15 + rnd() * 0.2})`; g.fillRect(x, y, 2 + rnd() * 6, 1); }
-      for (let i = 0; i < 5; i++) { const y = H * (0.18 + rnd() * 0.7), a = t.at(y), x = a.x + (rnd() - 0.5) * a.w * 0.45; g.fillStyle = 'rgba(10,6,6,.45)'; g.beginPath(); g.ellipse(x, y, a.w * 0.07, a.w * 0.12, 0, 0, TAU); g.fill(); g.strokeStyle = 'rgba(220,200,190,.16)'; g.lineWidth = 2; g.stroke(); }
-      // moss on the shaded, lower side
-      for (let i = 0; i < 260; i++) { const y = H * (0.5 + rnd() * 0.55), a = t.at(y), x = a.x - t.side * a.w * (0.05 + rnd() * 0.45); g.fillStyle = `rgba(${90 + rnd() * 40 | 0},${120 + rnd() * 40 | 0},${50 + rnd() * 20 | 0},${0.12 + rnd() * 0.25})`; g.beginPath(); g.arc(x, y, 1 + rnd() * 3.2, 0, TAU); g.fill(); }
+      for (let i = 0; i < 260; i++) { const y = rnd() * H, a = t.at(y), x = a.x + (rnd() - 0.5) * a.w * 0.9; g.fillStyle = `rgba(0,0,0,${0.12 + rnd() * 0.18})`; g.fillRect(x, y, 2 + rnd() * 6, 1); }
+      for (let i = 0; i < 5; i++) { const y = H * (0.18 + rnd() * 0.7), a = t.at(y), x = a.x + (rnd() - 0.5) * a.w * 0.45; g.fillStyle = 'rgba(0,0,0,.4)'; g.beginPath(); g.ellipse(x, y, a.w * 0.07, a.w * 0.12, 0, 0, TAU); g.fill(); g.strokeStyle = rgba(M.rim, 0.16); g.lineWidth = 2; g.stroke(); }
+      for (let i = 0; i < 220; i++) { const y = H * (0.5 + rnd() * 0.55), a = t.at(y), x = a.x - t.side * a.w * (0.05 + rnd() * 0.45); g.fillStyle = rgba(mix(hex(M.leaves[2]), [90, 120, 60], 0.5), 0.1 + rnd() * 0.22); g.beginPath(); g.arc(x, y, 1 + rnd() * 3.2, 0, TAU); g.fill(); }
       const ao = g.createLinearGradient(mid.x - mid.w / 2, 0, mid.x + mid.w / 2, 0); ao.addColorStop(0, `rgba(0,0,0,${sunny ? 0.45 : 0})`); ao.addColorStop(0.5, 'rgba(0,0,0,0)'); ao.addColorStop(1, `rgba(0,0,0,${sunny ? 0 : 0.45})`);
       g.fillStyle = ao; g.fillRect(0, 0, W, H); g.restore();
     });
@@ -282,11 +300,10 @@
   }
 
   /* ── birds ── */
-  const offPoint = (k) => (k === 'L' ? { x: -90, y: H * 0.16 } : k === 'R' ? { x: W + 90, y: H * 0.06 } : k === 'TR' ? { x: W + 160, y: -140 } : { x: W * 0.56, y: H + 260 });
+  const offPoint = (k) => (k === 'L' ? { x: -90, y: H * 0.16 } : k === 'R' ? { x: W + 90, y: H * 0.06 } : k === 'TR' ? { x: W + 160, y: -140 } : k === 'TL' ? { x: -160, y: -140 } : { x: W * 0.56, y: H + 260 });
   function perchPt(i) { const p = perches[i]; if (!p) return { x: W / 2, y: H / 2 }; const q = branchPt(p.b, p.s); return { x: q.x, y: q.y - p.b.w0 * 0.1 }; }
   const ptOf = (k) => (typeof k === 'number' ? perchPt(k) : typeof k === 'object' ? k : offPoint(k));
-  const allSegs = () => (narrow ? dyn : SCRIPT).concat(idle);
-
+  const allSegs = () => (narrow ? dyn : SCRIPT).concat(extra);
   function placeBirds(now) {
     const segs = allSegs();
     for (const bd of birds) {
@@ -296,7 +313,6 @@
         const [, type, from, to, t0, t1] = cur, u = (T - t0) / (t1 - t0), a = ptOf(from), b = ptOf(to), dx = b.x - a.x;
         bd.hidden = false; bd.perched = null;
         if (type === 'approach') {
-          // from behind the viewer into the scene: large and close, shrinking with distance
           const depth = 1 - Math.pow(1 - u, 2.3); bd.s = lerp(8, 1, depth);
           bd.x = lerp(a.x, b.x, depth) + Math.sin(u * 5) * 34 * (1 - u); bd.y = lerp(a.y, b.y, depth) - Math.sin(u * Math.PI) * 70;
           bd.face = b.x < a.x ? -1 : 1; bd.flap = u < 0.86 ? now * 16 : Math.PI * 0.55;
@@ -308,12 +324,11 @@
         }
       } else if (prev && typeof prev[3] === 'number') {
         const p = perchPt(prev[3]); bd.hidden = false; bd.perched = prev[3]; bd.landedAt = prev[5]; bd.s = 1; bd.x = p.x; bd.y = p.y; bd.flap = 0;
-        // face the open air, towards the middle of the scene, when there was no flight to set a direction
         if (prev[2] === prev[3]) bd.face = p.x < W / 2 ? 1 : -1;
       } else bd.hidden = true;
     }
   }
-  // what a perched bird is doing: sing, look down at the scroll, look at us, then rest and glance about
+
   function pose(bd, now) {
     const r = T - bd.landedAt, P = { open: 0, pitch: 0, front: 0 };
     if (r < ROUTINE + 0.2) {
@@ -329,6 +344,7 @@
     const s = clamp(W / 1300, 0.8, 1.15) * (narrow ? 1.2 : 1.45);
     notes.push({ x: bd.x + bd.face * 20 * s, y: bd.y - 24 * s, vx: bd.face * (14 + Math.random() * 14), vy: -24 - Math.random() * 16, life: 0, sym: Math.random() < 0.5 ? '♪' : '♫' });
   }
+
 
   function drawBird(bd, now) {
     if (bd.hidden) return;
@@ -398,173 +414,141 @@
     }
   }
 
-  /* ── reveals, the bloom ── */
+
+  /* ── reveals; the turn of the season ── */
   function applyLit() { cards.forEach((c, i) => c.classList.toggle('is-lit', lit.has(i))); }
+  function lastPerch(i) { let best = null, bt = -1; for (const s of allSegs()) if (s[0] === i && s[5] <= T + 0.01 && s[5] > bt) { bt = s[5]; best = s[3]; } return typeof best === 'number' ? best : null; }
   function runEvents(prevT) {
     for (const s of allSegs()) {
       const [, , from, to, t0, t1, rev] = s;
       if (prevT < t0 && T >= t0 && typeof from === 'number' && perches[from]) perches[from].b.dv -= 40;
       if (prevT < t1 && T >= t1) { if (typeof to === 'number' && perches[to]) perches[to].b.dv += 120; if (rev >= 0 && !lit.has(rev)) { lit.add(rev); applyLit(); } }
     }
-    if (lit.size === cards.length && bloomAt === Infinity) bloomAt = T + (narrow ? 2.2 : 2.6);
-    if (bloomAt !== Infinity && ctl && ctl.textContent !== 'Replay') ctl.textContent = 'Replay';
+    // every scroll is open: let the last bird finish its song, then both fly off and spring comes in
+    if (lit.size === cards.length && springAt === Infinity) {
+      springAt = T + ROUTINE + 0.2;
+      [0, 1].forEach((bi) => { const here = lastPerch(bi); if (here != null) extra.push([bi, 'away', here, bi ? 'TR' : 'TL', springAt - 0.4 + bi * 0.3, springAt + 1.0 + bi * 0.3, -1]); });
+    }
+    if (springAt !== Infinity && ctl && ctl.textContent !== 'Replay') ctl.textContent = 'Replay';
   }
   // phones: a bird comes to each scroll as it scrolls into view
   const lastAt = [null, null], busy = [0, 0];
   function phoneScript() {
     if (!narrow) return;
-    const vh = innerHeight, rr = root.getBoundingClientRect();
+    const vh = innerHeight;
     cards.forEach((card, i) => {
       if (lit.has(i) || queued.has(i) || !perches[i]) return; const b = card.getBoundingClientRect(); if (b.top > vh * 0.78 || b.bottom < vh * 0.1) return;
       const bi = cards.length === 6 ? TREE_OF[i] : i % 2, start = Math.max(T + 0.05, busy[bi]), to = perchPt(i);
       const from = lastAt[bi] != null ? lastAt[bi] : { x: bi ? W + 70 : -70, y: to.y - 160 }, fp = ptOf(from), dist = Math.hypot(to.x - fp.x, to.y - fp.y), dur = clamp(dist / 420, 0.8, 2.0);
       dyn.push([bi, dist < 200 ? 'hop' : 'fly', from, i, start, start + dur, i]); queued.add(i); lastAt[bi] = i; busy[bi] = start + dur + ROUTINE;
     });
-    void rr;
   }
-  // after the story: the birds stay, preen, and now and then hop to another branch of their tree
-  let nextIdle = SCRIPT_END + 4;
-  function planIdle() {
-    if (T < nextIdle || T < bloomAt) return;
-    const bd = birds[Math.random() < 0.5 ? 0 : 1], here = lastPerch(bd.i); if (here == null) { nextIdle = T + 4; return; }
-    const tree = perches[here]?.tree, there = lastPerch(1 - bd.i), opts = perches.filter((p) => p && p.tree === tree && p.card !== here && p.card !== there).map((p) => p.card);
-    if (opts.length && !narrow) { const to = opts[Math.floor(Math.random() * opts.length)]; idle.push([bd.i, 'hop', here, to, T + 0.1, T + 0.85, -1]); }
-    if (idle.length > 12) idle.splice(0, idle.length - 12);
-    nextIdle = T + 6 + Math.random() * 6;
-  }
-  function lastPerch(i) { let best = null, bt = -1; for (const s of allSegs()) if (s[0] === i && s[5] <= T + 0.01 && s[5] > bt && typeof s[3] === 'number') { bt = s[5]; best = s[3]; } return best; }
 
   /* ── one frame ── */
   function draw(now, dt) {
     WN = CALM ? 0.3 : wind(now);
-    const bloom = CALM ? 1 : bloomAt === Infinity ? 0 : eio(seg(T, bloomAt, bloomAt + 5)), c = ctx;
+    const sp = CALM ? 1 : springAt === Infinity ? 0 : eio(seg(T, springAt, springAt + SPRING_IN)), au = 1 - sp, c = ctx, A = THEME.autumn, S = THEME.spring;
     for (const b of branches) { b.dv += (-70 * b.dip - 7 * b.dv) * dt; b.dip += b.dv * dt; }
     placeBirds(now);
     c.setTransform(DPR, 0, 0, DPR, 0, 0); mx += (tmx - mx) * Math.min(1, dt * 3);
-    // sky, the sun, the far land: evening, crossfading to sunrise as the trees bloom
-    c.drawImage(L.skyDusk, -20 - mx * 6, 0, W + 40, H);
-    if (bloom > 0) { c.globalAlpha = bloom; c.drawImage(L.skyDawn, -20 - mx * 6, 0, W + 40, H); c.globalAlpha = 1; }
-    const hz = HZ(), sunX = W * 0.62, sunY = lerp(hz + 40, hz - H * 0.16, bloom);
-    { const R = Math.max(W, H) * 0.5, g = c.createRadialGradient(sunX, sunY, 0, sunX, sunY, R), col = mix(DUSK.light, DAWN.light, bloom);
-      g.addColorStop(0, rgba(col, 0.55 + 0.3 * bloom)); g.addColorStop(0.08, rgba(col, 0.3 + 0.2 * bloom)); g.addColorStop(0.45, rgba(col, 0.08)); g.addColorStop(1, rgba(col, 0)); c.fillStyle = g; c.fillRect(0, 0, W, H);
-      if (bloom > 0.02) { c.fillStyle = rgba([255, 244, 214], bloom); c.beginPath(); c.arc(sunX, sunY, clamp(W * 0.03, 18, 44), 0, TAU); c.fill(); } }
-    c.drawImage(L.dusk.c, -L.dusk.pad - mx * 12, 0, W + L.dusk.pad * 2, H);
-    if (bloom > 0) { c.globalAlpha = bloom; c.drawImage(L.dawn.c, -L.dawn.pad - mx * 12, 0, W + L.dawn.pad * 2, H); c.globalAlpha = 1; }
-    // drifting mist over the lake and between the ridges
+    const lay = (img, x, w) => { if (au > 0.001) { c.globalAlpha = 1; c.drawImage(img(L.autumn), x, 0, w, H); } if (sp > 0.001) { c.globalAlpha = sp; c.drawImage(img(L.spring), x, 0, w, H); } c.globalAlpha = 1; };
+    lay((s) => s.sky, -20 - mx * 6, W + 40);
+    lay((s) => s.land.c, -20 - mx * 12, W + 40);
+    const hz = HZ(), light = mix(A.light, S.light, sp), haze = mix(A.haze, S.haze, sp);
+    // drifting mist
     for (let i = 0; i < 3; i++) {
       const y = hz - H * (0.02 + i * 0.045), x = ((now * (8 + i * 4) + i * 400) % (W + 800)) - 400, g = c.createRadialGradient(x, y, 0, x, y, 420);
-      g.addColorStop(0, rgba(mix(DUSK.haze, DAWN.haze, bloom), 0.22)); g.addColorStop(1, rgba(mix(DUSK.haze, DAWN.haze, bloom), 0)); c.save(); c.scale(1, 0.18); c.translate(0, y / 0.18 - y); c.fillStyle = g; c.fillRect(x - 420, y - 420, 840, 840); c.restore();
+      g.addColorStop(0, rgba(haze, 0.2)); g.addColorStop(1, rgba(haze, 0)); c.save(); c.translate(0, y); c.scale(1, 0.18); c.translate(0, -y); c.fillStyle = g; c.fillRect(x - 420, y - 420, 840, 840); c.restore();
     }
-    // light shafts through the canopy, stronger at sunrise
+    // light shafts through the canopy
     c.save(); c.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < 5; i++) {
-      const x = W * (0.3 + i * 0.13), a = (0.03 + 0.02 * Math.sin(now * 0.4 + i * 1.7)) * (0.8 + bloom * 1.2), g = c.createLinearGradient(x, 0, x - W * 0.25, H), col = mix(DUSK.light, DAWN.light, bloom);
-      g.addColorStop(0, rgba(col, a)); g.addColorStop(1, rgba(col, 0)); c.fillStyle = g;
+    for (let i = 0; i < 4; i++) {
+      const x = W * (0.32 + i * 0.15), a = (0.03 + 0.015 * Math.sin(now * 0.4 + i * 1.7)) * (isDark() ? 1 : 0.7), g = c.createLinearGradient(x, 0, x - W * 0.25, H);
+      g.addColorStop(0, rgba(light, a)); g.addColorStop(1, rgba(light, 0)); c.fillStyle = g;
       c.beginPath(); c.moveTo(x, -10); c.lineTo(x + 40 + i * 12, -10); c.lineTo(x - W * 0.22 + 90, H); c.lineTo(x - W * 0.28, H); c.closePath(); c.fill();
     }
     c.restore();
-    c.drawImage(L.near, 0, 0, W, H);
-    // branches: tapered, with a rim of warm light along the top
+    lay((s) => s.trunks, 0, W);
+    // branches and twigs
+    const barkMid = mix(A.bark[1], S.bark[1], sp), rim = mix(A.rim, S.rim, sp);
     for (const b of branches) {
-      if (b.hidden) continue; const N = 16, top = [], bot = [];
-      for (let i = 0; i <= N; i++) { const s = i / N, p = branchPt(b, s), q = branchPt(b, Math.min(1, s + 0.02)), ang = Math.atan2(q.y - p.y, q.x - p.x) - Math.PI / 2, w = lerp(b.w0, b.w1, Math.pow(s, 0.8)) / 2; top.push([p.x + Math.cos(ang) * w, p.y + Math.sin(ang) * w]); bot.push([p.x - Math.cos(ang) * w, p.y - Math.sin(ang) * w]); }
+      if (b.hidden) continue; const N = 12, top = [], bot = [];
+      for (let i = 0; i <= N; i++) { const s = i / N, p = branchPt(b, s), q = branchPt(b, Math.min(1, s + 0.03)), ang = Math.atan2(q.y - p.y, q.x - p.x) - Math.PI / 2, w = lerp(b.w0, b.w1, Math.pow(s, 0.8)) / 2; top.push([p.x + Math.cos(ang) * w, p.y + Math.sin(ang) * w]); bot.push([p.x - Math.cos(ang) * w, p.y - Math.sin(ang) * w]); }
       c.beginPath(); top.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); for (let i = bot.length - 1; i >= 0; i--) c.lineTo(bot[i][0], bot[i][1]); c.closePath();
-      c.fillStyle = rgba(BARK[1]); c.fill();
-      c.beginPath(); (top[0][1] < bot[0][1] ? top : bot).forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); c.strokeStyle = rgba(mix([235, 170, 160], [255, 214, 160], bloom), 0.45); c.lineWidth = 1.3; c.stroke();
+      c.fillStyle = rgba(barkMid); c.fill();
+      c.beginPath(); (top[0][1] < bot[0][1] ? top : bot).forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); c.strokeStyle = rgba(rim, 0.45); c.lineWidth = 1.2; c.stroke();
     }
-    c.lineCap = 'round';
-    for (const tw of twigs) { const a = branchPt(tw.b, tw.s), e = anchorPos({ b: tw.b, s: tw.s, twig: tw }, now); c.strokeStyle = rgba(BARK[1]); c.lineWidth = tw.w; c.beginPath(); c.moveTo(a.x, a.y); c.quadraticCurveTo((a.x + e.x) / 2 + 4, (a.y + e.y) / 2 + 3, e.x, e.y); c.stroke(); }
+    c.lineCap = 'round'; c.strokeStyle = rgba(barkMid);
+    for (const tw of twigs) { const a = branchPt(tw.b, tw.s), e = anchorPos({ b: tw.b, s: tw.s, twig: tw }, now); c.lineWidth = tw.w; c.beginPath(); c.moveTo(a.x, a.y); c.quadraticCurveTo((a.x + e.x) / 2 + 4, (a.y + e.y) / 2 + 3, e.x, e.y); c.stroke(); }
     // the cords from each branch down to its scroll
-    for (const p of perches) {
-      if (!p || !(lit.has(p.card) || !root.classList.contains('is-live'))) continue; const a = branchPt(p.b, p.s);
-      c.strokeStyle = 'rgba(200,160,90,.9)'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(a.x, a.y); c.quadraticCurveTo((a.x + p.hole.x) / 2 + WN * 3, (a.y + p.hole.y) / 2, p.hole.x, p.hole.y); c.stroke();
-    }
-    // foliage: shadowed masses, then the leaves, then the blossoms
-    const deep = hex(LEAVES[0]).map((v) => v * 0.6), mid2 = hex(LEAVES[1]);
-    for (const cl of clusters) { const o = anchorPos(cl.anchor, now); for (const q of cl.blobs) { const x = o.x + q.ox, y = o.y + q.oy, g = c.createRadialGradient(x - q.r * 0.3, y - q.r * 0.4, 0, x, y, q.r); g.addColorStop(0, rgba(mid2, 0.5)); g.addColorStop(0.35, rgba(deep, 0.92)); g.addColorStop(0.8, rgba(deep, 0.7)); g.addColorStop(1, rgba(deep, 0)); c.fillStyle = g; c.beginPath(); c.arc(x, y, q.r, 0, TAU); c.fill(); } }
+    c.strokeStyle = isDark() ? 'rgba(216,180,106,.9)' : 'rgba(150,112,58,.9)'; c.lineWidth = 1.4;
+    for (const p of perches) { if (!p || !(lit.has(p.card) || !root.classList.contains('is-live'))) continue; const a = branchPt(p.b, p.s); c.beginPath(); c.moveTo(a.x, a.y); c.quadraticCurveTo((a.x + p.hole.x) / 2 + WN * 3, (a.y + p.hole.y) / 2, p.hole.x, p.hole.y); c.stroke(); }
+    // foliage: one baked image per cluster, swaying as one; spring blooms in over the autumn leaves
+    const pop = sp > 0 ? eob(clamp(sp * 1.15, 0, 1)) : 0;
     for (const cl of clusters) {
-      const o = anchorPos(cl.anchor, now);
-      for (const lf of cl.leaves) {
-        const fl = Math.sin(now * 3.1 + lf.ph) * 0.3 + WN * 0.22, x = o.x + lf.ox + Math.sin(now * 1.9 + lf.ph) * 1.2, y = o.y + lf.oy + Math.cos(now * 2.3 + lf.ph) * 0.8;
-        const a = lf.ang + fl, s = lf.sz * 0.5, cs = Math.cos(a) * s, sn = Math.sin(a) * s, tilt = 0.75 + 0.25 * Math.cos(now * 2 + lf.ph);
-        c.setTransform(DPR * cs, DPR * sn, -DPR * sn * tilt, DPR * cs * tilt, DPR * x, DPR * y); c.drawImage(mapleSprite(LEAVES[lf.col]), -32, -32);
+      const o = anchorPos(cl.anchor, now), rot = WN * 0.03 + Math.sin(now * 1.3 + cl.ph) * 0.025;
+      c.setTransform(DPR * Math.cos(rot), DPR * Math.sin(rot), -DPR * Math.sin(rot), DPR * Math.cos(rot), DPR * o.x, DPR * o.y);
+      if (au > 0.001) { const k = cl.autumn; c.globalAlpha = sp > 0 ? au : 1; c.drawImage(k.c, k.x0, k.y0, k.w, k.h); }
+      if (sp > 0.001) { const k = cl.spring, s = lerp(0.82, 1, pop); c.globalAlpha = sp; c.drawImage(k.c, k.x0 * s, k.y0 * s, k.w * s, k.h * s); }
+    }
+    c.globalAlpha = 1; c.setTransform(DPR, 0, 0, DPR, 0, 0);
+    // birds and their song (autumn only)
+    if (au > 0.01) {
+      for (const bd of birds) drawBird(bd, now);
+      c.font = `600 ${narrow ? 13 : 16}px Georgia, serif`; c.textAlign = 'center'; c.fillStyle = isDark() ? '#F3E3B8' : '#7A5A26';
+      for (let i = notes.length - 1; i >= 0; i--) { const n = notes[i]; n.life += dt; n.x += n.vx * dt; n.y += n.vy * dt; if (n.life > 1.3) { notes.splice(i, 1); continue; } c.globalAlpha = (1 - n.life / 1.3) * 0.95; c.fillText(n.sym, n.x + Math.sin(n.life * 9) * 3, n.y); }
+      c.globalAlpha = 1;
+      // falling leaves, tumbling: they thin out as spring comes and then stop
+      const leafPal = A.leaves;
+      for (const f of falling) {
+        if (!CALM) { f.y += f.vy * dt; f.x += (WN * 26 + 8) * dt + Math.sin(now * 1.2 + f.ph) * f.sw * dt; if (f.y > H + 30 || f.x > W + 40) Object.assign(f, newFall(false)); }
+        const a = now * f.spin + f.ph, s = f.sz * 0.6, ca = Math.cos(a * 0.7), sa = Math.sin(a * 0.7), flip = Math.cos(a); c.globalAlpha = au;
+        c.setTransform(DPR * s * ca, DPR * s * sa, -DPR * s * sa * flip, DPR * s * ca * flip, DPR * f.x, DPR * f.y); c.drawImage(mapleSprite(leafPal[f.col]), -32, -32);
       }
-    }
-    if (bloom > 0) for (const cl of clusters) {
-      const o = anchorPos(cl.anchor, now);
-      for (const bl of cl.blooms) {
-        const g = eob(clamp((bloom - bl.delay * 0.7) / 0.3, 0, 1)); if (g <= 0.01) continue;
-        const x = o.x + bl.ox + Math.sin(now * 1.7 + bl.ph) * 1, y = o.y + bl.oy, a = bl.ang + Math.sin(now * 2 + bl.ph) * 0.15, s = bl.sz * g * 0.55;
-        c.setTransform(DPR * Math.cos(a) * s, DPR * Math.sin(a) * s, -DPR * Math.sin(a) * s, DPR * Math.cos(a) * s, DPR * x, DPR * y); c.drawImage(blossomSprite(bl.kind), -24, -24);
+      for (const b of bokeh) {
+        if (!CALM) { b.x += b.vx * dt; if (b.x > W + 140) { b.x = -140; b.y = H * (0.15 + Math.random() * 0.7); } }
+        const a = now * 0.4 + b.ph, s = b.sz; c.globalAlpha = 0.32 * au;
+        c.setTransform(DPR * s * Math.cos(a), DPR * s * Math.sin(a), -DPR * s * Math.sin(a), DPR * s * Math.cos(a), DPR * b.x, DPR * b.y); c.drawImage(mapleSprite(leafPal[b.col], 5), -80, -80);
       }
+      c.globalAlpha = 1; c.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
-    c.setTransform(DPR, 0, 0, DPR, 0, 0);
-    // birds and their song
-    for (const bd of birds) drawBird(bd, now);
-    c.font = `600 ${narrow ? 13 : 16}px Georgia, serif`; c.textAlign = 'center';
-    for (let i = notes.length - 1; i >= 0; i--) { const n = notes[i]; n.life += dt; n.x += n.vx * dt; n.y += n.vy * dt; if (n.life > 1.3) { notes.splice(i, 1); continue; }
-      c.fillStyle = `rgba(255,248,230,${(1 - n.life / 1.3) * 0.95})`; c.shadowColor = 'rgba(255,200,140,.8)'; c.shadowBlur = 8; c.fillText(n.sym, n.x + Math.sin(n.life * 9) * 3, n.y); }
-    c.shadowBlur = 0;
-    // falling maple leaves, tumbling; cherry petals once the trees bloom
-    for (const f of falling) {
-      if (!CALM) { f.y += f.vy * dt; f.x += (WN * 26 + 8) * dt + Math.sin(now * 1.2 + f.ph) * f.sw * dt; if (f.y > H + 30 || f.x > W + 40) Object.assign(f, newFall(false)); }
-      const a = now * f.spin + f.ph, s = f.sz * 0.6, ca = Math.cos(a * 0.7), sa = Math.sin(a * 0.7), flip = Math.cos(a);
-      c.setTransform(DPR * s * ca, DPR * s * sa, -DPR * s * sa * flip, DPR * s * ca * flip, DPR * f.x, DPR * f.y); c.drawImage(mapleSprite(LEAVES[f.col]), -32, -32);
-    }
-    if (bloom > 0) for (const p of petals) {
-      if (!CALM) { p.y += p.vy * dt; p.x += (WN * 30 + 14) * dt + Math.sin(now * 1.5 + p.ph) * p.sw * dt; if (p.y > H + 20 || p.x > W + 30) Object.assign(p, newPetal(false)); }
-      const a = now * p.spin + p.ph, s = p.sz, flip = Math.cos(a * 1.3); c.globalAlpha = bloom;
-      c.setTransform(DPR * s * Math.cos(a), DPR * s * Math.sin(a), -DPR * s * Math.sin(a) * flip, DPR * s * Math.cos(a) * flip, DPR * p.x, DPR * p.y); c.drawImage(petalSprite(), -12, -12); c.globalAlpha = 1;
-    }
-    c.setTransform(DPR, 0, 0, DPR, 0, 0);
-    // fireflies in the evening, motes in the sunrise
-    c.save(); c.globalCompositeOperation = 'lighter';
-    for (const m of motes) {
-      const x = m.x + Math.sin(now * m.sp + m.ph) * 18, y = m.y + Math.cos(now * m.sp * 0.8 + m.ph) * 12, a = 0.5 * (0.5 + 0.5 * Math.sin(now * 1.6 + m.ph * 3)), col = mix([255, 214, 140], [255, 244, 220], bloom);
-      const g = c.createRadialGradient(x, y, 0, x, y, m.r * 4); g.addColorStop(0, rgba(col, a)); g.addColorStop(1, rgba(col, 0)); c.fillStyle = g; c.beginPath(); c.arc(x, y, m.r * 4, 0, TAU); c.fill();
-    }
-    c.restore();
-    // out-of-focus leaves drifting right past the lens
-    for (const b of bokeh) {
-      if (!CALM) { b.x += b.vx * dt; b.y += Math.sin(now * 0.5 + b.ph) * 6 * dt; if (b.x > W + 140) { b.x = -140; b.y = H * (0.15 + Math.random() * 0.7); } }
-      const a = now * 0.4 + b.ph, s = b.sz; c.globalAlpha = 0.38;
-      c.setTransform(DPR * s * Math.cos(a), DPR * s * Math.sin(a), -DPR * s * Math.sin(a), DPR * s * Math.cos(a), DPR * b.x, DPR * b.y); c.drawImage(mapleSprite(LEAVES[b.col], 5), -80, -80); c.globalAlpha = 1;
-    }
-    c.setTransform(DPR, 0, 0, DPR, 0, 0);
-    // colour grade: cool violet in the evening, warm gold at sunrise; a soft vignette; fade into the neighbouring sections
-    c.fillStyle = rgba(mix([70, 60, 140], [255, 170, 110], bloom), 0.1); c.fillRect(0, 0, W, H);
-    const vg = c.createRadialGradient(W / 2, H * 0.5, Math.min(W, H) * 0.35, W / 2, H * 0.5, Math.max(W, H) * 0.75); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(10,6,20,.38)'); c.fillStyle = vg; c.fillRect(0, 0, W, H);
-    const isDark = document.documentElement.getAttribute('data-theme') !== 'light', bgc = isDark ? [8, 12, 20] : [250, 248, 244], v = c.createLinearGradient(0, 0, 0, H);
-    v.addColorStop(0, rgba(bgc, 0.6)); v.addColorStop(0.05, rgba(bgc, 0)); v.addColorStop(0.95, rgba(bgc, 0)); v.addColorStop(1, rgba(bgc, 0.7)); c.fillStyle = v; c.fillRect(0, 0, W, H);
+    // a few gold motes in the light
+    if (isDark()) { c.save(); c.globalCompositeOperation = 'lighter'; const gs = glowSprite();
+      for (const m of motes) { const x = m.x + Math.sin(now * m.sp + m.ph) * 18, y = m.y + Math.cos(now * m.sp * 0.8 + m.ph) * 12, r = m.r * 4; c.globalAlpha = 0.45 * (0.5 + 0.5 * Math.sin(now * 1.6 + m.ph * 3)); c.drawImage(gs, x - r, y - r, r * 2, r * 2); }
+      c.restore(); }
+    // a soft vignette, and the top and bottom fade into the page so the section sits inside the site
+    const bgc = A.bg, v = c.createLinearGradient(0, 0, 0, H);
+    v.addColorStop(0, rgba(bgc, 0.85)); v.addColorStop(0.06, rgba(bgc, 0)); v.addColorStop(0.93, rgba(bgc, 0)); v.addColorStop(1, rgba(bgc, 0.9)); c.fillStyle = v; c.fillRect(0, 0, W, H);
   }
 
   function loop(ms) {
-    const now = ms / 1000, dt = Math.min(0.1, last ? now - last : 0); last = now;
-    if (started && !CALM) { const p = T; T += dt; phoneScript(); runEvents(p); planIdle(); }
-    draw(now, dt);
     raf = visible ? requestAnimationFrame(loop) : 0;
+    if (ms - lastDraw < 1000 / FPS - 2) return; lastDraw = ms;
+    const now = ms / 1000, dt = Math.min(0.1, last ? now - last : 0); last = now;
+    if (started && !CALM) { const p = T; T += dt; phoneScript(); runEvents(p); }
+    draw(now, dt);
   }
   const kick = () => { if (!raf && visible && !CALM) { last = 0; raf = requestAnimationFrame(loop); } };
 
   /* ── controls ── */
   function finish() {
     for (let i = 0; i < cards.length; i++) lit.add(i); applyLit(); started = true;
-    if (narrow) { dyn.length = 0; [0, 1].forEach((bi) => { const mine = perches.filter((p) => p && p.tree === bi); const p = mine[mine.length - 1]; if (p) dyn.push([bi, 'hop', p.card, p.card, T - 0.2, T - 0.1, -1]); }); }
-    else { const p = T; T = Math.max(T, SCRIPT_END - 2.5); runEvents(p); }
-    if (bloomAt === Infinity || bloomAt > T) bloomAt = T + 0.3; if (ctl) ctl.textContent = 'Replay'; kick();
+    if (!narrow) T = Math.max(T, 19);
+    if (springAt === Infinity) { springAt = T + 0.8; [0, 1].forEach((bi) => { const here = lastPerch(bi); if (here != null) extra.push([bi, 'away', here, bi ? 'TR' : 'TL', T, T + 1.2, -1]); }); }
+    if (ctl) ctl.textContent = 'Replay'; kick();
   }
-  function replay() { lit.clear(); applyLit(); idle.length = 0; dyn.length = 0; queued.clear(); lastAt[0] = lastAt[1] = null; busy[0] = busy[1] = 0; notes.length = 0; T = 0; bloomAt = Infinity; nextIdle = SCRIPT_END + 4; started = true; if (ctl) ctl.textContent = 'Skip'; kick(); }
+  function replay() { lit.clear(); applyLit(); extra.length = 0; dyn.length = 0; queued.clear(); lastAt[0] = lastAt[1] = null; busy[0] = busy[1] = 0; notes.length = 0; T = 0; springAt = Infinity; started = true; if (ctl) ctl.textContent = 'Skip'; kick(); }
   ctl && ctl.addEventListener('click', () => (ctl.textContent === 'Replay' ? replay() : finish()));
   root.addEventListener('pointermove', (e) => { const r = root.getBoundingClientRect(); tmx = (e.clientX - r.left) / r.width - 0.5; });
 
   /* ── start when the section is on screen ── */
   function boot() {
     layout();
-    if (CALM) { for (let i = 0; i < cards.length; i++) lit.add(i); applyLit(); T = SCRIPT_END + 6; bloomAt = 0; draw(0, 0); if (ctl) ctl.hidden = true; return; }
+    if (CALM) { for (let i = 0; i < cards.length; i++) lit.add(i); applyLit(); springAt = -10; T = 0; draw(0, 0); if (ctl) ctl.hidden = true; return; }
     const io = new IntersectionObserver((es) => { for (const e of es) { visible = e.isIntersecting; if (e.intersectionRatio > (narrow ? 0.05 : 0.28) && !started) started = true; } kick(); }, { threshold: [0, 0.05, 0.28, 0.5] });
     io.observe(root);
     let rt = 0, lastW = innerWidth; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (Math.abs(innerWidth - lastW) < 2 && narrow) return; lastW = innerWidth; layout(); kick(); }, 180); });
-    new MutationObserver(() => kick()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    new MutationObserver(() => { layout(); kick(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(boot); else addEventListener('load', boot);
 })();
