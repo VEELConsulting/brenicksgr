@@ -1,50 +1,80 @@
 /* ─────────────────────────────────────────────────────────────
    The Grove: the Salesforce page's "What a Brenicks Salesforce engagement delivers" section.
-   js/grove.js paints two autumn trees close up, cropped by the frame. Birds land on the
-   branches, and each card drops on its string as a bird lands above it.
-   Without JavaScript, or with reduced motion, every card simply shows.
+   js/grove.js paints a maple garden in ancient Japan: two old trees close up, cropped by the frame,
+   red leaves, a pagoda and a mountain in the haze. Birds land on the branches; as each one lands,
+   the leather hanging scroll tied below that branch unrolls. When every scroll is open, the trees
+   blossom and the blue-violet evening turns to sunrise.
+   Without JavaScript, or with reduced motion, every scroll simply shows, open.
    ───────────────────────────────────────────────────────────── */
-.grove { position: relative; overflow: hidden; isolation: isolate; background: #0B1020;
+.grove { position: relative; overflow: hidden; isolation: isolate; background: #2B3A6B;
   padding-top: clamp(5rem, 9vw, 8rem); padding-bottom: clamp(6rem, 11vw, 10rem); }
-[data-theme="light"] .grove { background: #F2D9A8; }
 .grove__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; }
 .grove__inner { position: relative; z-index: 1; }
 .grove__head { position: relative; max-width: 36rem; }
-.grove__head::before { content: ""; position: absolute; inset: -3rem -4rem -3rem -5rem; z-index: -1; pointer-events: none;
-  background: radial-gradient(closest-side, rgba(8,11,22,.62), rgba(8,11,22,0)); }
-[data-theme="light"] .grove__head::before { background: radial-gradient(closest-side, rgba(252,240,214,.8), rgba(252,240,214,0)); }
-.grove .section__title, .grove .section__label { text-shadow: 0 2px 22px rgba(0,0,0,.55); }
-.grove .section__title { color: #F7F5F0; }
-[data-theme="light"] .grove .section__title { color: #1E1712; text-shadow: 0 1px 18px rgba(255,240,210,.8); }
-[data-theme="light"] .grove .section__label { text-shadow: 0 1px 14px rgba(255,240,210,.9); }
+.grove__head::before { content: ""; position: absolute; inset: -3rem -5rem -3rem -6rem; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(16,18,40,.55), rgba(16,18,40,0)); }
+.grove .section__title { color: #F7F5F0; text-shadow: 0 2px 24px rgba(10,10,30,.6); }
+.grove .section__label { color: #E8C987; text-shadow: 0 1px 14px rgba(10,10,30,.7); }
 
-/* the cards hang like tags, in the open air between the two trunks */
+/* the scrolls hang in the open air between the two trunks */
 .grove__grid.build-grid { position: relative; background: none; border: 0; border-radius: 0; overflow: visible;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(5.5rem, 8vw, 7.5rem) clamp(1rem, 2.4vw, 2rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(5.5rem, 8vw, 7.5rem) clamp(2rem, 3.6vw, 3.25rem);
   max-width: min(980px, 76vw); margin: clamp(5rem, 8vw, 7rem) auto 0; }
-.grove .build-item { position: relative; border-radius: 16px; transform-origin: 50% -44px;
-  background: rgba(10, 13, 20, .74); border: 1px solid rgba(216, 180, 106, .34);
-  backdrop-filter: blur(8px) saturate(1.1); -webkit-backdrop-filter: blur(8px) saturate(1.1);
-  box-shadow: 0 24px 60px -28px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,236,190,.08);
-  transition: opacity .55s ease .2s, transform .9s cubic-bezier(.2,1.4,.4,1) .2s, background .3s; }
-.grove .build-item:hover { background: rgba(14, 18, 27, .86); }
-.grove .build-item h4 { color: #F7F5F0; }
-.grove .build-item p { color: rgba(247,245,240,.72); }
-[data-theme="light"] .grove .build-item { background: rgba(255, 251, 243, .84); border-color: rgba(168, 132, 71, .45); box-shadow: 0 24px 60px -30px rgba(80,50,20,.55); }
-[data-theme="light"] .grove .build-item:hover { background: rgba(255, 251, 243, .95); }
-[data-theme="light"] .grove .build-item h4 { color: #1E1712; }
-[data-theme="light"] .grove .build-item p { color: #5A4C40; }
-/* the eyelet the string is tied to */
-.grove .build-item::before { content: ""; position: absolute; top: 10px; left: 50%; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%;
-  border: 1.5px solid rgba(216,180,106,.8); background: rgba(0,0,0,.35); }
 
-/* waiting for a bird (only on wide screens, only when the scene is running) */
-.grove.is-live .build-item:not(.is-lit) { opacity: 0; transform: translateY(-26px) rotate(-5deg) scale(.96); }
-.grove.is-live .build-item.is-lit { animation: grove-swing 2.6s ease-out .45s 1 both; }
-@keyframes grove-swing { 0% { transform: rotate(-3.2deg); } 22% { transform: rotate(2.4deg); } 44% { transform: rotate(-1.4deg); } 66% { transform: rotate(.7deg); } 100% { transform: none; } }
+/* ── a hanging scroll (kakejiku) in leather ── */
+.grove .build-item { position: relative; background: none; padding: 7px 0 14px; border: 0; transform-origin: 50% -46px;
+  transition: opacity .25s ease; filter: drop-shadow(0 22px 26px rgba(10,6,20,.55)); }
+.grove .build-item:hover { background: none; }
+.scroll__rod, .scroll__roll { position: absolute; left: -8px; right: -8px; z-index: 2; border-radius: 99px; pointer-events: none;
+  background: linear-gradient(180deg, #6A4428 0%, #3B2213 38%, #1C0F08 70%, #4A2D18 100%);
+  box-shadow: 0 2px 4px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,220,170,.35); }
+.scroll__rod { top: 0; height: 12px; }
+.scroll__roll { top: calc(100% - 17px); height: 17px; left: -11px; right: -11px; }
+/* gold end caps */
+.scroll__rod::before, .scroll__rod::after, .scroll__roll::before, .scroll__roll::after { content: ""; position: absolute; top: -2px; bottom: -2px; width: 12px; border-radius: 4px;
+  background: linear-gradient(180deg, #F6DFA0 0%, #D8B46A 35%, #8A6A2C 75%, #C9A45C 100%); box-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.scroll__rod::before, .scroll__roll::before { left: -6px; }
+.scroll__rod::after, .scroll__roll::after { right: -6px; }
+/* the leather */
+.scroll__paper { position: relative; margin: 0 2px; padding: clamp(1.4rem, 2.6vw, 1.9rem) clamp(1.2rem, 2.2vw, 1.6rem) clamp(1.5rem, 2.8vw, 2rem);
+  border-radius: 3px 3px 5px 5px; color: #F3E9D6;
+  background-color: #2F1D12;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.018' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .34  0 0 0 0 .16  0 0 0 .55 -.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E"),
+    radial-gradient(120% 70% at 28% 12%, rgba(255,214,160,.14), rgba(255,214,160,0) 60%),
+    radial-gradient(110% 110% at 50% 50%, rgba(0,0,0,0) 52%, rgba(10,4,0,.55) 100%),
+    linear-gradient(180deg, #3D2616 0%, #2A190F 100%);
+  background-blend-mode: multiply, soft-light, normal, normal, normal;
+  outline: 1.5px dashed rgba(216,180,106,.6); outline-offset: -9px;
+  box-shadow: inset 0 0 0 1px rgba(216,180,106,.28), inset 0 2px 10px rgba(255,220,170,.06), inset 0 -10px 24px rgba(0,0,0,.35); }
+.grove .build-item__label { color: #E3C27E; letter-spacing: .2em; }
+.grove .build-item h4 { color: #F7EBD3; text-shadow: 0 1px 0 rgba(0,0,0,.6); }
+.grove .build-item p { color: rgba(243,233,214,.82); }
+[data-theme="light"] .scroll__paper { color: #2A1A0E; background-color: #E6D2AA;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.016' numOctaves='2' seed='9'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .38  0 0 0 0 .2  0 0 0 .5 -.18'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E"),
+    radial-gradient(120% 70% at 28% 12%, rgba(255,250,235,.5), rgba(255,250,235,0) 60%),
+    radial-gradient(110% 110% at 50% 50%, rgba(0,0,0,0) 50%, rgba(110,70,30,.42) 100%),
+    linear-gradient(180deg, #F1E1BF 0%, #E2C99B 100%);
+  outline-color: rgba(122,84,40,.6); box-shadow: inset 0 0 0 1px rgba(122,84,40,.35), inset 0 -10px 24px rgba(110,70,30,.18); }
+[data-theme="light"] .grove .build-item__label { color: #8A5E22; }
+[data-theme="light"] .grove .build-item h4 { color: #24160B; text-shadow: none; }
+[data-theme="light"] .grove .build-item p { color: #4A3624; }
+
+/* waiting for a bird: hidden, rolled up */
+.grove.is-live .build-item:not(.is-lit) { opacity: 0; }
+.grove.is-live .build-item:not(.is-lit) .scroll__paper { clip-path: inset(0 0 100% 0); }
+.grove.is-live .build-item:not(.is-lit) .scroll__roll { top: 4px; }
+/* the bird lands: the rod drops into view and the scroll unrolls under the weight of its roller */
+.grove.is-live .build-item.is-lit { animation: grove-swing 2.8s ease-out 1.25s 1 both; }
+.grove.is-live .build-item.is-lit .scroll__paper { clip-path: inset(0 0 0 0); transition: clip-path 1.25s cubic-bezier(.45,.05,.25,1) .15s; }
+.grove.is-live .build-item.is-lit .scroll__roll { transition: top 1.25s cubic-bezier(.45,.05,.25,1) .15s; }
+@keyframes grove-swing { 0% { transform: rotate(0); } 15% { transform: rotate(-2.2deg); } 38% { transform: rotate(1.6deg); } 60% { transform: rotate(-.8deg); } 80% { transform: rotate(.35deg); } 100% { transform: none; } }
 
 .grove__ctl { position: absolute; bottom: 22px; right: 22px; z-index: 3; cursor: pointer; font: 600 10px/1 Inter, system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase;
-  padding: 9px 14px; border-radius: 999px; color: rgba(247,245,240,.78); background: rgba(10,14,19,.6); border: 1px solid rgba(247,245,240,.2); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  padding: 9px 14px; border-radius: 999px; color: rgba(247,245,240,.82); background: rgba(16,14,30,.55); border: 1px solid rgba(247,245,240,.22); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .grove__ctl:hover { color: #F7F5F0; border-color: #D8B46A; }
 .grove__ctl:focus-visible { outline: 2px solid #D8B46A; outline-offset: 3px; }
 
@@ -52,10 +82,9 @@
   .grove__grid.build-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 80vw; }
 }
 @media (max-width: 620px) {
-  .grove__grid.build-grid { grid-template-columns: 1fr; max-width: 74vw; gap: 4.5rem; }
-  .grove .build-item { padding: 1.25rem 1.2rem 1.3rem; }
+  .grove__grid.build-grid { grid-template-columns: 1fr; max-width: 68vw; gap: 8.5rem; }
   .grove__ctl { bottom: 14px; right: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .grove .build-item { transition: none; animation: none !important; }
+  .grove .build-item, .grove .scroll__paper, .grove .scroll__roll { transition: none !important; animation: none !important; }
 }
