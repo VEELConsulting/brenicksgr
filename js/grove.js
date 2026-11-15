@@ -172,9 +172,9 @@
     });
 
     // bake each cluster once per season: the leaves no longer cost a draw call each
-    for (const cl of clusters) cl.autumn = bakeCluster(cl, THEME.autumn, false);
+    // leaves are baked a few clusters per frame (never one long block), and fade in as they are ready
     L = { autumn: { sky: paintSky(THEME.autumn), land: paintLand(THEME.autumn, rngOf(31)), trunks: paintTrunks(trees, THEME.autumn) }, spring: null };
-    springTrees = trees; prepareSpring(++layoutId);
+    springTrees = trees; bakeAutumn(++layoutId);
     falling = Array.from({ length: narrow ? 12 : 22 }, () => newFall(true));
     motes = Array.from({ length: narrow ? 12 : 26 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 0.6 + Math.random() * 1.6, ph: Math.random() * TAU, sp: 0.2 + Math.random() * 0.5 }));
     bokeh = Array.from({ length: narrow ? 1 : 3 }, (_, i) => ({ x: Math.random() * W, y: H * (0.15 + Math.random() * 0.7), sz: (narrow ? 0.5 : 0.8) + Math.random() * 0.6, vx: 6 + Math.random() * 10, ph: Math.random() * TAU, col: 1 + (i % 4) }));
@@ -184,6 +184,17 @@
   // spring is painted a little at a time while the browser is idle, never in one long block
   let springTrees = null, layoutId = 0;
   const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 400 }) : (f) => setTimeout(() => f({ timeRemaining: () => 8 }), 30);
+  function bakeAutumn(id) {
+    let i = 0;
+    const step = () => {
+      if (id !== layoutId) return;
+      const until = performance.now() + 6;
+      while (i < clusters.length && performance.now() < until) { const cl = clusters[i++]; cl.autumn = bakeCluster(cl, THEME.autumn, false); cl.born = performance.now(); }
+      if (i < clusters.length) requestAnimationFrame(step); else prepareSpring(id);
+      if (!raf) draw(performance.now() / 1000, 0);
+    };
+    requestAnimationFrame(step);
+  }
   function prepareSpring(id) {
     let i = 0;
     const step = (dl) => {
@@ -207,6 +218,7 @@
     for (const q of cl.blobs) { const gr = g.createRadialGradient(q.ox - q.r * 0.3, q.oy - q.r * 0.4, 0, q.ox, q.oy, q.r); gr.addColorStop(0, rgba(mid2, 0.55)); gr.addColorStop(0.35, rgba(deep, 0.9)); gr.addColorStop(0.8, rgba(deep, 0.65)); gr.addColorStop(1, rgba(deep, 0)); g.fillStyle = gr; g.beginPath(); g.arc(q.ox, q.oy, q.r, 0, TAU); g.fill(); }
     for (const l of cl.leaves) { const s = l.sz * 0.5; g.save(); g.translate(l.ox, l.oy); g.rotate(l.ang); g.scale(s, s * l.tilt); g.drawImage(mapleSprite(M.leaves[l.col]), -32, -32); g.restore(); }
     if (spring) for (const b of cl.blooms) { const s = b.sz * 0.55; g.save(); g.translate(b.ox, b.oy); g.rotate(b.ang); g.scale(s, s); g.drawImage(blossomSprite(b.kind, isDark()), -24, -24); g.restore(); }
+    g.getImageData(0, 0, 1, 1);
     return { c, x0, y0, w, h };
   }
   function newFall(any) { return { x: Math.random() * W * 1.1 - W * 0.05, y: any ? Math.random() * H : -20 - Math.random() * 80, vy: 26 + Math.random() * 30, sw: 20 + Math.random() * 34, ph: Math.random() * TAU, spin: 0.8 + Math.random() * 2.2, col: Math.floor(Math.random() * 6), sz: 0.5 + Math.random() * 0.45 }; }
@@ -506,8 +518,8 @@
     for (const cl of clusters) {
       const o = anchorPos(cl.anchor, now), rot = WN * 0.03 + Math.sin(now * 1.3 + cl.ph) * 0.025;
       c.setTransform(DPR * Math.cos(rot), DPR * Math.sin(rot), -DPR * Math.sin(rot), DPR * Math.cos(rot), DPR * o.x, DPR * o.y);
-      if (au > 0.001) { const k = cl.autumn; c.globalAlpha = sp > 0 ? au : 1; c.drawImage(k.c, k.x0, k.y0, k.w, k.h); }
-      if (sp > 0.001) { const k = cl.spring, s = lerp(0.82, 1, pop); c.globalAlpha = sp; c.drawImage(k.c, k.x0 * s, k.y0 * s, k.w * s, k.h * s); }
+      if (au > 0.001 && cl.autumn) { const k = cl.autumn, fade = clamp((performance.now() - cl.born) / 450, 0, 1); c.globalAlpha = (sp > 0 ? au : 1) * fade; c.drawImage(k.c, k.x0, k.y0, k.w, k.h); }
+      if (sp > 0.001 && cl.spring) { const k = cl.spring, s = lerp(0.82, 1, pop); c.globalAlpha = sp; c.drawImage(k.c, k.x0 * s, k.y0 * s, k.w * s, k.h * s); }
     }
     c.globalAlpha = 1; c.setTransform(DPR, 0, 0, DPR, 0, 0);
     // birds and their song (autumn only)
