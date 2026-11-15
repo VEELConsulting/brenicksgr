@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /new-sky
 
 Sitemap: https://brenicks.com/sitemap.xml

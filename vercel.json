@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/new-sky", "destination": "/api/new-sky" },
+    { "source": "/new-sky/", "destination": "/api/new-sky" }
+  ]
+}
