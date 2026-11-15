@@ -249,7 +249,7 @@
   <!-- WHY Brenicks -->
   <section class="about section" id="about">
     <div class="container">
-      <div class="about__inner glass-card reveal">
+      <div class="about__inner glass-card reveal" data-hold>
         <div class="about__text">
           <span class="section__label">Why Brenicks</span>
           <h2 class="section__title">We don't stop <em>at recommendations</em></h2>
@@ -258,19 +258,11 @@
           <a href="about/index.html" class="btn btn--primary" style="margin-top:2rem">About Brenicks →</a>
         </div>
         <div class="about__visual stack-host">
-          <div class="stack3d" data-stack role="img" aria-label="A flat roadmap document with four layers rising out of it: design, build, integrate and support, topped by a beam marking measurable results.">
-            <div class="stack3d__cam" aria-hidden="true"><div class="stack3d__world">
-              <div class="stack3d__grid"></div>
-              <div class="stack3d__deck"><b>Roadmap.pdf</b><i></i><i></i><i></i><i></i></div>
-              <div class="stack3d__slab" style="--i:0"><div class="stack3d__face stack3d__side"></div><div class="stack3d__face stack3d__front">Design</div><div class="stack3d__face stack3d__top"><em>01</em></div></div>
-              <div class="stack3d__slab" style="--i:1"><div class="stack3d__face stack3d__side"></div><div class="stack3d__face stack3d__front">Build</div><div class="stack3d__face stack3d__top"><em>02</em></div></div>
-              <div class="stack3d__slab" style="--i:2"><div class="stack3d__face stack3d__side"></div><div class="stack3d__face stack3d__front">Integrate</div><div class="stack3d__face stack3d__top"><em>03</em></div></div>
-              <div class="stack3d__slab" style="--i:3"><div class="stack3d__face stack3d__side"></div><div class="stack3d__face stack3d__front">Support</div><div class="stack3d__face stack3d__top"><em>04</em></div></div>
-              <div class="stack3d__beam"></div>
-            </div></div>
-            <div class="stack3d__label stack3d__label--deck" aria-hidden="true">Where most firms stop</div>
-            <div class="stack3d__label stack3d__label--top" aria-hidden="true">Measurable results</div>
-            <div class="stack3d__steps" aria-hidden="true"><span>Design</span><span>Build</span><span>Integrate</span><span>Support</span></div>
+          <div class="film film--stack" data-film="stack" role="img" aria-label="Animation: a slide deck of recommendations falls flat, then four layers are built on top of it: design, build, integrate with your systems, and ongoing support, rising to measurable results.">
+            <canvas class="film__canvas" aria-hidden="true"></canvas>
+            <p class="film__cap" aria-live="polite"></p>
+            <div class="film__steps"><button type="button" data-seek="0">Design</button><button type="button" data-seek="1">Build</button><button type="button" data-seek="2">Integrate</button><button type="button" data-seek="3">Support</button></div>
+            <button type="button" class="film__ctl" data-ctl>Skip</button>
           </div>
         </div>
       </div>
