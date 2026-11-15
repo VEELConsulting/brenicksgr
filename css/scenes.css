@@ -79,9 +79,9 @@ html.film-hold, html.film-hold body { overscroll-behavior: none; }
   /* runs from the left edge of the screen to just short of the guide; explicit width so Safari stretches it too */
   .tunnel { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); }
   .tunnel .film--tunnel { width: calc(100% + var(--bleed)); max-width: none; margin-left: calc(-1 * var(--bleed)); height: clamp(520px, 50vw, 720px); border-radius: 0;
-    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 93%, transparent 100%), linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-    mask-image: linear-gradient(90deg, #000 0, #000 93%, transparent 100%), linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-    -webkit-mask-composite: source-in; mask-composite: intersect; }
+    /* soft at the top and bottom only; the side beside the guide stays crisp so nothing is faded away */
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%); }
 }
 @media (max-width: 900px) {
   /* phones and tablets: the film runs edge to edge */

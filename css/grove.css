@@ -11,14 +11,12 @@
 .grove__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; pointer-events: none; }
 .grove__inner { position: relative; z-index: 1; }
 .grove__head { position: relative; max-width: 36rem; }
-.grove__head::before { content: ""; position: absolute; inset: -3rem -5rem -3rem -6rem; z-index: -1; pointer-events: none;
-  background: radial-gradient(closest-side, rgba(16,18,40,.55), rgba(16,18,40,0)); }
-.grove .section__title { color: #F7F5F0; text-shadow: 0 2px 24px rgba(10,10,30,.6); }
-.grove .section__label { color: #E8C987; text-shadow: 0 1px 14px rgba(10,10,30,.7); }
+/* the title floats over the leaves, no backing: a tight shadow and a soft halo keep it legible */
+.grove .section__title { color: #FBF8F1; font-weight: 600; text-shadow: 0 1px 2px rgba(6,8,14,.95), 0 2px 10px rgba(6,8,14,.85), 0 0 30px rgba(6,8,14,.7); }
+.grove .section__label { color: #F0D69C; font-weight: 700; text-shadow: 0 1px 2px rgba(6,8,14,.95), 0 0 14px rgba(6,8,14,.9); }
 [data-theme="light"] .grove { background: #F3EEE2; }
-[data-theme="light"] .grove__head::before { background: radial-gradient(closest-side, rgba(250,248,244,.75), rgba(250,248,244,0)); }
-[data-theme="light"] .grove .section__title { color: #1A1510; text-shadow: 0 1px 18px rgba(250,248,244,.9); }
-[data-theme="light"] .grove .section__label { color: #9A7440; text-shadow: none; }
+[data-theme="light"] .grove .section__title { color: #17120C; text-shadow: 0 1px 1px rgba(255,253,248,.95), 0 0 10px rgba(255,253,248,.95), 0 0 28px rgba(255,253,248,.85); }
+[data-theme="light"] .grove .section__label { color: #5A3A0E; font-weight: 800; text-shadow: 0 0 2px #FFFDF8, 0 0 6px rgba(255,253,248,1), 0 0 16px rgba(255,253,248,.95); }
 
 /* the scrolls hang in the open air between the two trunks */
 .grove__grid.build-grid { position: relative; background: none; border: 0; border-radius: 0; overflow: visible;

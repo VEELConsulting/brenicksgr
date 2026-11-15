@@ -281,7 +281,7 @@
     return ['<em>Where your team works:</em> we build inside it.', '<em>How it connects:</em> we wire it together.', '<em>The intelligence:</em> the right model for each job.'][Math.max(0, focusOf(t))];
   };
   TUN.draw = (ctx, W, H, t, now, done) => {
-    const c = cam(), sf = ctx.__safe || {l: 0, w: W}; c.f = Math.min(sf.w, H) * (sf.w < 520 ? 0.7 : 0.86); c.cx = sf.l + sf.w / 2; c.cy = H / 2 + (W < 520 ? 22 : 10);
+    const c = cam(), sf = ctx.__safe || {l: 0, w: W}; c.f = Math.min(sf.w, H) * (sf.w < 520 ? 0.7 : 0.8); c.cx = sf.l + sf.w * (sf.w < 520 ? 0.5 : 0.44); /* a little left of centre, so the glowing core is never clipped */ c.cy = H / 2 + (W < 520 ? 22 : 10);
     const pull = eio(seg(t, 8.0, 9.6)), z = camZ(t), sway = done && !CALM ? Math.sin(now * 0.3) * 40 : 0;
     const px = lerp(0, 2500, pull) + sway, py = lerp(0, 640, pull), pz = lerp(camZ(t), 1650, pull);
     look(c, px, py, pz, 0, lerp(0, -30, pull), lerp(pz + 1000, 2080, pull));

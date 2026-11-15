@@ -6,7 +6,7 @@
    then looks at us. One lands on "New Orgs"; the other lands on the far tree, hops from branch to branch, flies off,
    then flies back from behind the viewer onto the tree.
    Spring: once every scroll is open, the birds fly off, the leaves stop falling, and over three seconds the garden
-   turns to spring: aquamarine leaves, ivory blossoms with gold hearts, the sky clearing to dawn.
+   turns to spring: fresh green leaves, ivory blossoms blushed with rose and gold hearts, a warm dawn.
    Dark theme: obsidian and navy with warm gold. Light theme: ivory, champagne and aquamarine.
    For speed, each cluster of leaves is painted once into an image and moved as one, and the frame rate is capped.
    On phones the birds come to each scroll as it scrolls into view. The scene runs only while it is on screen. */
@@ -31,17 +31,17 @@
       autumn: { sky: ['#060A12', '#0B1220', '#131C30', '#272A3E', '#56452F', '#A8864F'], fuji: '#1B2438', snow: '#D9C79C', ridge: ['#151D2F', '#101727', '#0B111D'],
         lake: ['#4A4232', '#0D1320'], ground: '#090D15', torii: [200, 169, 110], light: [216, 180, 106], haze: [58, 66, 92],
         leaves: ['#4E3210', '#74501E', '#9E7536', '#C8A96E', '#DDBF85', '#F0DCAE'], bark: [[14, 16, 22], [32, 34, 42], [60, 60, 68]], rim: [216, 180, 106], bg: [8, 12, 20] },
-      spring: { sky: ['#08101E', '#0F1E36', '#1A3048', '#2A4A5C', '#5F8C92', '#BBD6D2'], fuji: '#26374E', snow: '#F4F0E6', ridge: ['#1F3146', '#17283B', '#101C2C'],
-        lake: ['#5C8C95', '#0E1A2A'], ground: '#0B131F', torii: [216, 180, 106], light: [190, 228, 232], haze: [96, 150, 162],
-        leaves: ['#173D44', '#245C63', '#3F8088', '#6FAFB8', '#8EC5D0', '#C4E3E8'], bark: [[16, 20, 26], [36, 42, 50], [68, 74, 82]], rim: [200, 228, 232], bg: [8, 12, 20] },
+      spring: { sky: ['#08101E', '#121F38', '#22304C', '#4A465E', '#A9826A', '#E6BE88'], fuji: '#2A3348', snow: '#F6EEDC', ridge: ['#24324A', '#1B283C', '#121C2C'],
+        lake: ['#8A7460', '#0E1828'], ground: '#0C1418', torii: [216, 180, 106], light: [236, 200, 140], haze: [112, 108, 124],
+        leaves: ['#1C3A26', '#2C5838', '#467A4C', '#6E9E62', '#9DC07E', '#CFE0A4'], bark: [[16, 18, 24], [36, 38, 46], [70, 68, 74]], rim: [236, 200, 140], bg: [8, 12, 20] },
     },
     light: {
       autumn: { sky: ['#DCE9EC', '#EAEEE8', '#F4EEE2', '#F1E2C4', '#E7CB96', '#D9B378'], fuji: '#B4C2C6', snow: '#FAF8F4', ridge: ['#D3CBBB', '#BCB09C', '#9B8D77'],
         lake: ['#EAD9B6', '#B7A685'], ground: '#77674F', torii: [184, 149, 106], light: [255, 236, 196], haze: [240, 226, 200],
         leaves: ['#7E5018', '#A87230', '#C49450', '#D8B47A', '#E8CC98', '#F5E4C0'], bark: [[66, 54, 44], [100, 86, 72], [138, 122, 104]], rim: [255, 240, 210], bg: [250, 248, 244] },
-      spring: { sky: ['#B9DEE5', '#CFE8EB', '#E6F2F0', '#F5F3EA', '#FAF8F4', '#FFFFFF'], fuji: '#A3C6CD', snow: '#FFFFFF', ridge: ['#A6CAD0', '#8DB6BD', '#6C9CA4'],
-        lake: ['#D2EAEC', '#8EC5D0'], ground: '#5A7B7E', torii: [184, 149, 106], light: [255, 250, 236], haze: [214, 236, 238],
-        leaves: ['#3A767E', '#57949C', '#8EC5D0', '#AED9DF', '#D2ECEF', '#F0F9FA'], bark: [[74, 70, 64], [110, 104, 96], [150, 144, 134]], rim: [255, 255, 245], bg: [250, 248, 244] },
+      spring: { sky: ['#BCDCE5', '#DAEAE9', '#F3EFE4', '#F8E3CA', '#F2CFA6', '#E9BE8C'], fuji: '#AFC3C6', snow: '#FFFFFF', ridge: ['#B9C7B4', '#9DB298', '#7A9478'],
+        lake: ['#F2DCC0', '#8EC5D0'], ground: '#5B6E4E', torii: [184, 149, 106], light: [255, 238, 205], haze: [244, 232, 214],
+        leaves: ['#3C6640', '#558654', '#79A66C', '#A2C686', '#C8DFA4', '#EAF2CE'], bark: [[74, 64, 56], [108, 96, 84], [148, 136, 120]], rim: [255, 244, 222], bg: [250, 248, 244] },
     },
   };
   let THEME = PAL.dark;
@@ -82,11 +82,11 @@
     const key = 'b' + k + dark; if (sprites.has(key)) return sprites.get(key);
     const S = 48, c = document.createElement('canvas'); c.width = S; c.height = S; const g = c.getContext('2d'); g.translate(S / 2, S / 2);
     // ivory petals with an aquamarine blush, gold stamens: the Brenicks blossom
-    const tint = [[250, 248, 244], [236, 246, 246], [243, 240, 234]][k % 3], blush = dark ? [142, 197, 208] : [120, 180, 192];
+    const tint = [[252, 246, 240], [250, 232, 226], [246, 238, 226]][k % 3], blush = dark ? [226, 150, 150] : [220, 140, 138];
     for (let p = 0; p < 5; p++) {
       g.save(); g.rotate(p * TAU / 5 + k * 0.3); g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(-9, -6, -8, -17, -2.2, -19); g.lineTo(0, -16.5); g.lineTo(2.2, -19); g.bezierCurveTo(8, -17, 9, -6, 0, 0);
       const gr = g.createLinearGradient(0, 0, 0, -19); gr.addColorStop(0, rgba(blush, 0.95)); gr.addColorStop(0.4, rgba(tint)); gr.addColorStop(1, '#FFFFFF');
-      g.fillStyle = gr; g.fill(); g.strokeStyle = 'rgba(110,150,160,.35)'; g.lineWidth = 0.6; g.stroke(); g.restore();
+      g.fillStyle = gr; g.fill(); g.strokeStyle = 'rgba(190,130,120,.3)'; g.lineWidth = 0.6; g.stroke(); g.restore();
     }
     for (let s = 0; s < 9; s++) { const a = s * TAU / 9; g.strokeStyle = 'rgba(168,132,71,.9)'; g.lineWidth = 0.7; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a) * 6.5, Math.sin(a) * 6.5); g.stroke(); g.fillStyle = '#E3C27E'; g.beginPath(); g.arc(Math.cos(a) * 6.8, Math.sin(a) * 6.8, 1.1, 0, TAU); g.fill(); }
     sprites.set(key, c); return c;
@@ -106,7 +106,7 @@
     // measured without transforms, so a scroll still waiting for its bird is placed where it will hang
     const rel = (el) => { let x = 0, y = 0, e = el; while (e && e !== root) { x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; } return { x, y, w: el.offsetWidth, h: el.offsetHeight }; };
     const rects = cards.map(rel), hb = rel(head), headR = { x: hb.x - 24, y: hb.y - 24, w: hb.w + 48, h: hb.h + 48 };
-    const avoid = rects.map((q) => ({ x: q.x - 14, y: q.y - 4, w: q.w + 28, h: q.h + 14 })).concat([headR]);
+    const avoid = rects.map((q) => ({ x: q.x - 14, y: q.y - 4, w: q.w + 28, h: q.h + 14 }));   // the title is see-through: leaves may grow behind it
     const inAvoid = (x, y) => avoid.some((q) => x > q.x && x < q.x + q.w && y > q.y && y < q.y + q.h);
     const rnd = rngOf(1185 + Math.round(W / 40) * 7 + Math.round(H / 60));
     const k = clamp(W / 1300, 0.62, 1.15);
