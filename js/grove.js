@@ -69,8 +69,9 @@
   const sprites = new Map();
   function mapleSprite(col, blur = 0) {
     const key = col + '|' + blur; if (sprites.has(key)) return sprites.get(key);
-    const S = blur ? 160 : 64, c = document.createElement('canvas'); c.width = S; c.height = S; const g = c.getContext('2d'), cc = hex(col), R = S * (blur ? 0.3 : 0.42);
-    g.translate(S / 2, S / 2); if (blur && canFilter) g.filter = `blur(${blur}px)`;
+    // the out-of-focus version is painted tiny and scaled up when drawn: soft for free, no canvas filter
+    const S = blur ? 20 : 64, c = document.createElement('canvas'); c.width = S; c.height = S; const g = c.getContext('2d'), cc = hex(col), R = S * 0.42;
+    g.translate(S / 2, S / 2);
     g.beginPath(); for (let k = 0; k <= 280; k++) { const th = (k / 280) * TAU, a = th - Math.PI / 2, lobe = Math.pow(Math.abs(Math.cos(3.5 * (th - Math.PI))), 0.55), tooth = 0.035 * Math.sin(th * 42), gap = Math.exp(-Math.pow((th - Math.PI) * 3.2, 2)) * 0.55, r = R * (0.42 + 0.58 * lobe + tooth - gap); const x = -Math.cos(a + Math.PI) * r, y = -Math.sin(a + Math.PI) * r; k ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath();
     const gr = g.createRadialGradient(-R * 0.2, -R * 0.25, R * 0.05, 0, 0, R * 1.1);
     gr.addColorStop(0, rgba(cc.map((v) => Math.min(255, v * 1.1 + 8)))); gr.addColorStop(0.55, rgba(cc)); gr.addColorStop(1, rgba(cc.map((v) => v * 0.62)));
@@ -171,25 +172,53 @@
     });
 
     // bake each cluster once per season: the leaves no longer cost a draw call each
-    for (const cl of clusters) { cl.autumn = bakeCluster(cl, THEME.autumn, false); cl.spring = bakeCluster(cl, THEME.spring, true); }
-    L = {};
-    for (const season of ['autumn', 'spring']) { const M = THEME[season]; L[season] = { sky: paintSky(M), land: paintLand(M, rngOf(season === 'autumn' ? 31 : 55)), trunks: paintTrunks(trees, M) }; }
+    // leaves are baked a few clusters per frame (never one long block), and fade in as they are ready
+    L = { autumn: { sky: paintSky(THEME.autumn), land: paintLand(THEME.autumn, rngOf(31)), trunks: paintTrunks(trees, THEME.autumn) }, spring: null };
+    springTrees = trees; bakeAutumn(++layoutId);
     falling = Array.from({ length: narrow ? 12 : 22 }, () => newFall(true));
     motes = Array.from({ length: narrow ? 12 : 26 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 0.6 + Math.random() * 1.6, ph: Math.random() * TAU, sp: 0.2 + Math.random() * 0.5 }));
     bokeh = Array.from({ length: narrow ? 1 : 3 }, (_, i) => ({ x: Math.random() * W, y: H * (0.15 + Math.random() * 0.7), sz: (narrow ? 0.5 : 0.8) + Math.random() * 0.6, vx: 6 + Math.random() * 10, ph: Math.random() * TAU, col: 1 + (i % 4) }));
     root.classList.toggle('is-live', !CALM && cards.length > 0);
     applyLit(); draw(performance.now() / 1000, 0);
   }
+  // spring is painted a little at a time while the browser is idle, never in one long block
+  let springTrees = null, layoutId = 0;
+  const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 400 }) : (f) => setTimeout(() => f({ timeRemaining: () => 8 }), 30);
+  function bakeAutumn(id) {
+    let i = 0;
+    const step = () => {
+      if (id !== layoutId) return;
+      const until = performance.now() + 6;
+      while (i < clusters.length && performance.now() < until) { const cl = clusters[i++]; cl.autumn = bakeCluster(cl, THEME.autumn, false); cl.born = performance.now(); }
+      if (i < clusters.length) requestAnimationFrame(step); else prepareSpring(id);
+      if (!raf) draw(performance.now() / 1000, 0);
+    };
+    requestAnimationFrame(step);
+  }
+  function prepareSpring(id) {
+    let i = 0;
+    const step = (dl) => {
+      if (id !== layoutId) return;
+      const until = performance.now() + Math.max(4, Math.min(12, dl.timeRemaining ? dl.timeRemaining() : 8));
+      while (i < clusters.length && performance.now() < until) { const cl = clusters[i++]; cl.spring = bakeCluster(cl, THEME.spring, true); }
+      if (i < clusters.length) return idle(step);
+      if (!L.spring) idle(() => { if (id === layoutId) L.spring = { sky: paintSky(THEME.spring), land: paintLand(THEME.spring, rngOf(55)), trunks: null }; idle(() => { if (id === layoutId && L.spring) L.spring.trunks = paintTrunks(springTrees, THEME.spring); }); });
+    };
+    idle(step);
+  }
+  // if spring is needed before the idle work has finished, finish it now
+  function ensureSpring() { if (L.spring && L.spring.trunks && clusters.every((c) => c.spring)) return; for (const cl of clusters) if (!cl.spring) cl.spring = bakeCluster(cl, THEME.spring, true); L.spring = L.spring || {}; L.spring.sky = L.spring.sky || paintSky(THEME.spring); L.spring.land = L.spring.land || paintLand(THEME.spring, rngOf(55)); L.spring.trunks = L.spring.trunks || paintTrunks(springTrees, THEME.spring); }
   function bakeCluster(cl, M, spring) {
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const pad = 20;
     for (const q of cl.blobs) { x0 = Math.min(x0, q.ox - q.r); y0 = Math.min(y0, q.oy - q.r); x1 = Math.max(x1, q.ox + q.r); y1 = Math.max(y1, q.oy + q.r); }
     for (const l of cl.leaves) { x0 = Math.min(x0, l.ox - pad); y0 = Math.min(y0, l.oy - pad); x1 = Math.max(x1, l.ox + pad); y1 = Math.max(y1, l.oy + pad); }
-    const w = Math.ceil(x1 - x0), h = Math.ceil(y1 - y0), c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * DPR)); c.height = Math.max(1, Math.round(h * DPR));
-    const g = c.getContext('2d'); g.scale(DPR, DPR); g.translate(-x0, -y0);
+    const BD = Math.min(DPR, 1.25), w = Math.ceil(x1 - x0), h = Math.ceil(y1 - y0), c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * BD)); c.height = Math.max(1, Math.round(h * BD));
+    const g = c.getContext('2d'); g.scale(BD, BD); g.translate(-x0, -y0);
     const deep = hex(M.leaves[0]).map((v) => v * 0.7), mid2 = hex(M.leaves[1]);
     for (const q of cl.blobs) { const gr = g.createRadialGradient(q.ox - q.r * 0.3, q.oy - q.r * 0.4, 0, q.ox, q.oy, q.r); gr.addColorStop(0, rgba(mid2, 0.55)); gr.addColorStop(0.35, rgba(deep, 0.9)); gr.addColorStop(0.8, rgba(deep, 0.65)); gr.addColorStop(1, rgba(deep, 0)); g.fillStyle = gr; g.beginPath(); g.arc(q.ox, q.oy, q.r, 0, TAU); g.fill(); }
     for (const l of cl.leaves) { const s = l.sz * 0.5; g.save(); g.translate(l.ox, l.oy); g.rotate(l.ang); g.scale(s, s * l.tilt); g.drawImage(mapleSprite(M.leaves[l.col]), -32, -32); g.restore(); }
     if (spring) for (const b of cl.blooms) { const s = b.sz * 0.55; g.save(); g.translate(b.ox, b.oy); g.rotate(b.ang); g.scale(s, s); g.drawImage(blossomSprite(b.kind, isDark()), -24, -24); g.restore(); }
+    g.getImageData(0, 0, 1, 1);
     return { c, x0, y0, w, h };
   }
   function newFall(any) { return { x: Math.random() * W * 1.1 - W * 0.05, y: any ? Math.random() * H : -20 - Math.random() * 80, vy: 26 + Math.random() * 30, sw: 20 + Math.random() * 34, ph: Math.random() * TAU, spin: 0.8 + Math.random() * 2.2, col: Math.floor(Math.random() * 6), sz: 0.5 + Math.random() * 0.45 }; }
@@ -211,7 +240,7 @@
   }
   function paintLand(M, rnd) {
     const c = document.createElement('canvas'), pad = 20; c.width = Math.round(W + pad * 2); c.height = Math.round(H); const g = c.getContext('2d'); g.translate(pad, 0);
-    const hz = HZ(), blurOn = (px) => { if (canFilter) g.filter = px ? `blur(${px}px)` : 'none'; };
+    const hz = HZ(), blurOn = () => {};   // no canvas filters: they cost seconds on some machines; the haze layers give the depth instead
     blurOn(1.4);
     const fx = W * 0.42, fy = hz - Math.min(H * 0.42, W * 0.24), fw = Math.max(W * 0.36, 420);
     g.beginPath(); g.moveTo(fx - fw, hz); g.quadraticCurveTo(fx - fw * 0.35, hz - (hz - fy) * 0.55, fx - fw * 0.08, fy + 4); g.lineTo(fx + fw * 0.08, fy + 4); g.quadraticCurveTo(fx + fw * 0.35, hz - (hz - fy) * 0.55, fx + fw, hz); g.closePath();
@@ -448,6 +477,7 @@
   function draw(now, dt) {
     WN = CALM ? 0.3 : wind(now);
     const sp = CALM ? 1 : springAt === Infinity ? 0 : eio(seg(T, springAt, springAt + SPRING_IN)), au = 1 - sp, c = ctx, A = THEME.autumn, S = THEME.spring;
+    if (sp > 0) ensureSpring();
     for (const b of branches) { b.dv += (-70 * b.dip - 7 * b.dv) * dt; b.dip += b.dv * dt; }
     placeBirds(now);
     c.setTransform(DPR, 0, 0, DPR, 0, 0); mx += (tmx - mx) * Math.min(1, dt * 3);
@@ -488,8 +518,8 @@
     for (const cl of clusters) {
       const o = anchorPos(cl.anchor, now), rot = WN * 0.03 + Math.sin(now * 1.3 + cl.ph) * 0.025;
       c.setTransform(DPR * Math.cos(rot), DPR * Math.sin(rot), -DPR * Math.sin(rot), DPR * Math.cos(rot), DPR * o.x, DPR * o.y);
-      if (au > 0.001) { const k = cl.autumn; c.globalAlpha = sp > 0 ? au : 1; c.drawImage(k.c, k.x0, k.y0, k.w, k.h); }
-      if (sp > 0.001) { const k = cl.spring, s = lerp(0.82, 1, pop); c.globalAlpha = sp; c.drawImage(k.c, k.x0 * s, k.y0 * s, k.w * s, k.h * s); }
+      if (au > 0.001 && cl.autumn) { const k = cl.autumn, fade = clamp((performance.now() - cl.born) / 450, 0, 1); c.globalAlpha = (sp > 0 ? au : 1) * fade; c.drawImage(k.c, k.x0, k.y0, k.w, k.h); }
+      if (sp > 0.001 && cl.spring) { const k = cl.spring, s = lerp(0.82, 1, pop); c.globalAlpha = sp; c.drawImage(k.c, k.x0 * s, k.y0 * s, k.w * s, k.h * s); }
     }
     c.globalAlpha = 1; c.setTransform(DPR, 0, 0, DPR, 0, 0);
     // birds and their song (autumn only)
@@ -508,7 +538,7 @@
       for (const b of bokeh) {
         if (!CALM) { b.x += b.vx * dt; if (b.x > W + 140) { b.x = -140; b.y = H * (0.15 + Math.random() * 0.7); } }
         const a = now * 0.4 + b.ph, s = b.sz; c.globalAlpha = 0.32 * au;
-        c.setTransform(DPR * s * Math.cos(a), DPR * s * Math.sin(a), -DPR * s * Math.sin(a), DPR * s * Math.cos(a), DPR * b.x, DPR * b.y); c.drawImage(mapleSprite(leafPal[b.col], 5), -80, -80);
+        c.setTransform(DPR * s * Math.cos(a), DPR * s * Math.sin(a), -DPR * s * Math.sin(a), DPR * s * Math.cos(a), DPR * b.x, DPR * b.y); c.drawImage(mapleSprite(leafPal[b.col], 1), -80, -80, 160, 160);
       }
       c.globalAlpha = 1; c.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
@@ -550,5 +580,7 @@
     let rt = 0, lastW = innerWidth; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (Math.abs(innerWidth - lastW) < 2 && narrow) return; lastW = innerWidth; layout(); kick(); }, 180); });
     new MutationObserver(() => { layout(); kick(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   }
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(boot); else addEventListener('load', boot);
+  // nothing is painted until the visitor is about a screen away from the scene, so the page itself opens instantly
+  function bootWhenNear() { const near = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { near.disconnect(); boot(); } }, { rootMargin: '900px 0px' }); near.observe(root); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(bootWhenNear); else addEventListener('load', bootWhenNear);
 })();
