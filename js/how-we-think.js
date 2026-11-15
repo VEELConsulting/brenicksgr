@@ -469,7 +469,7 @@ function frame(now){
   if(CALM)autoA=autoDir>0?1:0;else autoA=clamp(autoA+autoDir*dt/AUTO_MS,0,1);
   const p=autoA>=1?Math.max(0.8,pT):0.8*autoA;if(Math.abs(p-lastP)>1e-5){layoutReveal(p);lastP=p;}
   const moving=p>0.5&&p<0.8||(autoA>0&&autoA<1);
-  upSnap(r); // paper is growing: hold the canvas still
+  if(!toured)upSnap(r); // the gentle frame-from-below happens only before the first tour; after it the visitor scrolls freely
   if(moving){}else if(flight){let t=(now-flight.t0)/flight.dur;if(t>=1)t=1;cam=flight.it(ease(t));dirty=true;if(t===1){flight=null;onArrive(now);}}
   else if(playing&&now>holdUntil){if(tourI<TOUR.length)go(TOUR[tourI++]);else endTour();}
   // paused on a tile: keep it glimmering
@@ -490,11 +490,15 @@ let held=false,heldY=0;const KEYS=new Set(['ArrowDown','ArrowUp','PageDown','Pag
 const stopEv=e=>{if(held)e.preventDefault();};
 const stopKey=e=>{if(!held||!KEYS.has(e.key))return;if(e.key===' '&&e.target.closest&&e.target.closest('button,a,input,textarea'))return;e.preventDefault();};
 const keepY=()=>{if(held&&Math.abs(scrollY-heldY)>1)scrollTo(0,heldY);};
-function holdPage(){if(held)return;held=true;heldY=scrollY;addEventListener('wheel',stopEv,{passive:false});addEventListener('touchmove',stopEv,{passive:false});addEventListener('keydown',stopKey);addEventListener('scroll',keepY);}
+function holdPage(y){if(held)return;held=true;heldY=y==null?scrollY:y;if(Math.abs(scrollY-heldY)>1)scrollTo(0,heldY);addEventListener('wheel',stopEv,{passive:false});addEventListener('touchmove',stopEv,{passive:false});addEventListener('keydown',stopKey);addEventListener('scroll',keepY);}
 function freePage(){if(!held)return;held=false;removeEventListener('wheel',stopEv);removeEventListener('touchmove',stopEv);removeEventListener('keydown',stopKey);removeEventListener('scroll',keepY);}
 function endTour(){toured=true;tourI=0;setPlaying(false);freePage();}
 function setPlaying(p){playing=p;playBtn.innerHTML=p?ICON_PAUSE:ICON_PLAY;playBtn.setAttribute('aria-label',p?'Pause the tour':'Play the tour');}
-playBtn.addEventListener('click',()=>{setPlaying(!playing);if(playing){if(tourI>=TOUR.length)tourI=0;holdUntil=Math.min(holdUntil,performance.now()+500);}else freePage();});
+// Play: lock the film into view until the tour ends or the visitor presses pause. Pause: the page scrolls freely again.
+playBtn.addEventListener('click',()=>{setPlaying(!playing);
+  if(playing){if(tourI>=TOUR.length)tourI=0;holdUntil=Math.min(holdUntil,performance.now()+500);
+    const r=reveal.getBoundingClientRect(),top=scrollY+r.top,bottom=scrollY+r.bottom-H;holdPage(clamp(scrollY,top,Math.max(top,bottom)));}
+  else freePage();});
 let down=null;
 cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
 cv.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down.x,e.clientY-down.y)>8||lastP<0.8){down=null;return;}down=null;
