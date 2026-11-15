@@ -90,23 +90,28 @@
           <p>What we build isn't a chatbot, and it isn't "AI" as an abstraction. It's a specific tool that removes a specific piece of busywork, with a specific ROI attached to it.</p>
         </div>
         <div class="reveal reveal--delay-1">
-          <div class="values-grid">
-            <div class="value-card">
+          <div class="film film--bench" data-film="bench" role="img" aria-label="Animation: four workstations wired to your existing systems: a document drafting itself from your templates, a search lifting the right folder from your files, a call turning into a signed proposal, and incoming requests sorted into lanes.">
+            <canvas class="film__canvas" aria-hidden="true"></canvas>
+            <p class="film__cap" aria-live="polite"></p>
+            <button type="button" class="film__ctl" data-ctl>Skip</button>
+          </div>
+          <div class="values-grid bench-cards">
+            <div class="value-card" data-seek="0" role="button" tabindex="0">
               <div class="value-card__icon">◆</div>
               <h4>Document Drafting</h4>
               <p>AI-assisted drafting for contracts, briefs, and proposals — grounded in your firm's own templates and precedent.</p>
             </div>
-            <div class="value-card">
+            <div class="value-card" data-seek="1" role="button" tabindex="0">
               <div class="value-card__icon">◈</div>
               <h4>Knowledge Search</h4>
               <p>Instant answers across case files, SOPs, and internal documentation — no more digging through folders.</p>
             </div>
-            <div class="value-card">
+            <div class="value-card" data-seek="2" role="button" tabindex="0">
               <div class="value-card__icon">◉</div>
               <h4>Proposal Generation</h4>
               <p>Turn a discovery call into a polished SOW or engagement letter in minutes, not hours.</p>
             </div>
-            <div class="value-card">
+            <div class="value-card" data-seek="3" role="button" tabindex="0">
               <div class="value-card__icon">◎</div>
               <h4>Intake &amp; Triage</h4>
               <p>AI agents that qualify inbound leads, route requests, and draft first-pass responses.</p>

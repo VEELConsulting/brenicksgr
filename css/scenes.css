@@ -55,3 +55,13 @@ html.film-hold, html.film-hold body { overscroll-behavior: none; }
   .film__steps button { font-size: 8.5px; letter-spacing: .1em; padding: 7px 8px; min-height: 30px; }
   .film__cap, .film--stack .film__cap, .film--tunnel .film__cap { top: 50px; font-size: 15px; }
 }
+
+/* ── 3. THE WORKBENCH (AI Implementation, "The Brenicks Difference") ── */
+.film--bench { aspect-ratio: 1 / .86; margin-bottom: 1rem; }
+.bench-cards { gap: .75rem; }
+.bench-cards .value-card { cursor: pointer; padding: 1rem 1.1rem; transition: border-color .45s, background .45s, box-shadow .45s, opacity .45s; opacity: .62; }
+.bench-cards .value-card:hover { opacity: .9; }
+.bench-cards .value-card.is-on { opacity: 1; border-color: #D8B46A; background: rgba(216,180,106,.07); box-shadow: 0 0 30px -10px rgba(216,180,106,.5); }
+.bench-cards .value-card:focus-visible { outline: 2px solid #D8B46A; outline-offset: 3px; }
+.bench-cards .value-card p { font-size: .82rem; }
+@media (max-width: 520px) { .film--bench { aspect-ratio: 1 / 1.05; } }

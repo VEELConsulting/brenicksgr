@@ -331,6 +331,94 @@
     if (!(CORE - c.z > order[0].d)) drawCore();
   };
 
+
+  /* ══════════════ 3. THE WORKBENCH ══════════════ */
+  const ST = [{x: -165, z: 150, name: 'Document Drafting'}, {x: 165, z: 150, name: 'Knowledge Search'}, {x: -165, z: -150, name: 'Proposal Generation'}, {x: 165, z: -150, name: 'Intake & Triage'}];
+  const BENCH = {dur: 11.2, seekTo: [1.35, 3.6, 5.85, 8.1]};
+  const benchFocus = (t) => { for (let i = 3; i >= 0; i--) if (t >= BENCH.seekTo[i] - 0.05 && t < BENCH.seekTo[i] + 2.2) return i; return -1; };
+  BENCH.caption = (t, done) => {
+    if (done || t > 10.3) return 'Each one wired into <em>the systems you already use.</em>';
+    const f = benchFocus(t);
+    if (f < 0) return 'Specific tools for <em>specific busywork.</em>';
+    return ['<em>Drafting</em> from your own templates and precedent.', '<em>Search</em> that finds the answer, with its sources.', 'From a <em>call</em> to a signed-ready proposal.', '<em>Intake</em> qualified, routed and answered.'][f];
+  };
+  // a standing sheet of paper (faces -z when yaw = 0)
+  const sheet = (c, cx, cy, cz, w, h, yaw) => { const cs = Math.cos(yaw), sn = Math.sin(yaw); const q = (u, v) => P(c, cx + u * cs, cy + v, cz + u * sn); return [q(-w / 2, h), q(w / 2, h), q(w / 2, 0), q(-w / 2, 0)]; };
+  function paper(ctx, c, cx, cy, cz, w, h, yaw, alpha, fill) {
+    const [tl, tr, br, bl] = sheet(c, cx, cy, cz, w, h, yaw); if (!tl || !tr || !br || !bl) return;
+    poly(ctx, [tl, tr, br, bl]); ctx.fillStyle = rgba(IVORY, 0.92 * alpha); ctx.fill(); ctx.strokeStyle = rgba(GOLD, 0.6 * alpha); ctx.lineWidth = 1; ctx.stroke();
+    onQuad(ctx, tl, tr, bl, 100, 136, (g) => { g.globalAlpha = alpha; fill(g); });
+  }
+  const label3 = (ctx, c, x, y, z, text, a, col = IVORY, size = 11) => { const p = P(c, x, y, z); if (!p) return; ctx.font = `600 ${clamp(size * p.k * 1.5, 8, 15)}px ${SANS}`; ctx.fillStyle = rgba(col, a); ctx.textAlign = 'center'; ctx.fillText(text, p.x, p.y); ctx.textAlign = 'left'; };
+  BENCH.draw = (ctx, W, H, t, now, done) => {
+    const c = cam(); const narrow = W < 480; c.f = Math.min(W, H) * (narrow ? 1.0 : 1.08); c.cx = W / 2; c.cy = H * 0.55;
+    // camera: overview, then a visit to each station, then back
+    let fx = 0, fz = 0, zoom = 0;
+    const f = done ? -1 : benchFocus(t);
+    ST.forEach((S, i) => { const T0 = BENCH.seekTo[i]; const w = eio(seg(t, T0 - 0.05, T0 + 0.6)) * (1 - eio(seg(t, T0 + 1.6, T0 + 2.25))); if (w > 0) { fx += S.x * w; fz += S.z * w; zoom = Math.max(zoom, w); } });
+    if (done) { fx = 0; fz = 0; zoom = 0; }
+    const sway = CALM ? 0 : Math.sin(now * 0.3) * 0.05, th = -0.62 + sway, dist = lerp(620, 400, zoom), ht = lerp(470, 280, zoom);
+    look(c, fx + dist * Math.sin(th), ht, fz - dist * Math.cos(th), fx, 18, fz);
+    const dim = (i) => (f < 0 || f === i ? 1 : 0.4);
+    // floor grid and glow
+    ctx.lineWidth = 1;
+    for (let i = -8; i <= 8; i++) { const v = i * 45, fall = 1 - Math.abs(i) / 9; ctx.strokeStyle = rgba(GOLD, 0.12 * fall); line3(ctx, c, [v, 0, -360], [v, 0, 360]); line3(ctx, c, [-360, 0, v], [360, 0, v]); }
+    // the hub (your systems) and its cables to each station
+    drawBox(ctx, c, [0, 0, 0, 70, 46, 70], TEAL, 0.5, 0.2 + 0.1 * Math.sin(now * 2));
+    label3(ctx, c, 0, 66, 0, 'YOUR SYSTEMS', 0.85, TEAL, 9);
+    ST.forEach((S, i) => {
+      ctx.strokeStyle = rgba(TEAL, 0.4 * dim(i)); ctx.lineWidth = 1.2; line3(ctx, c, [0, 6, 0], [S.x * 0.62, 6, S.z * 0.62]);
+      const u = (now * 0.5 + i * 0.25) % 1, p = P(c, S.x * 0.62 * u, 6, S.z * 0.62 * u); if (p) glowDot(ctx, p.x, p.y, 6 * p.k + 2, TEAL, 0.9 * dim(i));
+    });
+    // draw stations far to near
+    const order = ST.map((S, i) => ({S, i, d: Math.hypot(S.x - c.x, S.z - c.z)})).sort((a, b) => b.d - a.d);
+    order.forEach(({S, i}) => {
+      const a = dim(i), lit = f === i, x = S.x, z = S.z, L = now;
+      drawBox(ctx, c, [x, 0, z, 150, 8, 150], lit ? GOLD : [120, 110, 90], 0.55 * a, lit ? 0.4 : 0);
+      label3(ctx, c, x, 158, z, S.name.toUpperCase(), (lit ? 1 : 0.75) * a, lit ? GOLD : IVORY, 10);
+      if (i === 0) { // Document Drafting: templates behind, a new page writes itself, then a gold check
+        paper(ctx, c, x - 40, 9, z + 34, 52, 70, -0.25, 0.55 * a, (g) => { g.fillStyle = 'rgba(12,17,23,.3)'; for (let k = 0; k < 7; k++) g.fillRect(12, 18 + k * 14, 70 - (k % 3) * 12, 5); g.font = `600 9px ${SANS}`; g.fillStyle = 'rgba(168,132,71,.9)'; g.fillText('TEMPLATE', 12, 126); });
+        paper(ctx, c, x + 40, 9, z + 34, 52, 70, 0.25, 0.55 * a, (g) => { g.fillStyle = 'rgba(12,17,23,.3)'; for (let k = 0; k < 7; k++) g.fillRect(12, 18 + k * 14, 60 - (k % 2) * 16, 5); g.font = `600 9px ${SANS}`; g.fillStyle = 'rgba(168,132,71,.9)'; g.fillText('PRECEDENT', 12, 126); });
+        const cyc = (L * 0.32) % 1, lines = Math.floor(clamp(cyc / 0.75, 0, 1) * 8);
+        paper(ctx, c, x, 9 + Math.sin(L * 1.5) * 2, z - 6, 70, 96, 0, a, (g) => {
+          g.font = `600 11px ${SERIF}`; g.fillStyle = '#0C1117'; g.fillText('Draft agreement', 10, 18);
+          g.fillStyle = 'rgba(12,17,23,.35)'; for (let k = 0; k < lines; k++) g.fillRect(10, 30 + k * 11, (k === lines - 1 ? 0.6 : 1) * (78 - (k % 3) * 10), 4);
+          if (cyc > 0.8) { g.strokeStyle = '#A88447'; g.lineWidth = 4; g.beginPath(); g.moveTo(66, 118); g.lineTo(74, 126); g.lineTo(90, 108); g.stroke(); }
+        });
+      }
+      if (i === 1) { // Knowledge Search: a scan sweeps a row of files; the right one lifts with an answer
+        const sweep = (L * 0.4) % 1, hit = 4, sx = lerp(-60, 60, sweep);
+        for (let k = 0; k < 8; k++) {
+          const fxk = x - 56 + k * 16, lift = k === hit ? clamp((sweep - 0.55) / 0.15, 0, 1) * 34 : 0;
+          drawBox(ctx, c, [fxk, 8 + lift, z, 10, 58, 64], k === hit && lift > 2 ? GOLD : IVORY, (k === hit && lift > 2 ? 0.95 : 0.45) * a, k === hit ? lift / 34 : 0);
+        }
+        const p1 = P(c, x + sx, 8, z - 40), p2 = P(c, x + sx, 76, z - 40), p3 = P(c, x + sx, 76, z + 40), p4 = P(c, x + sx, 8, z + 40);
+        if (p1 && p2 && p3 && p4) { poly(ctx, [p1, p2, p3, p4]); ctx.fillStyle = rgba(TEAL, 0.18 * a); ctx.fill(); ctx.strokeStyle = rgba(TEAL, 0.8 * a); ctx.stroke(); }
+        if (sweep > 0.68) { const p = P(c, x, 112, z); if (p) { const w = 130, h = 40, ap = clamp((sweep - 0.68) / 0.08, 0, 1) * a; ctx.globalAlpha = ap; rr(ctx, p.x - w / 2, p.y - h / 2, w, h, 8); ctx.fillStyle = 'rgba(10,14,19,.9)'; ctx.fill(); ctx.strokeStyle = rgba(GOLD, 0.8); ctx.stroke(); ctx.font = `700 9px ${SANS}`; ctx.fillStyle = rgba(GOLD, 1); ctx.fillText('ANSWER FOUND', p.x - w / 2 + 10, p.y - 4); ctx.font = `500 10px ${SANS}`; ctx.fillStyle = rgba(IVORY, 0.85); ctx.fillText('with 3 sources', p.x - w / 2 + 10, p.y + 11); ctx.globalAlpha = 1; } }
+      }
+      if (i === 2) { // Proposal Generation: a call's voice wave flows into a proposal that fills and is signed
+        for (let k = 0; k < 9; k++) { const hgt = 10 + Math.abs(Math.sin(L * 4 + k * 0.8)) * 34; drawBox(ctx, c, [x - 50, 8, z - 36 + k * 9, 6, hgt, 5], TEAL, 0.8 * a, 0); }
+        label3(ctx, c, x - 50, 78, z, 'DISCOVERY CALL', 0.75 * a, TEAL, 8);
+        for (let q = 0; q < 4; q++) { const u = (L * 0.6 + q / 4) % 1, p = P(c, lerp(x - 42, x + 20, u), 40 + Math.sin(u * Math.PI) * 26, z); if (p) glowDot(ctx, p.x, p.y, 5 * p.k + 2, GOLD, 0.9 * a); }
+        const cyc = (L * 0.3) % 1;
+        paper(ctx, c, x + 40, 9, z, 72, 98, 0.35, a, (g) => {
+          g.font = `600 11px ${SERIF}`; g.fillStyle = '#0C1117'; g.fillText('Proposal', 10, 18); g.font = `600 7px ${SANS}`; g.fillStyle = 'rgba(168,132,71,.95)'; g.fillText('SCOPE · TIMELINE · FEE', 10, 30);
+          const n = Math.floor(clamp(cyc / 0.6, 0, 1) * 6); g.fillStyle = 'rgba(12,17,23,.35)'; for (let k = 0; k < n; k++) g.fillRect(10, 40 + k * 10, 74 - (k % 2) * 14, 4);
+          if (cyc > 0.65) { g.strokeStyle = '#0C1117'; g.lineWidth = 1.6; g.beginPath(); const e = clamp((cyc - 0.65) / 0.25, 0, 1); for (let s2 = 0; s2 <= 30 * e; s2++) { const xx = 14 + s2 * 2, yy = 118 + Math.sin(s2 * 0.9) * 4; s2 ? g.lineTo(xx, yy) : g.moveTo(xx, yy); } g.stroke(); g.fillStyle = 'rgba(12,17,23,.3)'; g.fillRect(12, 124, 70, 1.5); }
+        });
+      }
+      if (i === 3) { // Intake & Triage: envelopes stream in, pass the gate and sort into three lanes
+        drawBox(ctx, c, [x, 8, z + 10, 70, 44, 8], GOLD, 0.5 * a, 0.2);
+        const lanes = [{dx: -52, n: 'QUALIFIED'}, {dx: 0, n: 'ROUTED'}, {dx: 52, n: 'REPLY DRAFTED'}];
+        lanes.forEach((ln) => { ctx.strokeStyle = rgba(GOLD, 0.35 * a); ctx.lineWidth = 1; line3(ctx, c, [x, 9, z], [x + ln.dx, 9, z - 62]); label3(ctx, c, x + ln.dx, 10, z - 74, ln.n, 0.8 * a, IVORY, 7.5); });
+        for (let q = 0; q < 6; q++) {
+          const u = (L * 0.28 + q / 6) % 1, ln = lanes[q % 3];
+          const px = u < 0.5 ? x : lerp(x, x + ln.dx, (u - 0.5) / 0.5), pz = u < 0.5 ? lerp(z + 70, z, u / 0.5) : lerp(z, z - 62, (u - 0.5) / 0.5);
+          drawBox(ctx, c, [px, 10, pz, 18, 3, 12], IVORY, 0.9 * a * (u < 0.92 ? 1 : (1 - u) / 0.08), 0);
+        }
+      }
+    });
+  };
   /* ── wire up ── */
   document.querySelectorAll('[data-film="stack"]').forEach((root) => {
     const btns = [...root.querySelectorAll('[data-seek]')];
@@ -343,5 +431,11 @@
     TUN.steps = (t, done) => { const k = done || t > 8.2 ? 9 : focusOf(t); layers.forEach((l, i) => l.classList.toggle('is-on', k === 9 || k === i)); };
     const f = Film(root, TUN); films.push(f);
     layers.forEach((l, i) => { const go = () => f.seek(TUN.seekTo[i]); l.addEventListener('click', go); l.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); });
+  });
+  document.querySelectorAll('[data-film="bench"]').forEach((root) => {
+    const cards = [...root.parentElement.querySelectorAll('.bench-cards [data-seek]')];
+    BENCH.steps = (t, done) => { const k = done ? -1 : benchFocus(t); cards.forEach((el, i) => el.classList.toggle('is-on', k === i)); };
+    const f = Film(root, BENCH); films.push(f);
+    cards.forEach((el, i) => { const go = () => f.seek(BENCH.seekTo[i] + 0.65); el.addEventListener('click', go); el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); });
   });
 })();
