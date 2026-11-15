@@ -21,9 +21,9 @@ export const DEFAULT_KB = {
   services: {
     web: { page: 'https://brenicks.com/web-design/', name: 'web design', range: 'We quote by scope, but website projects range from $500 (an audit) to $9,000 (a 12-page build), and care plans run $300 to $600 a month.', about: 'We design and rebuild fast, clear websites built to turn visitors into enquiries.', start: 'audit',
       keywords: 'web ?site|web ?design|\\bsite\\b|pages?\\b|seo|landing|redesign|wordpress|shopify|squarespace|wix|homepage',
-      audit: [['Site Audit — Standard', '$500 flat', '3 days, sites up to 10 pages', 10], ['Site Audit — Extended', '$900 flat', '5 days, sites of 11–30 pages', 30]],
+      audit: [['Site Audit: Standard', '$500 flat', '3 days, sites up to 10 pages', 10], ['Site Audit: Extended', '$900 flat', '5 days, sites of 11–30 pages', 30]],
       build: [['Website Starter', '$5,000 flat', '3–4 weeks, up to 5 custom pages', 5], ['Website Growth', '$9,000 flat', '5–7 weeks, up to 12 pages with a CMS', 12]],
-      retainer: [['Care Plan — Standard', '$300/month', 'hosting, monitoring, backups and up to 2 hours of edits, sites up to 10 pages', 10], ['Care Plan — Extended', '$600/month', 'up to 5 hours of edits, sites of 11–30 pages', 30]] },
+      retainer: [['Care Plan: Standard', '$300/month', 'hosting, monitoring, backups and up to 2 hours of edits, sites up to 10 pages', 10], ['Care Plan: Extended', '$600/month', 'up to 5 hours of edits, sites of 11–30 pages', 30]] },
     salesforce: { page: 'https://brenicks.com/salesforce/', name: 'Salesforce', range: 'We quote by scope, but Salesforce work ranges from $100 to $500 per user (minimum 10 users), and ongoing care is $150 per user a month.', about: 'We set up, connect and improve Salesforce: data model, automations, integrations and migration.', start: 'audit',
       keywords: 'salesforce|\\bcrm\\b|sfdc|users?\\b|licen[cs]es?|seats?', per_user: { audit: 100, build: 500, retainer: 150 }, min_users: 10,
       audit: [['Org Audit', '$100 per user', '1 week, minimum 10 users']], build: [['Quick Setup', '$500 per user', '2–3 weeks, minimum 10 users']], retainer: [['Care Retainer', '$150 per user per month', 'minimum 10 users']] },

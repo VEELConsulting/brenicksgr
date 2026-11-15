@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
-  <title>Start a Conversation — The Brenicks Group</title>
+  <title>Start a Conversation | The Brenicks Group</title>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <link rel="icon" type="image/x-icon" href="https://brenicks.com/favicon.ico" />
   <link rel="apple-touch-icon" href="https://brenicks.com/apple-touch-icon.png" />
@@ -11,12 +11,12 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:image:type" content="image/png" />
   <meta name="twitter:image" content="https://brenicks.com/assets/social-og-image.png" />
-  <meta property="og:title" content="Start a Conversation — The Brenicks Group" />
+  <meta property="og:title" content="Start a Conversation | The Brenicks Group" />
   <meta property="og:description" content="Tell us about your project. We will respond within 24 hours." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://brenicks.com/contact/" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Start a Conversation — The Brenicks Group" />
+  <meta name="twitter:title" content="Start a Conversation | The Brenicks Group" />
   <meta name="twitter:description" content="Tell us about your project. We will respond within 24 hours." />
   <meta name="description" content="Tell us about your project. We'll tell you exactly what's possible." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -146,7 +146,7 @@
       <div class="page-hero__inner reveal">
         <span class="section__label" id="heroLabel">Let's Talk</span>
         <h1 class="page-hero__title">Start a <em>conversation.</em></h1>
-        <p class="page-hero__sub">Tell us about your project — the more detail the better. We'll come back to you within 24 hours with honest thoughts and clear next steps.</p>
+        <p class="page-hero__sub">Tell us about your project. The more detail, the better. We'll come back to you within 24 hours with honest thoughts and clear next steps.</p>
       </div>
     </div>
   </section>
@@ -159,7 +159,7 @@
         <div class="contact-info reveal">
           <span class="section__label">Get in Touch</span>
           <h3>What happens next</h3>
-          <p>You fill in the brief below. We read it carefully — not skim it. Within 24 hours you'll hear from us with either a set of clarifying questions or a proposed next step.</p>
+          <p>You fill in the brief below. We read it carefully. We don't skim it. Within 24 hours you'll hear from us with either a set of clarifying questions or a proposed next step.</p>
           <p>No pressure. No sales script. Just a straight conversation about what you need and whether we're the right fit to deliver it.</p>
 
           <div class="contact-details">
@@ -190,7 +190,7 @@
 
           <div class="glass-card" style="padding:1.75rem;margin-top:2rem;">
             <span class="section__label">Prefer a call?</span>
-            <p style="color:var(--c-text-2);font-size:.9rem;line-height:1.7;margin:0.75rem 0 1.25rem;">If you'd rather talk than type, book a 30-minute call. No pitch — just a conversation.</p>
+            <p style="color:var(--c-text-2);font-size:.9rem;line-height:1.7;margin:0.75rem 0 1.25rem;">If you'd rather talk than type, book a 30-minute call. No pitch, just a conversation.</p>
             <a href="https://calendly.com/thebrenicksgroup/website-consultation" class="btn btn--call" style="width:100%;justify-content:center;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
               Book a Call
@@ -318,7 +318,7 @@
         'salesforce':        '../salesforce/index.html#pricing'
       };
       // Add id="pricing" anchors to service pages via JS isn't possible here,
-      // so we link back to the page root — service pages scroll position is preserved by browser on back()
+      // so we link back to the page root; service pages scroll position is preserved by browser on back()
       const backUrls = {
         'ai-implementation': '../ai-implementation/index.html',
         'pilot':             '../ai-implementation/index.html',
@@ -365,7 +365,7 @@
         backLink.href = backUrls[service];
 
         if (tier && tierLabels[tier]) {
-          badgeBar.innerHTML = `Enquiring about: <strong>${tierLabels[tier]}</strong> — ${serviceLabels[service] || ''}`;
+          badgeBar.innerHTML = `Enquiring about: <strong>${tierLabels[tier]}</strong> · ${serviceLabels[service] || ''}`;
         } else {
           badgeBar.innerHTML = `Service: <strong>${serviceLabels[service] || service}</strong>`;
         }
@@ -378,7 +378,7 @@
         const bannerBack = document.getElementById('tierBannerBack');
 
         banner.style.display = 'flex';
-        bannerText.innerHTML = `You selected: <strong>${tierLabels[tier] || tier}</strong> — ${serviceLabels[service] || service}`;
+        bannerText.innerHTML = `You selected: <strong>${tierLabels[tier] || tier}</strong> · ${serviceLabels[service] || service}`;
 
         if (backUrls[service]) {
           bannerBack.href = backUrls[service];
