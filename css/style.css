@@ -30,6 +30,7 @@
   --radius-xl:     40px;
   --nav-h:         72px;
   --max-w:         1200px;
+  --gutter:        clamp(1.25rem, 6vw, 4.5rem);  /* side margin: grows with the window so card corners never crowd the edge */
   --gap:           clamp(1.25rem, 2.5vw, 2.5rem);
   --ease-silk:     cubic-bezier(0.23, 1, 0.32, 1);
   --ease-glass:    cubic-bezier(0.16, 1, 0.3, 1);
@@ -93,7 +94,7 @@ ul { list-style: none; }
 .container {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 0 clamp(1.25rem, 5vw, 3rem);
+  padding: 0 var(--gutter, clamp(1.25rem, 6vw, 4.5rem));
 }
 .section { padding: clamp(4rem, 8vw, 8rem) 0; }
 em { font-style: italic; font-family: 'Playfair Display', serif; }
@@ -230,7 +231,7 @@ em { font-style: italic; font-family: 'Playfair Display', serif; }
 .nav__inner {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 0 clamp(1.25rem, 5vw, 3rem);
+  padding: 0 var(--gutter, clamp(1.25rem, 6vw, 4.5rem));
   height: 100%;
   display: flex;
   align-items: center;
@@ -246,11 +247,12 @@ em { font-style: italic; font-family: 'Playfair Display', serif; }
 }
 .nav__links {
   display: flex;
-  gap: 1.75rem;
+  gap: clamp(0.9rem, 1.9vw, 1.75rem);
   margin-left: 1.5rem;
   flex: 1;
 }
 .nav__links a {
+  white-space: nowrap;
   font-size: 0.875rem;
   color: var(--c-text-2);
   letter-spacing: 0.03em;
@@ -541,7 +543,7 @@ body:has(.nav__mobile.open) #bk-chat-btn { opacity: 0; pointer-events: none; tra
   width: 100%;
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 4rem clamp(1.25rem, 5vw, 3rem) 6rem;
+  padding: 4rem var(--gutter, clamp(1.25rem, 6vw, 4.5rem)) 6rem;
 }
 .hero__eyebrow {
   display: inline-flex;
