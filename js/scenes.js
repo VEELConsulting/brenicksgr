@@ -135,9 +135,9 @@
   const SATS = [{a: -0.3, label: 'CRM'}, {a: 0.87, label: 'Documents'}, {a: 2.05, label: 'Workflows'}].map((s) => ({...s, x: Math.cos(s.a) * 235, z: Math.sin(s.a) * 235}));
   const MOTES = Array.from({length: 60}, (_, i) => ({a: i * 2.399, r: 20 + (i * 37) % 70, s: 0.4 + ((i * 13) % 10) / 10, o: (i * 0.137) % 1}));
   STACK.draw = (ctx, W, H, t, now, done) => {
-    // light theme: ivory field, deeper gold, and a deep aquamarine base layer that holds its own on a pale page
+    // light theme: ivory field, deeper gold, and a the Brenicks navy base layer, as solid as it is in the dark theme
     LIGHT = document.documentElement.getAttribute('data-theme') === 'light';
-    const GD = LIGHT ? [168, 128, 60] : GOLD, TL = LIGHT ? [46, 124, 134] : TEAL, IV = LIGHT ? [214, 204, 186] : IVORY, LBL = LIGHT ? [70, 56, 34] : IVORY;
+    const GD = LIGHT ? [168, 128, 60] : GOLD, TL = LIGHT ? [22, 34, 62] : TEAL, IV = LIGHT ? [214, 204, 186] : IVORY, LBL = LIGHT ? [70, 56, 34] : IVORY;
     const c = cam(), sf = ctx.__safe || {l: 0, w: W}, SW0 = sf.w; const narrow = SW0 < 480; c.f = Math.min(SW0, H) * (narrow ? 1.05 : 1.12); c.cx = sf.l + SW0 / 2; c.cy = H * (narrow ? 0.5 : 0.58);
     const sway = CALM ? 0 : Math.sin(now * 0.35) * 0.08;
     const a1 = eio(seg(t, 1.55, 3.0)), rise = eio(seg(t, 6.9, 8.4));
@@ -205,7 +205,7 @@
       const b = [0, y, 0, L.w, LH, L.w];
       if (i === 0) {
         const tr = eo(seg(t, T, T + 0.85)), solid = seg(t, STACK.land[1], STACK.land[1] + 0.6);
-        if (solid > 0) drawBox(ctx, c, b, TL, (LIGHT ? 0.75 : 0.55) * solid, 0);
+        if (solid > 0) drawBox(ctx, c, b, LIGHT ? [30, 46, 82] : TL, (LIGHT ? 1.45 : 0.55) * solid, 0);
         ctx.strokeStyle = rgba(TL, 0.95); ctx.lineWidth = 1.4; boxEdges(...b).forEach(([p, q], n) => line3(ctx, c, p, q, clamp(tr * 12 - n, 0, 1)));
         // dimension lines (the blueprint)
         const dA = seg(t, T + 0.5, T + 1.0) * (1 - solid);
