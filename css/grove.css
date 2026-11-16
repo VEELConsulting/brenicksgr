@@ -83,6 +83,30 @@
 @media (max-width: 900px) {
   .grove__grid.build-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 80vw; }
 }
+/* phones turned sideways: the full desktop scene, three scrolls across, sized to the short screen */
+@media (orientation: landscape) and (max-height: 520px) {
+  .grove { padding-top: 4.5rem; padding-bottom: 5rem; }
+  .grove__grid.build-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: min(980px, 78vw); gap: 4.75rem 1.5rem; margin-top: 4rem; }
+  .grove .section__title { font-size: clamp(1.6rem, 4.2vw, 2.2rem); }
+  .grove .scroll__paper { padding: 1rem 1rem 1.15rem; }
+  .grove .build-item h4 { font-size: .95rem; }
+  .grove .build-item p { font-size: .78rem; line-height: 1.5; }
+  .grove .build-item__label { font-size: .62rem; }
+}
+
+/* the turn cue: phones held upright only. A small gold ring of two arrows around a phone, beside the section label;
+   it turns once, slowly, when the section arrives, then rests. No words, no banner. */
+.grove__turn { display: none; }
+@media (orientation: portrait) and (max-width: 620px) and (pointer: coarse) {
+  .grove__head { position: relative; }
+  .grove__turn { display: inline-flex; position: absolute; top: -.35rem; right: 0; width: 34px; height: 34px; align-items: center; justify-content: center;
+    color: #E3C27E; border-radius: 50%; background: rgba(8,12,20,.35); box-shadow: inset 0 0 0 1px rgba(216,180,106,.38); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); opacity: .9; }
+  [data-theme="light"] .grove__turn { color: #8A6428; background: rgba(250,248,244,.6); box-shadow: inset 0 0 0 1px rgba(138,100,40,.35); }
+  .grove__turn svg { width: 22px; height: 22px; }
+  .grove__turn-phone { transform-origin: 16px 16px; }
+  .grove__head.visible .grove__turn-phone, .grove__head.is-in .grove__turn-phone { animation: grove-turn 2.4s cubic-bezier(.6,.05,.3,1) .9s 2 both; }
+}
+@keyframes grove-turn { 0%, 15% { transform: rotate(0); } 55%, 80% { transform: rotate(-90deg); } 100% { transform: rotate(0); } }
 @media (max-width: 620px) {
   .grove__grid.build-grid { grid-template-columns: 1fr; max-width: 68vw; gap: 8.5rem; }
   .grove__ctl { bottom: 14px; right: 14px; }

@@ -101,7 +101,7 @@
 
   /* ── layout: measure the scrolls, grow the trees towards them, paint everything that does not move ── */
   function layout() {
-    const r = root.getBoundingClientRect(); W = r.width; H = r.height; narrow = W < 901; THEME = PAL[isDark() ? 'dark' : 'light'];
+    const r = root.getBoundingClientRect(); W = r.width; H = r.height; narrow = W < 901 && !(innerWidth > innerHeight && innerHeight <= 520);   // a phone turned sideways gets the full desktop story THEME = PAL[isDark() ? 'dark' : 'light'];
     DPR = Math.min(devicePixelRatio || 1, W > 1500 ? 1.25 : 1.5);
     cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
     // measured without transforms, so a scroll still waiting for its bird is placed where it will hang

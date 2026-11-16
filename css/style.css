@@ -468,7 +468,7 @@ body:has(.nav__mobile.open) #bk-chat-btn { opacity: 0; pointer-events: none; tra
   .nav__mobile.open { transition: opacity 0.2s linear, visibility 0s; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) { /* phones in landscape and small tablets use the menu button too */
   .nav__links, .nav__actions .btn--outline { display: none; }
   .nav__burger { display: flex; }
   .nav__actions { gap: 0.5rem; }
