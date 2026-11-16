@@ -43,7 +43,7 @@ export const DEFAULT_KB = {
     { id: 'work', match: 'portfolio|examples?|case stud|past (work|projects)|clients you|projects (have you|you have)|work you.?ve done', answer: "We've delivered 50+ projects. Selected work on our homepage includes Oceanis Yachts and Pinnacle Resorts (web design) and Maison Étoile (Salesforce)." },
     { id: 'ownership', match: 'own (the|it)|ownership|source code|intellectual property|documentation|lock.?in', answer: 'Every engagement ends with full ownership: the system, the documentation and the knowledge to run it without us.' },
     { id: 'contact', match: 'phone|number|email (address)?|contact|reach (you|someone)|get in touch', answer: 'Email hello@brenicks.com or call +1 919 298 1808. We reply within 24 hours.' },
-    { id: 'location', match: 'where are you|located|based|raleigh|remote|office', answer: 'We are based in North Carolina and serve North Carolina and the world, working with clients remotely wherever they are.' },
+    { id: 'location', match: 'where are you|located|based|raleigh|remote|office', answer: 'We are based in North Carolina and work with clients everywhere, remotely: Carolina to the Globe.' },
     { id: 'timeline', match: 'how long (does|will|would|to)|timeline|turnaround|how soon|how many weeks|how quickly', answer: 'Timelines depend on the package: website audits take 3–5 days, new websites 3–7 weeks, a Salesforce Quick Setup 2–3 weeks and an AI Pilot 4–8 weeks.' },
   ],
 };

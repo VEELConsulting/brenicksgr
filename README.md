@@ -29,4 +29,4 @@ Boutique AI implementation, Salesforce, and web design consulting for ambitious 
 
 ---
 
-Serving North Carolina and the world
+Carolina to the Globe
