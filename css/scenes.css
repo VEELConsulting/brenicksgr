@@ -93,3 +93,11 @@
 [data-theme="light"] .film--tunnel .film__cap { color: #1A1510; text-shadow: 0 1px 12px rgba(255,253,248,.95); }
 [data-theme="light"] .film--tunnel .film__cap em { color: #9A7440; }
 [data-theme="light"] .film--tunnel .film__ctl { color: #6A5230; background: rgba(255,253,248,.75); border-color: rgba(154,116,64,.35); }
+
+/* the build stack in the light theme: the same ivory field as the tunnel */
+[data-theme="light"] .film--stack.film--bleed { background: radial-gradient(70% 80% at 58% 55%, #FFFFFF 0%, #FAF6EC 55%, rgba(243,238,226,0) 100%); }
+[data-theme="light"] .film--stack .film__cap { color: #1A1510; text-shadow: 0 1px 12px rgba(255,253,248,.95); }
+[data-theme="light"] .film--stack .film__cap em { color: #9A7440; }
+[data-theme="light"] .film--stack .film__ctl { color: #6A5230; background: rgba(255,253,248,.75); border-color: rgba(154,116,64,.35); }
+[data-theme="light"] .film--stack .film__steps button { color: #6A5230; background: rgba(255,253,248,.8); border-color: rgba(154,116,64,.3); }
+[data-theme="light"] .film--stack .film__steps button.is-on { color: #FFFDF8; background: #A88447; border-color: #A88447; box-shadow: 0 0 18px rgba(168,132,71,.35); }
