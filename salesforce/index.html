@@ -400,10 +400,10 @@
       </div>
       <div class="tiers-grid">
         <!-- Stripe Payment Link: Salesforce Org Audit ($100/seat, min 10) -->
-        <a href="https://buy.stripe.com/test_00waEX2cZed6frwak10480i" class="tier-card reveal reveal--delay-1" style="display:block;text-decoration:none;color:inherit;">
+        <a href="https://buy.stripe.com/test_00waEX2cZed6frwak10480i" data-pkg="sf-audit" class="tier-card reveal reveal--delay-1" style="display:block;text-decoration:none;color:inherit;">
           <span class="tier-card__badge">Paid Audit</span>
           <h3 class="tier-card__name">Org Audit</h3>
-          <p class="tier-card__price">1 week · $100/user <span style="opacity:.65;">(min 10 users)</span></p>
+          <p class="tier-card__price">1 week · <span data-price="sf-audit">$100</span>/user <span style="opacity:.65;">(min 10 users)</span></p>
           <ul class="tier-card__features">
             <li>Full org health check</li>
             <li>Data quality &amp; automation review</li>
@@ -413,10 +413,10 @@
           <span class="service-card__link" style="margin-top:.5rem;">Pay &amp; get started <span>→</span></span>
         </a>
         <!-- Stripe Payment Link: Salesforce Quick Setup ($500/seat, min 10) -->
-        <a href="https://buy.stripe.com/test_bJefZh5pb3ysdjo2Rz0480k" class="tier-card tier-card--featured reveal reveal--delay-2" style="display:block;text-decoration:none;color:inherit;">
+        <a href="https://buy.stripe.com/test_bJefZh5pb3ysdjo2Rz0480k" data-pkg="sf-setup" class="tier-card tier-card--featured reveal reveal--delay-2" style="display:block;text-decoration:none;color:inherit;">
           <span class="tier-card__badge">One-Time Build</span>
           <h3 class="tier-card__name">Quick Setup</h3>
-          <p class="tier-card__price">2–3 weeks · $500/user <span style="opacity:.65;">(min 10 users)</span></p>
+          <p class="tier-card__price">2–3 weeks · <span data-price="sf-setup">$500</span>/user <span style="opacity:.65;">(min 10 users)</span></p>
           <ul class="tier-card__features">
             <li>Core objects, fields &amp; page layouts</li>
             <li>Automated flows scaled to team size</li>
@@ -426,10 +426,10 @@
           <span class="service-card__link" style="margin-top:.5rem;">Pay &amp; get started <span>→</span></span>
         </a>
         <!-- Stripe Payment Link: Salesforce Care Retainer ($150/seat/mo recurring, min 10) -->
-        <a href="https://buy.stripe.com/test_28EfZh3h38SM93877P0480l" class="tier-card reveal reveal--delay-3" style="display:block;text-decoration:none;color:inherit;">
+        <a href="https://buy.stripe.com/test_28EfZh3h38SM93877P0480l" data-pkg="sf-care" class="tier-card reveal reveal--delay-3" style="display:block;text-decoration:none;color:inherit;">
           <span class="tier-card__badge">Retainer</span>
           <h3 class="tier-card__name">Care Retainer</h3>
-          <p class="tier-card__price">Monthly · $150/user/mo <span style="opacity:.65;">(min 10 users)</span></p>
+          <p class="tier-card__price">Monthly · <span data-price="sf-care">$150</span>/user/mo <span style="opacity:.65;">(min 10 users)</span></p>
           <ul class="tier-card__features">
             <li>Ongoing admin support &amp; small changes</li>
             <li>Monthly health check</li>
@@ -467,5 +467,6 @@
 
   <script src="../js/main.js"></script>
   <script src="../js/grove.js" defer></script>
+  <script src="../js/local-prices.js" defer></script>
 </body>
 </html>

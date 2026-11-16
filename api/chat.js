@@ -3,6 +3,7 @@
 // POST {session, path, message}                  → {reply, staff?}
 // GET  ?session=<id>&after=<n>                    → {messages: [staff replies after index n]}  (the widget polls this)
 // Optional later: ANTHROPIC_API_KEY (and CHAT_MODEL) for AI-written replies grounded in the same knowledge base.
+import { PRICING, priceFor, localFor } from './_prices.js';
 import { redis, day, readBody } from './_redis.js';
 import { loadKb, BOOKING } from './_kb.js';
 
@@ -110,13 +111,17 @@ export default async function handler(req, res) {
     else {
       if (process.env.ANTHROPIC_API_KEY) {
         try {
-          const sys = `You are the website chat for The Brenicks Group. Only discuss the company and these offers and prices, exactly as written. We quote by scope; give the published range. Company: ${kb.company}. Offers: ${JSON.stringify(kb.services)} ${JSON.stringify(kb.faqs)}. Never invent prices, timelines or results. Booking: ${BOOKING}. Under 90 words.`;
+          const market = localFor(req.headers['x-vercel-ip-country']);
+          const marketNote = market.live ? ` This visitor is in ${market.country}, where our packages are priced for local businesses (prices in US dollars): ${Object.entries(PRICING.packages).filter(([, p]) => p.rule !== 'fixed').map(([id, p]) => `${p.name} $${priceFor(id, market.tier).toLocaleString('en-US')}${/user/.test(p.unit) ? ' per user' : ''}${/month/.test(p.unit) ? ' a month' : ''}`).join('; ')}. Quote these instead of the US prices; AI Implementation stays $30,000 to $150,000+.` : '';
+          const sys = `You are the website chat for The Brenicks Group. Only discuss the company and these offers and prices, exactly as written. We quote by scope; give the published range. Company: ${kb.company}. Offers: ${JSON.stringify(kb.services)} ${JSON.stringify(kb.faqs)}. Never invent prices, timelines or results. Booking: ${BOOKING}. Under 90 words.${marketNote}`;
           const msgs = rec.transcript.filter((m) => m.role === 'user' || m.role === 'assistant').slice(-12).map((m) => ({ role: m.role, content: m.content }));
           const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: process.env.CHAT_MODEL || 'claude-haiku-5-5', max_tokens: 400, system: sys, messages: msgs }) });
           const j = await r.json(); reply = (j.content || []).filter((c) => c.type === 'text').map((c) => c.text).join('\n').trim();
         } catch (e) { reply = ''; }
       }
       if (!reply) reply = answer(kb, userLines, rec.transcript.filter((m) => m.role === 'assistant').map((m) => m.content));
+      // the rule-based answers carry US prices; outside the US, point to the market price on the page
+      if (reply && /\$\d/.test(reply) && localFor(req.headers['x-vercel-ip-country']).live) reply += ' Prices on our pages are adjusted for businesses in your country.';
     }
     rec.transcript.push({ role: 'assistant', content: reply, at: new Date().toISOString(), kb: kb.version });
     rec.messages = rec.transcript.length;
