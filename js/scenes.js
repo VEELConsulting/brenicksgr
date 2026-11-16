@@ -4,6 +4,7 @@
    The page is never held: visitors scroll freely at all times. */
 (() => {
   const CALM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let LIGHT = false;   // set by each film as it draws, from the page theme
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const lerp = (a, b, t) => a + (b - a) * t;
   const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
@@ -58,7 +59,7 @@
       const g = ctx.createLinearGradient(pts[0].x, pts[0].y, pts[2].x, pts[2].y);
       g.addColorStop(0, rgba(col, a * alpha)); g.addColorStop(1, rgba(col.map((v) => v * 0.55), a * alpha * 0.8));
       poly(ctx, pts); ctx.fillStyle = g; ctx.fill();
-      ctx.strokeStyle = rgba([255, 236, 190], 0.75 * alpha); ctx.lineWidth = 1; ctx.stroke();
+      ctx.strokeStyle = rgba(LIGHT ? [150, 112, 52] : [255, 236, 190], 0.75 * alpha); ctx.lineWidth = 1; ctx.stroke();
       if (f.k === 'top' && glow) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; poly(ctx, pts); ctx.fillStyle = rgba(col, 0.25 * glow); ctx.fill(); ctx.restore(); }
     }
   }
@@ -134,6 +135,9 @@
   const SATS = [{a: -0.3, label: 'CRM'}, {a: 0.87, label: 'Documents'}, {a: 2.05, label: 'Workflows'}].map((s) => ({...s, x: Math.cos(s.a) * 235, z: Math.sin(s.a) * 235}));
   const MOTES = Array.from({length: 60}, (_, i) => ({a: i * 2.399, r: 20 + (i * 37) % 70, s: 0.4 + ((i * 13) % 10) / 10, o: (i * 0.137) % 1}));
   STACK.draw = (ctx, W, H, t, now, done) => {
+    // light theme: ivory field, deeper gold, and a the Brenicks navy base layer, as solid as it is in the dark theme
+    LIGHT = document.documentElement.getAttribute('data-theme') === 'light';
+    const GD = LIGHT ? [168, 128, 60] : GOLD, TL = LIGHT ? [22, 34, 62] : TEAL, IV = LIGHT ? [214, 204, 186] : IVORY, LBL = LIGHT ? [70, 56, 34] : IVORY;
     const c = cam(), sf = ctx.__safe || {l: 0, w: W}, SW0 = sf.w; const narrow = SW0 < 480; c.f = Math.min(SW0, H) * (narrow ? 1.05 : 1.12); c.cx = sf.l + SW0 / 2; c.cy = H * (narrow ? 0.5 : 0.58);
     const sway = CALM ? 0 : Math.sin(now * 0.35) * 0.08;
     const a1 = eio(seg(t, 1.55, 3.0)), rise = eio(seg(t, 6.9, 8.4));
@@ -147,7 +151,7 @@
       ctx.lineWidth = 1;
       for (let i = -9; i <= 9; i++) for (const axis of [0, 1]) {
         const v = i * 44, fall = 1 - Math.abs(i) / 10;
-        ctx.strokeStyle = rgba(GOLD, 0.16 * gA * fall);
+        ctx.strokeStyle = rgba(GD, (LIGHT ? 0.3 : 0.16) * gA * fall);
         if (axis) line3(ctx, c, [v, 0, -400], [v, 0, 400]); else line3(ctx, c, [-400, 0, v], [400, 0, v]);
       }
       const p0 = P(c, 0, 0, 0); if (p0) glowDot(ctx, p0.x, p0.y, 220 * p0.k, GOLD, 0.25 * gA);
@@ -165,7 +169,7 @@
       const tl = P(c, ...pt(-SW / 2, SH)), tr = P(c, ...pt(SW / 2, SH)), br = P(c, ...pt(SW / 2, 0)), bl = P(c, ...pt(-SW / 2, 0));
       if (!tl || !tr || !br || !bl) continue;
       const fade = i === 2 ? lerp(1, 0.42, fall) * (1 - 0.35 * a1) : 1;
-      poly(ctx, [tl, tr, br, bl]); ctx.fillStyle = rgba(IVORY, 0.94 * alpha * fade); ctx.fill(); ctx.strokeStyle = rgba(GOLD, 0.6 * alpha * fade); ctx.stroke();
+      poly(ctx, [tl, tr, br, bl]); ctx.fillStyle = rgba(LIGHT ? [255, 253, 248] : IVORY, 0.94 * alpha * fade); ctx.fill(); ctx.strokeStyle = rgba(GD, (LIGHT ? 0.9 : 0.6) * alpha * fade); ctx.stroke();
       onQuad(ctx, tl, tr, bl, SW, SH, (g) => {
         g.globalAlpha = alpha * fade; g.fillStyle = '#0C1117'; g.font = `600 15px ${SERIF}`; g.fillText(titles[i], 16, 30);
         g.fillStyle = 'rgba(12,17,23,.25)'; [0.7, 0.55, 0.62, 0.4].forEach((wd, j) => { g.fillRect(16, 48 + j * 16, (SW - 32) * wd, 6); });
@@ -188,53 +192,53 @@
       const top2 = 2 + 2 * (LH + LG) + LH / 2;
       SATS.forEach((S, j) => {
         const sb = [S.x, 0, S.z, 46, 40, 46], k0 = P(c, S.x, 60, S.z);
-        drawBox(ctx, c, sb, IVORY, 0.55 * integ, 0);
-        if (k0) { ctx.font = `600 ${Math.max(9, 11 * k0.k)}px ${SANS}`; ctx.fillStyle = rgba(IVORY, 0.85 * integ); ctx.textAlign = 'center'; ctx.fillText(S.label.toUpperCase(), k0.x, k0.y - 6); ctx.textAlign = 'left'; }
+        drawBox(ctx, c, sb, IV, (LIGHT ? 0.85 : 0.55) * integ, 0);
+        if (k0) { ctx.font = `600 ${Math.max(9, 11 * k0.k)}px ${SANS}`; ctx.fillStyle = rgba(LBL, 0.85 * integ); ctx.textAlign = 'center'; ctx.fillText(S.label.toUpperCase(), k0.x, k0.y - 6); ctx.textAlign = 'left'; }
         const A = [Math.cos(S.a) * 80, top2, Math.sin(S.a) * 80], B = [S.x, 40, S.z], N = 30, f = eo(integ);
-        ctx.strokeStyle = rgba(TEAL, 0.75 * integ); ctx.lineWidth = 1.6; ctx.beginPath(); let started = false;
+        ctx.strokeStyle = rgba(TL, 0.75 * integ); ctx.lineWidth = 1.6; ctx.beginPath(); let started = false;
         for (let n = 0; n <= N * f; n++) { const u = n / N, x = lerp(A[0], B[0], u), z = lerp(A[2], B[2], u), yy = lerp(A[1], B[1], u) + Math.sin(u * Math.PI) * 70; const p = P(c, x, yy, z); if (!p) continue; started ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); started = true; }
         ctx.stroke();
-        if (f >= 1) for (let q = 0; q < 3; q++) { const u = ((now * 0.45 + q / 3 + j * 0.21) % 1); const p = P(c, lerp(A[0], B[0], u), lerp(A[1], B[1], u) + Math.sin(u * Math.PI) * 70, lerp(A[2], B[2], u)); if (p) glowDot(ctx, p.x, p.y, 7 * p.k + 2, TEAL, 0.9); }
+        if (f >= 1) for (let q = 0; q < 3; q++) { const u = ((now * 0.45 + q / 3 + j * 0.21) % 1); const p = P(c, lerp(A[0], B[0], u), lerp(A[1], B[1], u) + Math.sin(u * Math.PI) * 70, lerp(A[2], B[2], u)); if (p) glowDot(ctx, p.x, p.y, 7 * p.k + 2, TL, 0.9); }
       });
     }
     items.forEach(({i, L, y, s, T}) => {
       const b = [0, y, 0, L.w, LH, L.w];
       if (i === 0) {
         const tr = eo(seg(t, T, T + 0.85)), solid = seg(t, STACK.land[1], STACK.land[1] + 0.6);
-        if (solid > 0) drawBox(ctx, c, b, TEAL, 0.55 * solid, 0);
-        ctx.strokeStyle = rgba(TEAL, 0.95); ctx.lineWidth = 1.4; boxEdges(...b).forEach(([p, q], n) => line3(ctx, c, p, q, clamp(tr * 12 - n, 0, 1)));
+        if (solid > 0) drawBox(ctx, c, b, LIGHT ? [30, 46, 82] : TL, (LIGHT ? 1.45 : 0.55) * solid, 0);
+        ctx.strokeStyle = rgba(TL, 0.95); ctx.lineWidth = 1.4; boxEdges(...b).forEach(([p, q], n) => line3(ctx, c, p, q, clamp(tr * 12 - n, 0, 1)));
         // dimension lines (the blueprint)
         const dA = seg(t, T + 0.5, T + 1.0) * (1 - solid);
         if (dA > 0) {
-          ctx.strokeStyle = rgba(TEAL, 0.7 * dA); ctx.lineWidth = 1; const e = L.w / 2, o = 26;
+          ctx.strokeStyle = rgba(TL, 0.7 * dA); ctx.lineWidth = 1; const e = L.w / 2, o = 26;
           line3(ctx, c, [-e, 0, -e - o], [e, 0, -e - o]); line3(ctx, c, [-e, 0, -e - o + 8], [-e, 0, -e - o - 8]); line3(ctx, c, [e, 0, -e - o + 8], [e, 0, -e - o - 8]);
           line3(ctx, c, [e + o, 0, -e], [e + o, 0, e]); line3(ctx, c, [e + o - 8, 0, -e], [e + o + 8, 0, -e]); line3(ctx, c, [e + o - 8, 0, e], [e + o + 8, 0, e]);
-          const m = P(c, 0, 0, -e - o - 14); if (m) { ctx.font = `600 ${10 * m.k * 1.6}px ${SANS}`; ctx.fillStyle = rgba(TEAL, 0.9 * dA); ctx.textAlign = 'center'; ctx.fillText('SPEC · SCOPE · SUCCESS MEASURE', m.x, m.y); ctx.textAlign = 'left'; }
+          const m = P(c, 0, 0, -e - o - 14); if (m) { ctx.font = `600 ${10 * m.k * 1.6}px ${SANS}`; ctx.fillStyle = rgba(TL, 0.9 * dA); ctx.textAlign = 'center'; ctx.fillText('SPEC · SCOPE · SUCCESS MEASURE', m.x, m.y); ctx.textAlign = 'left'; }
         }
-      } else drawBox(ctx, c, b, L.c, eo(s), s >= 1 ? 0.25 + 0.15 * Math.sin(now * 2 + i) : 1 - s);
+      } else drawBox(ctx, c, b, LIGHT ? L.c.map((v) => v * 0.9) : L.c, eo(s) * (LIGHT ? 1.2 : 1), s >= 1 ? 0.25 + 0.15 * Math.sin(now * 2 + i) : 1 - s);
       // landing ripple
       const rp = seg(t, T + 0.5, T + 1.2);
-      if (rp > 0 && rp < 1) { ctx.strokeStyle = rgba(GOLD, 0.6 * (1 - rp)); ctx.lineWidth = 1.5; ctx.beginPath(); for (let n = 0; n <= 48; n++) { const a = n / 48 * 6.2832, rad = L.w * 0.6 + rp * 160; const p = P(c, Math.cos(a) * rad, y, Math.sin(a) * rad); if (p) n ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); } ctx.stroke(); }
+      if (rp > 0 && rp < 1) { ctx.strokeStyle = rgba(GD, 0.6 * (1 - rp)); ctx.lineWidth = 1.5; ctx.beginPath(); for (let n = 0; n <= 48; n++) { const a = n / 48 * 6.2832, rad = L.w * 0.6 + rp * 160; const p = P(c, Math.cos(a) * rad, y, Math.sin(a) * rad); if (p) n ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); } ctx.stroke(); }
     });
     // support halo
     const sup = seg(t, STACK.land[3] + 0.4, STACK.land[3] + 1.1);
     if (sup > 0) {
       const hy = 2 + 3 * (LH + LG) + LH / 2, R = 128, spin = now * 0.6;
-      ctx.lineWidth = 2; for (let n = 0; n < 40 * eo(sup); n++) { if (n % 2) continue; const a = spin + n / 40 * 6.2832, b2 = spin + (n + 1) / 40 * 6.2832; ctx.strokeStyle = rgba(GOLD, 0.85 * sup); line3(ctx, c, [Math.cos(a) * R, hy, Math.sin(a) * R], [Math.cos(b2) * R, hy, Math.sin(b2) * R]); }
+      ctx.lineWidth = 2; for (let n = 0; n < 40 * eo(sup); n++) { if (n % 2) continue; const a = spin + n / 40 * 6.2832, b2 = spin + (n + 1) / 40 * 6.2832; ctx.strokeStyle = rgba(GD, 0.85 * sup); line3(ctx, c, [Math.cos(a) * R, hy, Math.sin(a) * R], [Math.cos(b2) * R, hy, Math.sin(b2) * R]); }
       for (let q = 0; q < 3; q++) { const a = -spin * 1.6 + q * 2.094; const p = P(c, Math.cos(a) * R, hy, Math.sin(a) * R); if (p) glowDot(ctx, p.x, p.y, 9 * p.k + 2, GOLD, sup); }
     }
     // measurable results: beam, rising motes and a climbing line
     if (rise > 0) {
       const topY = 2 + 3 * (LH + LG) + LH, b0 = P(c, 0, topY, 0), b1 = P(c, 0, topY + 300 * rise, 0);
-      if (b0 && b1) { const g = ctx.createLinearGradient(b0.x, b0.y, b1.x, b1.y); g.addColorStop(0, rgba([255, 240, 200], 0.9)); g.addColorStop(1, rgba(GOLD, 0)); ctx.strokeStyle = g; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(b0.x, b0.y); ctx.lineTo(b1.x, b1.y); ctx.stroke(); glowDot(ctx, b0.x, b0.y, 40 * b0.k, GOLD, 0.8 * rise); }
+      if (b0 && b1) { const g = ctx.createLinearGradient(b0.x, b0.y, b1.x, b1.y); g.addColorStop(0, rgba(LIGHT ? [196, 150, 70] : [255, 240, 200], 0.9)); g.addColorStop(1, rgba(GD, 0)); ctx.strokeStyle = g; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(b0.x, b0.y); ctx.lineTo(b1.x, b1.y); ctx.stroke(); glowDot(ctx, b0.x, b0.y, 40 * b0.k, GOLD, 0.8 * rise); }
       MOTES.forEach((m) => { const u = (now * 0.12 * m.s + m.o) % 1, p = P(c, Math.cos(m.a) * m.r, topY + u * 260, Math.sin(m.a) * m.r); if (p) glowDot(ctx, p.x, p.y, 4 * p.k + 1, GOLD, rise * (1 - u) * 0.9); });
       const pc = P(c, 0, topY + 165, 0);
       if (pc) {
         const pw = 170, ph = 74, x = pc.x - pw / 2, y = pc.y - ph / 2;
-        ctx.globalAlpha = rise; rr(ctx, x, y, pw, ph, 10); ctx.fillStyle = 'rgba(10,14,19,.82)'; ctx.fill(); ctx.strokeStyle = rgba(GOLD, 0.7); ctx.lineWidth = 1; ctx.stroke();
-        ctx.font = `700 9px ${SANS}`; ctx.fillStyle = rgba(GOLD, 0.95); ctx.fillText('MEASURABLE RESULTS', x + 12, y + 18);
+        ctx.globalAlpha = rise; rr(ctx, x, y, pw, ph, 10); ctx.fillStyle = LIGHT ? 'rgba(255,253,248,.94)' : 'rgba(10,14,19,.82)'; ctx.fill(); ctx.strokeStyle = rgba(GD, 0.7); ctx.lineWidth = 1; ctx.stroke();
+        ctx.font = `700 9px ${SANS}`; ctx.fillStyle = rgba(LIGHT ? [138, 100, 40] : GOLD, 0.95); ctx.fillText('MEASURABLE RESULTS', x + 12, y + 18);
         const pts = [0.15, 0.25, 0.2, 0.42, 0.38, 0.6, 0.72, 0.9], n = pts.length, draw = eo(seg(t, 7.2, 8.6));
-        ctx.strokeStyle = rgba([255, 230, 170], 1); ctx.lineWidth = 2; ctx.beginPath();
+        ctx.strokeStyle = rgba(LIGHT ? [168, 128, 60] : [255, 230, 170], 1); ctx.lineWidth = 2; ctx.beginPath();
         for (let j = 0; j < n * draw; j++) { const px = x + 12 + j / (n - 1) * (pw - 24), py = y + ph - 12 - pts[j] * (ph - 36); j ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }
         ctx.stroke(); ctx.globalAlpha = 1;
       }
