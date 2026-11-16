@@ -1,7 +1,7 @@
 /* Films: The Build Stack and The Tunnel. The Brenicks Group.
    Two short films drawn in real 3D on canvas (perspective camera, light, particles).
-   When a visitor reaches one, the page holds on it while it plays (buttons inside stay live),
-   then the scroll is freed. Each film holds the page once per visit; after that it idles and can be replayed. */
+   Each film plays whenever the visitor arrives at it, every time, and pauses while it is off screen.
+   The page is never held: visitors scroll freely at all times. */
 (() => {
   const CALM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -88,7 +88,7 @@
       spec.draw(ctx, W, H, t, now / 1000, done); setCap(); if (spec.steps) spec.steps(t, done);
     };
     const loop = (now) => {
-      raf = 0; if (!visible && !playing) return;
+      raf = 0; if (!visible) { last = 0; return; }   // off screen: the film waits where it is
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 0; last = now;
       if (playing) { t += dt; if (t >= spec.dur) { t = spec.dur; finish(); } }
       render(now); if (!CALM || playing) raf = requestAnimationFrame(loop);
@@ -105,39 +105,19 @@
     ctl.addEventListener('click', () => { if (playing) api.skip(); else api.play(null); });
     ctl.hidden = CALM;
     new ResizeObserver(() => { size(); render(performance.now()); }).observe(root);
-    new IntersectionObserver((es) => es.forEach((e) => { visible = e.isIntersecting; if (visible) kick(); }), {rootMargin: '10% 0px'}).observe(root);
+    // play on arrival, every time: once most of the film is in view it starts from the top; leaving the screen re-arms it
+    let armed = !CALM;
+    new IntersectionObserver((es) => es.forEach((e) => {
+      visible = e.isIntersecting;
+      if (!visible) { armed = !CALM; return; }
+      if (armed && e.intersectionRatio >= 0.5) { armed = false; api.play(null); }
+      kick();
+    }), {threshold: [0, 0.5]}).observe(root);
     size(); render(performance.now());
     return api;
   }
 
-  /* ── hold the page on a film while it plays, then free the scroll ── */
-  const films = []; let held = null, lastY = scrollY;
-  const KEYS = new Set(['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' ']);
-  const stop = (e) => { if (held) e.preventDefault(); };
-  const stopKey = (e) => { if (!held || !KEYS.has(e.key)) return; if (e.key === ' ' && e.target.closest && e.target.closest('button,a,input,textarea,[role=button]')) return; e.preventDefault(); };
-  const keep = () => { if (held && Math.abs(scrollY - held.y) > 1 && performance.now() > held.settle) scrollTo(0, held.y); };
-  function hold(film, y) {
-    held = {film, y, settle: performance.now() + 520}; film.played = true; document.documentElement.classList.add('film-hold');
-    addEventListener('wheel', stop, {passive: false}); addEventListener('touchmove', stop, {passive: false}); addEventListener('keydown', stopKey); addEventListener('scroll', keep);
-    scrollTo({top: y, behavior: 'smooth'});
-    film.play(release);
-  }
-  function release() {
-    if (!held) return; held = null; document.documentElement.classList.remove('film-hold');
-    removeEventListener('wheel', stop); removeEventListener('touchmove', stop); removeEventListener('keydown', stopKey); removeEventListener('scroll', keep);
-  }
-  function watch() {
-    const y = scrollY, dir = Math.sign(y - lastY); lastY = y; if (held || CALM || !dir) return;
-    const H = innerHeight, NAV = ((document.querySelector('.nav') || {}).offsetHeight || 72) + 12;
-    for (const f of films) {
-      if (f.played) continue;
-      const area = f.root.closest('[data-hold]'), useArea = area && area.getBoundingClientRect().height <= H - NAV - 20;
-      const r = (useArea ? area : f.root).getBoundingClientRect(); if (r.bottom < 0 || r.top > H) continue;
-      if (dir > 0 && r.bottom <= H - 16 && r.bottom > NAV + 60) { hold(f, y + r.bottom - (H - 16)); break; }   // its bottom reached the bottom of the screen
-      if (dir < 0 && r.top >= NAV && r.top < H - 60) { hold(f, y + r.top - NAV); break; }                    // coming back up: its top reached the top
-    }
-  }
-  addEventListener('scroll', watch, {passive: true});
+  const films = [];
 
   /* ══════════════ 1. THE BUILD STACK ══════════════ */
   const STACK = {
@@ -281,7 +261,8 @@
     return ['<em>Where your team works:</em> we build inside it.', '<em>How it connects:</em> we wire it together.', '<em>The intelligence:</em> the right model for each job.'][Math.max(0, focusOf(t))];
   };
   TUN.draw = (ctx, W, H, t, now, done) => {
-    const c = cam(), sf = ctx.__safe || {l: 0, w: W}; c.f = Math.min(sf.w, H) * (sf.w < 520 ? 0.7 : 0.8); c.cx = sf.l + sf.w * (sf.w < 520 ? 0.5 : 0.44); /* a little left of centre, so the glowing core is never clipped */ c.cy = H / 2 + (W < 520 ? 22 : 10);
+    const LT = document.documentElement.getAttribute('data-theme') === 'light', GD = LT ? [168, 128, 60] : GOLD, STAR2 = LT ? [196, 160, 92] : IVORY;
+    const c = cam(), sf = ctx.__safe || {l: 0, w: W}; c.f = Math.min(sf.w, H) * (sf.w < 520 ? 0.6 : 0.8); c.cx = sf.l + sf.w * (sf.w < 520 ? 0.4 : 0.44); /* a little left of centre, so the glowing core is never clipped */ c.cy = H / 2 + (W < 520 ? 22 : 10);
     const pull = eio(seg(t, 8.0, 9.6)), z = camZ(t), sway = done && !CALM ? Math.sin(now * 0.3) * 40 : 0;
     const px = lerp(0, 2500, pull) + sway, py = lerp(0, 640, pull), pz = lerp(camZ(t), 1650, pull);
     look(c, px, py, pz, 0, lerp(0, -30, pull), lerp(pz + 1000, 2080, pull));
@@ -290,8 +271,8 @@
     for (const s of STARS) {
       const p = P(c, s.x, s.y, s.z); if (!p || p.x < -20 || p.x > W + 20 || p.y < -20 || p.y > H + 20) continue;
       const a = clamp(0.15 + p.k * 0.9, 0, 0.8);
-      if (speed > 200) { const q = P(c, s.x, s.y, s.z - speed * 0.05); if (q) { ctx.strokeStyle = rgba(IVORY, a * 0.7); ctx.lineWidth = Math.max(0.6, s.s * p.k); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); continue; } }
-      ctx.fillStyle = rgba(s.s > 1.2 ? GOLD : IVORY, a); ctx.fillRect(p.x, p.y, Math.max(1, s.s * p.k * 1.4), Math.max(1, s.s * p.k * 1.4));
+      if (speed > 200) { const q = P(c, s.x, s.y, s.z - speed * 0.05); if (q) { ctx.strokeStyle = rgba(STAR2, a * 0.7); ctx.lineWidth = Math.max(0.6, s.s * p.k); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); continue; } }
+      ctx.fillStyle = rgba(s.s > 1.2 ? GD : STAR2, LT ? Math.min(1, a * 1.25) : a); ctx.fillRect(p.x, p.y, Math.max(1, s.s * p.k * 1.4), Math.max(1, s.s * p.k * 1.4));
     }
     const focus = done ? -1 : focusOf(t), coreA = seg(t, 7.0, 7.8);
     const coreP = P(c, 0, 0, CORE);
@@ -300,7 +281,7 @@
     const chipPos = (R, i, j) => { const a = -Math.PI / 2 + j / R.tools.length * 6.2832 + i * 0.6 + now * (i % 2 ? -0.08 : 0.1) * (CALM ? 0 : 1); return [Math.cos(a) * RR, Math.sin(a) * RR, R.z]; };
     if (linkA > 0 && coreP) RINGS.forEach((R, i) => R.tools.forEach((_, j) => {
       const q = chipPos(R, i, j), p = P(c, ...q); if (!p) return;
-      ctx.strokeStyle = rgba(GOLD, 0.35 * linkA); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(coreP.x, coreP.y); ctx.stroke();
+      ctx.strokeStyle = rgba(GD, 0.35 * linkA); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(coreP.x, coreP.y); ctx.stroke();
       const u = (now * 0.5 + j * 0.3 + i * 0.17) % 1, pp = P(c, lerp(q[0], 0, u), lerp(q[1], 0, u), lerp(q[2], CORE, u)); if (pp) glowDot(ctx, pp.x, pp.y, 5 * pp.k * 3 + 2, GOLD, linkA);
     }));
     // core, then rings far to near
@@ -316,12 +297,12 @@
       const lit = focus === i ? 1 : 0, base = (0.35 + 0.65 * lit) * near;
       // the ring: a wide soft stroke, a bright thin one, and a dashed inner track
       [[RR, 7, 0.12], [RR, 1.4, 0.8], [RR * 0.92, 1, 0.35]].forEach(([rad, lw, al], k) => {
-        ctx.lineWidth = lw; ctx.strokeStyle = rgba(GOLD, al * base); ctx.beginPath(); let on = false;
+        ctx.lineWidth = lw; ctx.strokeStyle = rgba(GD, Math.min(1, al * base * (LT ? 1.6 : 1))); ctx.beginPath(); let on = false;
         for (let n = 0; n <= 120; n++) { if (k === 2 && n % 4 > 1) { on = false; continue; } const a = n / 120 * 6.2832 + (k === 2 ? now * 0.2 : 0), p = P(c, Math.cos(a) * rad, Math.sin(a) * rad, R.z); if (!p) { on = false; continue; } on ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); on = true; }
         ctx.stroke();
       });
       const np = P(c, 0, -RR - 48, R.z);
-      if (np && np.k > 0.12) { ctx.font = `700 ${clamp(10 * np.k * 1.6, 8, 13)}px ${SANS}`; ctx.fillStyle = rgba(GOLD, (0.5 + 0.5 * lit) * near); ctx.textAlign = 'center'; ctx.fillText(R.name.split('').join(' '), np.x, np.y); ctx.textAlign = 'left'; }
+      if (np && np.k > 0.12) { ctx.font = `700 ${clamp(10 * np.k * 1.6, 8, 13)}px ${SANS}`; ctx.fillStyle = rgba(LT ? [122, 90, 38] : GOLD, (0.5 + 0.5 * lit) * near); ctx.textAlign = 'center'; ctx.fillText(R.name.split('').join(' '), np.x, np.y); ctx.textAlign = 'left'; }
       R.tools.forEach((tool, j) => {
         const p = P(c, ...chipPos(R, i, j)); if (!p) return;
         const fs = clamp(14 * p.k / (c.f / DWELL) * (W < 520 ? 0.82 : 1), 7, 30); if (fs < 7.5 && !lit) return;
@@ -329,9 +310,9 @@
         const a = clamp((0.45 + 0.55 * lit) * near * clamp(p.k * 6, 0, 1), 0, 1);
         const X = clamp(p.x, w / 2 + 6, W - w / 2 - 6), Y = clamp(p.y, (W < 520 ? 92 : 66) + h / 2, H - 10 - h / 2);
         if (lit) glowDot(ctx, X, Y, w * 0.8, GOLD, 0.18 * a);
-        rr(ctx, X - w / 2, Y - h / 2, w, h, h / 2); ctx.fillStyle = rgba([16, 22, 30], 0.92 * a); ctx.fill();
-        ctx.strokeStyle = rgba(lit ? [240, 210, 140] : GOLD, (lit ? 0.95 : 0.55) * a); ctx.lineWidth = 1; ctx.stroke();
-        ctx.fillStyle = rgba(IVORY, a); ctx.fillText(tool, X - tw / 2, Y + fs * 0.36);
+        rr(ctx, X - w / 2, Y - h / 2, w, h, h / 2); ctx.fillStyle = rgba(LT ? [255, 253, 248] : [16, 22, 30], 0.92 * a); ctx.fill();
+        ctx.strokeStyle = rgba(LT ? (lit ? [168, 128, 60] : [196, 160, 92]) : (lit ? [240, 210, 140] : GOLD), (lit ? 0.95 : 0.55) * a); ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillStyle = rgba(LT ? [30, 24, 18] : IVORY, a); ctx.fillText(tool, X - tw / 2, Y + fs * 0.36);
       });
     });
     if (!(CORE - c.z > order[0].d)) drawCore();

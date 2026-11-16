@@ -2,7 +2,7 @@
    Films: two short 3D films drawn on canvas by js/scenes.js
    1. The Build Stack (homepage "Why Brenicks")
    2. The Tunnel (AI Implementation "Technology")
-   When a visitor reaches one, the page holds while it plays, then frees the scroll.
+   Each film plays whenever a visitor arrives at it; the page always scrolls freely.
    ───────────────────────────────────────────────────────────── */
 .about__visual.stack-host { display: flex; width: 100%; }
 @media (max-width: 900px) { .about__visual.stack-host { display: flex; } }
@@ -44,8 +44,6 @@
 .tunnel__layer ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
 .tunnel__layer li { font-size: .76rem; padding: .32rem .62rem; border-radius: 999px; border: 1px solid var(--c-border, rgba(247,245,240,.12)); color: var(--c-text-2, #B9B5AD); }
 
-/* while a film holds the page */
-html.film-hold, html.film-hold body { overscroll-behavior: none; }
 @media (prefers-reduced-motion: reduce) { .film__cap, .tunnel__layer, .film__steps button { transition: none; } }
 
 /* phones: one row of step buttons, captions clear of the Skip button */
@@ -89,3 +87,9 @@ html.film-hold, html.film-hold body { overscroll-behavior: none; }
   .about__visual .film--stack { max-width: none; border-radius: 0; border-left: 0; border-right: 0; }
   .tunnel .film--tunnel { width: 100vw; margin-left: calc(50% - 50vw); border-radius: 0; border-left: 0; border-right: 0; }
 }
+
+/* the tunnel in the light theme: an ivory field with gold stars, so it sits inside the page */
+[data-theme="light"] .film--tunnel.film--bleed { background: radial-gradient(70% 80% at 46% 55%, #FFFFFF 0%, #FAF6EC 55%, rgba(243,238,226,0) 100%); }
+[data-theme="light"] .film--tunnel .film__cap { color: #1A1510; text-shadow: 0 1px 12px rgba(255,253,248,.95); }
+[data-theme="light"] .film--tunnel .film__cap em { color: #9A7440; }
+[data-theme="light"] .film--tunnel .film__ctl { color: #6A5230; background: rgba(255,253,248,.75); border-color: rgba(154,116,64,.35); }

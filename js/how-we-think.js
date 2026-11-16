@@ -386,7 +386,7 @@ function viewOf(tg){if(tg.kind==='overview'){const b=bounds();return viewFor(b.x
 let drawnOnce=false,flight=null,holdUntil=0,playing=false,current={kind:'overview'},dirty=true,extendedHold=false,bag=[],hop=0,lastId=null;
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
 // The tour: one pass through the map (the core, one tile from each room, then the bird's-eye view).
-// It plays once on arrival with the page held; then it pauses and the scroll is freed. Play runs it again.
+// It plays each time the map lands in view; the page is never held. Play runs it again.
 const TOUR=[{kind:'tile',id:'hero'},{kind:'tile',id:'s3'},{kind:'tile',id:'i2'},{kind:'tile',id:'b2'},{kind:'tile',id:'u1'},{kind:'tile',id:'p2'},{kind:'tile',id:'c1'},{kind:'overview'}];
 let tourI=0,toured=false,nextShine=0,holdUsed=false;
 function go(tg){const it=interpZoom(cam,viewOf(tg));flight={it:it.i,t0:performance.now(),dur:clamp(it.S*780,1300,3400)};current=tg;cap.classList.add('hide');}
@@ -428,7 +428,7 @@ function layoutReveal(p){
   const hud=p>=0.8;if(hud!==hudOn){hudOn=hud;topEl.classList.toggle('off',!hud);botEl.classList.toggle('off',!hud);if(hud)requestAnimationFrame(alignPlay);}
   // the tour starts only once the map has fully landed, so the canvas never repaints mid-transition
   if(p>=0.8&&!started){started=true;startedAt=performance.now();framedAt=startedAt;tourI=0;
-    if(!toured&&!CALM){holdPage();setPlaying(true);holdUntil=performance.now()+500;}else setPlaying(false);}
+    if(!CALM){setPlaying(true);holdUntil=performance.now()+500;}else setPlaying(false);}
   if(p<0.78&&started){started=false;setPlaying(false);tourI=0;flight=null;current={kind:'overview'};cam=viewOf(current);shine=null;cap.classList.add('hide');dirty=true;}
 }
 function pinFallback(r){const st=r.top>0?'before':(r.bottom<H?'after':'fixed');if(st!==pin){pin=st;stage.dataset.pin=st;}}
@@ -465,11 +465,10 @@ function frame(now){
   // the grow to full screen and then the tour all play on their own. Scrolling back up above the pin reverses it.
   if(r.top<=1)autoDir=1;else if(r.top>H*0.04)autoDir=-1;
   // the whole film is held: from the moment the sleeve pins until the first tour has played through once
-  if(!toured&&!CALM&&!held&&!holdUsed&&r.top<=1&&r.bottom>=H-2){holdUsed=true;holdPage();}
   if(CALM)autoA=autoDir>0?1:0;else autoA=clamp(autoA+autoDir*dt/AUTO_MS,0,1);
   const p=autoA>=1?Math.max(0.8,pT):0.8*autoA;if(Math.abs(p-lastP)>1e-5){layoutReveal(p);lastP=p;}
   const moving=p>0.5&&p<0.8||(autoA>0&&autoA<1);
-  if(!toured)upSnap(r); // the gentle frame-from-below happens only before the first tour; after it the visitor scrolls freely
+  // the page is never held or pulled: visitors scroll freely; the tour plays each time the map lands in view
   if(moving){}else if(flight){let t=(now-flight.t0)/flight.dur;if(t>=1)t=1;cam=flight.it(ease(t));dirty=true;if(t===1){flight=null;onArrive(now);}}
   else if(playing&&now>holdUntil){if(tourI<TOUR.length)go(TOUR[tourI++]);else endTour();}
   // paused on a tile: keep it glimmering
@@ -494,10 +493,10 @@ function holdPage(y){if(held)return;held=true;heldY=y==null?scrollY:y;if(Math.ab
 function freePage(){if(!held)return;held=false;removeEventListener('wheel',stopEv);removeEventListener('touchmove',stopEv);removeEventListener('keydown',stopKey);removeEventListener('scroll',keepY);}
 function endTour(){toured=true;tourI=0;setPlaying(false);freePage();}
 function setPlaying(p){playing=p;playBtn.innerHTML=p?ICON_PAUSE:ICON_PLAY;playBtn.setAttribute('aria-label',p?'Pause the tour':'Play the tour');}
-// Play: lock the film into view until the tour ends or the visitor presses pause. Pause: the page scrolls freely again.
+// Play and pause control the tour only; the page always scrolls freely.
 playBtn.addEventListener('click',()=>{setPlaying(!playing);
   if(playing){if(tourI>=TOUR.length)tourI=0;holdUntil=Math.min(holdUntil,performance.now()+500);
-    const r=reveal.getBoundingClientRect(),top=scrollY+r.top,bottom=scrollY+r.bottom-H;holdPage(clamp(scrollY,top,Math.max(top,bottom)));}
+  }
   else freePage();});
 let down=null;
 cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
