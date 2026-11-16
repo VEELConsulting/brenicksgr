@@ -29,4 +29,4 @@ Boutique AI implementation, Salesforce, and web design consulting for ambitious 
 
 ---
 
-North Carolina · Remote, Worldwide
+Serving North Carolina and the world
