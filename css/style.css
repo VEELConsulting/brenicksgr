@@ -298,7 +298,7 @@ em { font-style: italic; font-family: 'Playfair Display', serif; }
 .logo-dark  { display: none; }
 [data-theme="dark"] .logo-light { display: none; }
 [data-theme="dark"] .logo-dark  { display: inline-block; }
-.nav__logo img { height: 1.375rem; width: auto; vertical-align: middle; }
+.nav__logo img { height: 1.375rem; width: auto; vertical-align: middle; margin-left: -1.4rem; }   /* the wordmark is centred in its artwork: pull it left so "BRENICKS" lines up with the page content below */
 .footer__logo img,
 .footer__brand img { height: 1.5rem; width: auto; }
 .footer__bottom img { height: 1.125rem; width: auto; vertical-align: middle; }
