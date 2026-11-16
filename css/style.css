@@ -584,6 +584,13 @@ body:has(.nav__mobile.open) #bk-chat-btn { opacity: 0; pointer-events: none; tra
   margin-bottom: 2.25rem;
   max-width: 440px;
 }
+.hero__creed {
+  margin: -1.25rem 0 2.25rem;
+  font: italic 500 clamp(1.15rem, 2.2vw, 1.45rem)/1.35 'Playfair Display', Georgia, serif;
+  color: var(--c-gold);
+  letter-spacing: .01em;
+}
+.hero__creed em { color: inherit; }
 .hero__cta {
   display: flex;
   align-items: center;
