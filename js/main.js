@@ -129,8 +129,12 @@
 
 })();
 
-/* Brenicks add-on: first-party visit counts (no cookies) and the website chat. */
+/* Brenicks add-on: first-party visit counts (no cookies), the website chat and the promo strip. */
 (function () {
-  var load = function () { ['/brenicks-beacon.js', '/brenicks-chat.js'].forEach(function (src) { var s = document.createElement('script'); s.src = src; s.defer = true; document.head.appendChild(s); }); };
+  var load = function () {
+    ['/brenicks-beacon.js', '/brenicks-chat.js'].forEach(function (src) { var s = document.createElement('script'); s.src = src; s.defer = true; document.head.appendChild(s); });
+    var p = document.createElement('script'); p.src = '/promo-strip.js'; p.defer = true;
+    p.dataset.site = 'brenicks.com'; p.dataset.push = '.nav'; document.head.appendChild(p);
+  };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load); else load();
 })();
